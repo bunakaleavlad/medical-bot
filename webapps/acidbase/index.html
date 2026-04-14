@@ -400,7 +400,7 @@
         markErr('abg-be',      d.BE < -30 || d.BE > 30,         'BE поза межами (−30..+30)', e);
         markErr('abg-na',      d.Na < 110 || d.Na > 170,        'Na⁺ поза межами (110–170)', e);
         markErr('abg-cl',      d.Cl < 80 || d.Cl > 130,         'Cl⁻ поза межами (80–130)', e);
-        markErr('abg-lactate', d.lac < 0.5 || d.lac > 30,       'Лактат поза межами (0.5–30)', e);
+        markErr('abg-lactate', d.lac !== null && (d.lac < 0.5 || d.lac > 30), 'Лактат поза межами (0.5–30)', e);
         markErr('abg-albumin', d.alb < 15 || d.alb > 60,        'Альбумін поза межами (15–60)', e);
         markErr('abg-k',       d.K < 2.0 || d.K > 8.0,          'K⁺ поза межами (2.0–8.0)', e);
         markErr('abg-weight',  d.wt < 20 || d.wt > 300,         'Вага поза межами (20–300)', e);
@@ -542,7 +542,13 @@
 
     // ── КОРЕКЦІЯ БІКАРБОНАТУ ──────────────────────────
     function bicarb(BE, HCO3, wt, conc, pH, lac) {
-        var needBicarb = (BE < -5) || (pH < 7.2);
+        // CHANGE 9: перевірка ваги
+        if (wt === null || isNaN(wt) || !isFinite(wt) || wt <= 0) {
+            return { ok: false, error: 'Введіть вагу пацієнта' };
+        }
+
+        // CHANGE 1: && замість ||
+        var needBicarb = (BE < -5) && (pH < 7.2);
         if (!needBicarb) return { ok: false };
 
         var dist = 0.3;
@@ -562,7 +568,7 @@
         var remainingVol = remainingDef / conc;
 
         var caut = '⚠️ Розрахунок приблизний. Титрувати за клінічною відповіддю.';
-        if (lac > 4) caut += ' При лактат-ацидозі — бікарбонат обережно.';
+        if (lac !== null && lac > 4) caut += ' При лактат-ацидозі — бікарбонат обережно.';
 
         var bolusMsg = '';
         if (def > bolusMax) {
@@ -594,9 +600,12 @@
         else if (pH < 7.2)  add('🔴 ТЯЖКИЙ АЦИДОЗ! pH < 7.2! Розглянути болюс NaHCO₃!', true);
         else if (pH < 7.3)  add('⚠️ Помірний ацидоз. Контроль газів через 2 год.', false);
 
-        if      (lac > 10)  add('🔴🔴 КРИТИЧНИЙ ЛАКТАТ > 10! Шок? Ішемія кишечника?', true);
-        else if (lac > 4)   add('🔴 ЛАКТАТ-АЦИДОЗ! Оцінити перфузію, виключити сепсис!', true);
-        else if (lac > 2)   add('⚠️ Помірне підвищення лактату.', false);
+        // CHANGE 7: обгортка null-перевірки лактату
+        if (lac !== null) {
+            if      (lac > 10)  add('🔴🔴 КРИТИЧНИЙ ЛАКТАТ > 10! Шок? Ішемія кишечника?', true);
+            else if (lac > 4)   add('🔴 ЛАКТАТ-АЦИДОЗ! Оцінити перфузію, виключити сепсис!', true);
+            else if (lac > 2)   add('⚠️ Помірне підвищення лактату.', false);
+        }
 
         if      (pCO2 > 80) add('🔴🔴 КРИТИЧНА ГІПЕРКАПНІЯ pCO₂ > 80! Ризик CO₂-наркозу!', true);
         else if (pCO2 > 60) add('🔴 ТЯЖКА ГІПЕРКАПНІЯ pCO₂ > 60! Розглянути НІВЛ!', true);
@@ -617,7 +626,7 @@
     function recs(pH, agv, lac, pCO2, HCO3, prim, isAG, bicCaut) {
         var r = [];
         if (pH < 7.1) {
-            r.push(lac > 4
+            r.push(lac !== null && lac > 4
                 ? '💊 pH < 7.1 при лактат-ацидозі: бікарбонат ТІЛЬКИ при нестабільній гемодинаміці.'
                 : '💊 pH < 7.1: ввести 50–100% дози NaHCO₃ за 10–15 хв.');
         }
@@ -625,8 +634,10 @@
         if (isAG && agv > 20)                 r.push('🔬 Осмолярний розрив? Виключити метанол, етиленгліколь, саліцилати.');
         if (agv !== null && agv > 12 && prim.toLowerCase().indexOf('алкалоз') >= 0)
                                               r.push('🧪 AG-ацидоз + алкалоз. Шукати блювання, діуретики.');
-        if      (lac > 4)   r.push('🩸 Лактат-ацидоз: перфузія, сепсис, ішемія кишечника.');
-        else if (lac > 2)   r.push('📊 Моніторинг лактату, корекція гіпоперфузії.');
+        if (lac !== null) {
+            if      (lac > 4)   r.push('🩸 Лактат-ацидоз: перфузія, сепсис, ішемія кишечника.');
+            else if (lac > 2)   r.push('📊 Моніторинг лактату, корекція гіпоперфузії.');
+        }
         if      (pCO2 > 60) r.push('🫁 NIV/CPAP показана. Готувати до інтубації при неефективності.');
         else if (pCO2 > 50) r.push('🫁 Розглянути неінвазивну вентиляцію.');
         if (HCO3 < 15 && agv !== null && agv <= 12)
@@ -642,7 +653,7 @@
         var h3cl  = d.HCO3 < 22 ? 'critical' : d.HCO3 > 26 ? 'warning-text' : '';
         var becl  = d.BE < -5   ? 'critical' : d.BE > 5   ? 'warning-text' : '';
         var agcl  = agv !== null ? (agv > C.N.AG ? 'critical' : agv < 0 ? 'warning-text' : '') : '';
-        var laccl = d.lac > 2 ? 'critical' : '';
+        var laccl = d.lac !== null && d.lac > 2 ? 'critical' : '';
         var sidcl = (sid !== null && sid < 30) ? 'warning-text' : '';
 
         var html =
@@ -650,10 +661,13 @@
           + rowHtml('pCO₂',               span(co2cl, d.pCO2.toFixed(0)), 'мм рт.ст.')
           + rowHtml('HCO₃⁻',              span(h3cl, d.HCO3.toFixed(1)), 'ммоль/л')
           + rowHtml('BE',                 span(becl, d.BE.toFixed(1)), 'ммоль/л')
-          + rowHtml('Anion Gap (з K⁺)',   span(agcl, agv !== null ? agv.toFixed(1) : '—'), '(N < ' + C.N.AG + ')')
-          + rowHtml('SID (Na+K−Cl)',      span(sidcl, sid !== null ? sid.toFixed(1) : '—'), 'мЕкв/л')
+          // CHANGE 6: null-safe Anion Gap
+          + rowHtml('Anion Gap (з K⁺)',   span(agcl, agv !== null ? agv.toFixed(1) : '—'), agv !== null ? '(N < ' + C.N.AG + ')' : '')
+          // CHANGE 6: null-safe SID
+          + rowHtml('SID (Na+K−Cl)',      span(sidcl, sid !== null ? sid.toFixed(1) : '—'), sid !== null ? 'мЕкв/л' : '')
           + (dr !== null ? rowHtml('Delta Ratio', span('', dr.toFixed(2)), '') : '')
-          + rowHtml('Лактат',             span(laccl, d.lac.toFixed(1)), 'ммоль/л')
+          // CHANGE 6: null-safe Лактат
+          + rowHtml('Лактат',             span(laccl, d.lac !== null ? d.lac.toFixed(1) : '—'), d.lac !== null ? 'ммоль/л' : '')
           + (ec !== null ? rowHtml('Очікувана компенсація', span('', ec.toFixed(1)), '') : '');
 
         sh('abg-interpretation', html);
@@ -669,9 +683,17 @@
         if (isAG)          agTxt += ' ✦ AG-ацидоз';
         if (dr !== null)   agTxt += ' | ΔRatio = ' + dr.toFixed(2);
 
-        var lacTxt = lac > 4  ? '⚠️ Лактат-ацидоз (' + lac.toFixed(1) + ' ммоль/л) — оцінити перфузію'
-                  : lac > 2   ? '↑ Підвищений (' + lac.toFixed(1) + ' ммоль/л)'
-                  :              'Норма (' + lac.toFixed(1) + ' ммоль/л)';
+        // CHANGE 8: null-safe лактат
+        var lacTxt;
+        if (lac === null) {
+            lacTxt = 'Дані не введені';
+        } else if (lac > 4) {
+            lacTxt = '⚠️ Лактат-ацидоз (' + lac.toFixed(1) + ' ммоль/л) — оцінити перфузію';
+        } else if (lac > 2) {
+            lacTxt = '↑ Підвищений (' + lac.toFixed(1) + ' ммоль/л)';
+        } else {
+            lacTxt = 'Норма (' + lac.toFixed(1) + ' ммоль/л)';
+        }
 
         sh('abg-conclusion',
             '<div class="diagnosis-block">'
@@ -694,10 +716,12 @@
     }
 
     function renderCorr(b) {
+        // CHANGE 10: відображення помилки ваги
         if (!b.ok) {
+            var msg = b.error || 'Не показана (BE ≥ -5 або pH ≥ 7.2)';
             sh('abg-correction',
                 rowHtml('Корекція бікарбонатом:',
-                        '<span class="result-value success">Не показана (BE ≥ -5 та pH ≥ 7.2)</span>', ''));
+                        '<span class="result-value">' + msg + '</span>', ''));
             return;
         }
         var html = 
@@ -738,9 +762,39 @@
         if (el) el.innerHTML = rs.map(function(r){ return '<li>' + r + '</li>'; }).join('');
     }
 
+    // ── ПЕРЕВІРКА НАЯВНОСТІ ОБОВ'ЯЗКОВИХ ПОЛІВ ────────────────────────────────
+    // CHANGE 2: нові функції перевірки
+    function hasRequiredFields() {
+        var required = ['abg-ph', 'abg-pco2', 'abg-hco3'];
+        for (var i = 0; i < required.length; i++) {
+            var el = document.getElementById(required[i]);
+            if (!el || el.value.trim() === '') return false;
+        }
+        return true;
+    }
+
+    function hasElectrolytes() {
+        var elNa = document.getElementById('abg-na');
+        var elCl = document.getElementById('abg-cl');
+        if (!elNa || elNa.value.trim() === '') return false;
+        if (!elCl || elCl.value.trim() === '') return false;
+        return true;
+    }
+
     // ── ГОЛОВНИЙ РОЗРАХУНОК ───────────────────────────────────────────────────
     function calc() {
         rafPending = false;
+
+        // CHANGE 3: перевірка обов'язкових полів
+        if (!hasRequiredFields()) {
+            sh('abg-interpretation', '<div class="warning info" style="text-align:center;padding:20px;">❕ Введіть pH, pCO₂ та HCO₃⁻</div>');
+            sh('abg-conclusion', '');
+            sh('abg-correction', '');
+            sh('abg-warning', '');
+            var recEl = document.getElementById('abg-recommendations');
+            if (recEl) recEl.innerHTML = '<li style="color:#888;">⏳ Очікування даних пацієнта...</li>';
+            return;
+        }
 
         var d = {
             pH:  gf('abg-ph',      7.40),
@@ -750,7 +804,13 @@
             Na:  gf('abg-na',      140),
             Cl:  gf('abg-cl',      105),
             K:   gf('abg-k',       4.0),
-            lac: gf('abg-lactate', 2.0),
+            // CHANGE 4: null якщо поле порожнє
+            lac: (function() {
+                var el = document.getElementById('abg-lactate');
+                if (!el || el.value.trim() === '') return null;
+                var v = parseFloat(el.value);
+                return (isNaN(v) || !isFinite(v)) ? null : v;
+            })(),
             alb: gf('abg-albumin', 40),
             wt:  gf('abg-weight',  70),
             con: gf('abg-bicarb',  1.0)
@@ -767,8 +827,10 @@
         }
 
         var an  = primary(d.pH, d.pCO2, d.HCO3);
-        var agR = ag(d.Na, d.K, d.Cl, d.HCO3, d.alb, d.pH);
-        var sid = isFinite(d.Na + d.K - d.Cl) ? (d.Na + d.K - d.Cl) : null;
+        // CHANGE 5: перевірка електролітів перед ag() та sid
+        var hasLytes = hasElectrolytes();
+        var agR = hasLytes ? ag(d.Na, d.K, d.Cl, d.HCO3, d.alb, d.pH) : { v: null, dr: null, st: 'Дані не введені', isAG: false };
+        var sid = hasLytes ? (d.Na + d.K - d.Cl) : null;
         var bic = bicarb(d.BE, d.HCO3, d.wt, d.con, d.pH, d.lac);
 
         var showEC = an.p.indexOf('Метаболічний ацидоз') >= 0 ? an.ec : null;
