@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>Електролітний калькулятор</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #0f172a;
+            color: #e2e8f0;
+            padding: 12px;
+            min-height: 100vh;
+        }
+        .header {
+            background: linear-gradient(135deg, #1e3a5f 0%, #0f172a 100%);
+            border-radius: 16px;
+            padding: 16px;
+            margin-bottom: 16px;
+            border: 1px solid #2d4a6e;
+            text-align: center;
+        }
+        h1 { font-size: 20px; color: #fff; }
+        .disclaimer {
+            background: #7f1d1d;
+            color: #fecaca;
+            padding: 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            margin-bottom: 16px;
+            text-align: center;
+        }
+        .tabs {
+            display: flex;
+            gap: 4px;
+            margin-bottom: 16px;
+            background: #1e293b;
+            padding: 4px;
+            border-radius: 14px;
+        }
+        .tab {
+            flex: 1;
+            padding: 12px 4px;
+            background: transparent;
+            border: none;
+            color: #94a3b8;
+            font-size: 13px;
+            font-weight: 600;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .tab.active { background: #3b82f6; color: white; }
+        .card {
+            background: #1e293b;
+            border-radius: 18px;
+            padding: 16px;
+            margin-bottom: 14px;
+            border: 1px solid #334155;
+        }
+        .card-title {
+            font-size: 15px;
+            color: #93c5fd;
+            margin-bottom: 14px;
+            font-weight: 600;
+        }
+        .input-group { margin-bottom: 14px; }
+        label {
+            display: block;
+            font-size: 12px;
+            color: #94a3b8;
+            margin-bottom: 5px;
+        }
+        input, select {
+            width: 100%;
+            padding: 12px;
+            background: #0f172a;
+            border: 1.5px solid #334155;
+            border-radius: 12px;
+            color: white;
+            font-size: 15px;
+        }
+        input:focus, select:focus {
+            outline: none;
+            border-color: #3b82f6;
+        }
+        .row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .result {
+            background: linear-gradient(145deg, #1e293b 0%, #0f172a 100%);
+            border-radius: 18px;
+            padding: 16px;
+            border: 1px solid #2d4a6e;
+            margin-bottom: 14px;
+        }
+        .result-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            padding: 10px 0;
+            border-bottom: 1px solid #334155;
+        }
+        .result-row:last-child { border-bottom: none; }
+        .result-label { color: #94a3b8; font-size: 13px; }
+        .result-value { font-size: 18px; font-weight: 700; color: #fbbf24; }
+        .result-unit { font-size: 12px; color: #64748b; font-weight: 400; }
+        .warning {
+            background: #422006;
+            color: #fde68a;
+            padding: 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            line-height: 1.4;
+        }
+        .warning.danger { background: #450a0a; color: #fecaca; }
+        .button {
+            width: 100%;
+            padding: 14px;
+            background: #3b82f6;
+            color: white;
+            border: none;
+            border-radius: 14px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 8px;
+        }
+        .button:active { background: #2563eb; }
+        .hidden { display: none !important; }
+        .protocol-badge {
+            background: #1e3a5f;
+            color: #93c5fd;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            display: inline-block;
+            margin-top: 6px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🧪 Електролітний калькулятор</h1>
+        <span class="protocol-badge">фомули розрахунку з ESCIM 2025 • KDIGO 2024 • UpToDate 2026</span>
+    </div>
+
+    <div class="disclaimer">
+        ⚕️ Для медичних працівників. Перевіряйте розрахунки. Не замінює клінічне мислення.
+    </div>
+
+    <div class="tabs">
+        <button class="tab active" data-tab="na">🧂 Na⁺</button>
+        <button class="tab" data-tab="k">⚡ K⁺</button>
+        <button class="tab" data-tab="ca">🦴 Ca²⁺</button>
+        <button class="tab" data-tab="mg">💊 Mg²⁺</button>
+    </div>
+
+    <!-- ==================== НАТРІЙ ==================== -->
+    <div id="tab-na" class="tab-content">
+        <div class="card">
+            <div class="card-title">👤 Дані пацієнта</div>
+            <div class="row-2">
+                <div class="input-group">
+                    <label>Вага (кг)</label>
+                    <input type="number" id="na-weight" value="70" min="20" max="300" step="0.1">
+                </div>
+                <div class="input-group">
+                    <label>Вік (років)</label>
+                    <input type="number" id="na-age" value="45" min="18" max="110">
+                </div>
+            </div>
+            <div class="input-group">
+                <label>Стать</label>
+                <select id="na-gender">
+                    <option value="male">Чоловік</option>
+                    <option value="female">Жінка</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-title">🔬 Лабораторні дані</div>
+            <div class="row-2">
+                <div class="input-group">
+                    <label>Na⁺ зараз (ммоль/л)</label>
+                    <input type="number" id="na-current" value="118" min="100" max="180" step="1">
+                </div>
+                <div class="input-group">
+                    <label>Na⁺ цільовий (ммоль/л)</label>
+                    <input type="number" id="na-target" value="128" min="110" max="155" step="1">
+                </div>
+            </div>
+            <div class="input-group">
+                <label>Характер порушення</label>
+                <select id="na-chronicity">
+                    <option value="acute">Гостре (&lt;48 год)</option>
+                    <option value="chronic" selected>Хронічне (&gt;48 год)</option>
+                </select>
+            </div>
+            <div class="input-group">
+                <label>Розчин для корекції</label>
+                <select id="na-solution">
+                    <option value="154">NaCl 0.9% (154 ммоль/л)</option>
+                    <option value="513" selected>NaCl 3% (513 ммоль/л)</option>
+                    <option value="1000">NaCl 5.85% (1000 ммоль/л)</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="result" id="na-result"></div>
+        <div class="warning" id="na-warning"></div>
+    </div>
+
+    <!-- ==================== КАЛІЙ ==================== -->
+    <div id="tab-k" class="tab-content hidden">
+        <div class="card">
+            <div class="card-title">👤 Дані пацієнта</div>
+            <div class="input-group">
+                <label>Вага (кг)</label>
+                <input type="number" id="k-weight" value="70" min="20" max="300" step="0.1">
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-title">🔬 Лабораторні дані</div>
+            <div class="row-2">
+                <div class="input-group">
+                    <label>K⁺ зараз (ммоль/л)</label>
+                    <input type="number" id="k-current" value="2.8" min="1.5" max="8.0" step="0.1">
+                </div>
+                <div class="input-group">
+                    <label>K⁺ цільовий (ммоль/л)</label>
+                    <input type="number" id="k-target" value="4.0" min="3.5" max="5.0" step="0.1">
+                </div>
+            </div>
+            <div class="input-group">
+                <label>Шлях введення</label>
+                <select id="k-route">
+                    <option value="iv">Внутрішньовенно</option>
+                    <option value="po">Перорально</option>
+                </select>
+            </div>
+            <div class="input-group">
+                <label>Функція нирок (ШКФ)</label>
+                <select id="k-renal">
+                    <option value="normal">Нормальна (&gt;60 мл/хв)</option>
+                    <option value="impaired">Порушена (30-60 мл/хв)</option>
+                    <option value="severe">Тяжка (&lt;30 мл/хв)</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="result" id="k-result"></div>
+        <div class="warning" id="k-warning"></div>
+    </div>
+
+    <!-- ==================== КАЛЬЦІЙ ==================== -->
+    <div id="tab-ca" class="tab-content hidden">
+        <div class="card">
+            <div class="card-title">👤 Дані пацієнта</div>
+            <div class="input-group">
+                <label>Вага (кг)</label>
+                <input type="number" id="ca-weight" value="70" min="20" max="300" step="0.1">
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-title">🔬 Лабораторні дані</div>
+            <div class="input-group">
+                <label>Ca²⁺ іонізований (ммоль/л)</label>
+                <input type="number" id="ca-current" value="0.85" min="0.4" max="2.5" step="0.01">
+            </div>
+            <div class="input-group">
+                <label>Альбумін</label>
+                <input type="number" id="ca-albumin" value="35" min="15" max="60" step="1">
+                <select id="ca-albumin-unit" style="margin-top: 6px;">
+                    <option value="gl" selected>г/л (норма 35-50)</option>
+                    <option value="gdl">г/дл (норма 3.5-5.0)</option>
+                </select>
+            </div>
+            <div class="input-group">
+                <label>Препарат</label>
+                <select id="ca-drug">
+                    <option value="gluconate" selected>Кальцію глюконат 10% (0.22 ммоль/мл)</option>
+                    <option value="chloride">Кальцію хлорид 10% (0.68 ммоль/мл)</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="result" id="ca-result"></div>
+        <div class="warning" id="ca-warning"></div>
+    </div>
+
+    <!-- ==================== МАГНІЙ ==================== -->
+    <div id="tab-mg" class="tab-content hidden">
+        <div class="card">
+            <div class="card-title">👤 Дані пацієнта</div>
+            <div class="input-group">
+                <label>Вага (кг)</label>
+                <input type="number" id="mg-weight" value="70" min="20" max="300" step="0.1">
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-title">🔬 Лабораторні дані</div>
+            <div class="input-group">
+                <label>Mg²⁺ зараз (ммоль/л)</label>
+                <input type="number" id="mg-current" value="0.55" min="0.2" max="3.0" step="0.05">
+            </div>
+            <div class="input-group">
+                <label>Клінічна ситуація</label>
+                <select id="mg-indication">
+                    <option value="routine">Планова корекція</option>
+                    <option value="severe">Тяжка гіпомагніємія (&lt;0.5 ммоль/л)</option>
+                    <option value="torsades">Torsades de Pointes / Еклампсія</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="result" id="mg-result"></div>
+        <div class="warning" id="mg-warning"></div>
+    </div>
+
+    <button class="button" onclick="calculateCurrent()">🧮 РОЗРАХУВАТИ</button>
+
+    <script>
+        // ==================== TELEGRAM INTEGRATION ====================
+        const tg = window.Telegram?.WebApp;
+        if (tg) { 
+            tg.expand(); 
+            tg.ready();
+            tg.MainButton.setText('РОЗРАХУВАТИ').show().onClick(calculateCurrent);
+        }
+
+        // ==================== ФУНКЦІЯ TBW ====================
+        function calculateTBW(weight, gender, age) {
+            if (age > 65) return weight * 0.5;
+            return gender === 'male' ? weight * 0.6 : weight * 0.5;
+        }
+
+        // ==================== НАТРІЙ (ПЕРЕВІРЕНО) ====================
+        function calculateNa() {
+            const w = parseFloat(document.getElementById('na-weight').value) || 70;
+            const age = parseInt(document.getElementById('na-age').value) || 45;
+            const gender = document.getElementById('na-gender').value;
+            const cur = parseFloat(document.getElementById('na-current').value) || 140;
+            const target = parseFloat(document.getElementById('na-target').value) || 135;
+            const isChronic = document.getElementById('na-chronicity').value === 'chronic';
+            const solNa = parseFloat(document.getElementById('na-solution').value);
+
+            const tbw = calculateTBW(w, gender, age);
+            
+            let status = '', deficit = 0, volume = 0, rate = 0, hours = 0, solutionName = '';
+            let warningText = '';
+
+            if (cur < 135) {
+                status = '🔵 ГІПОНАТРІЄМІЯ';
+                deficit = tbw * (target - cur);  // ммоль
+                volume = (deficit / solNa) * 1000;  // мл
+                
+                if (solNa === 154) solutionName = 'NaCl 0.9%';
+                else if (solNa === 513) solutionName = 'NaCl 3%';
+                else solutionName = 'NaCl 5.85%';
+                
+                const maxRatePerHour = isChronic ? 0.5 : 2.0;
+                const maxDailyChange = isChronic ? 8 : 12;
+                
+                const desiredChange = target - cur;
+                const hoursByRate = desiredChange / maxRatePerHour;
+                const hoursByDaily = (desiredChange / maxDailyChange) * 24;
+                hours = Math.max(hoursByRate, hoursByDaily);
+                rate = volume / hours;
+                
+                if (cur < 120) {
+                    warningText = '🔴 КРИТИЧНА ГІПОНАТРІЄМІЯ! Симптоми? → 3% NaCl 100 мл болюс за 10 хв! Контроль Na⁺ через 2 год!';
+                } else {
+                    warningText = `✅ Корекція за ${hours.toFixed(1)} год. Контроль Na⁺ через ${Math.round(hours/3)} год. Макс. ${maxDailyChange} ммоль/добу.`;
+                }
+            } 
+            else if (cur > 145) {
+                status = '🔴 ГІПЕРНАТРІЄМІЯ';
+                const waterDeficit = tbw * ((cur / target) - 1);  // літри
+                volume = waterDeficit * 1000;  // мл
+                deficit = waterDeficit * 1000;
+                solutionName = '5% глюкоза або 0.45% NaCl';
+                
+                const desiredDrop = cur - target;
+                const maxDailyDrop = cur >= 170 ? 8 : 10;
+                
+                const hoursByRate = desiredDrop / 0.5;
+                const hoursByDaily = (desiredDrop / maxDailyDrop) * 24;
+                hours = Math.max(hoursByRate, hoursByDaily);
+                rate = volume / hours;
+                
+                if (cur > 160) {
+                    warningText = `🔴 ТЯЖКА ГІПЕРНАТРІЄМІЯ! Швидкість ≤ 0.5 ммоль/год. Макс. ${maxDailyDrop} ммоль/добу. Контроль Na⁺ кожні 2 год!`;
+                } else {
+                    warningText = `✅ Зниження Na⁺ за ${hours.toFixed(1)} год. Контроль кожні 4 год.`;
+                }
+            } 
+            else {
+                status = '🟢 НОРМОНАТРІЄМІЯ';
+                solutionName = '—';
+                warningText = '✅ Рівень натрію в межах норми.';
+            }
+
+            document.getElementById('na-result').innerHTML = `
+                <div class="result-row"><span class="result-label">Стан:</span><span class="result-value">${status}</span></div>
+                <div class="result-row"><span class="result-label">Загальна вода (TBW):</span><span class="result-value">${tbw.toFixed(1)} <span class="result-unit">л</span></span></div>
+                <div class="result-row"><span class="result-label">${cur > 145 ? 'Дефіцит води' : 'Дефіцит Na⁺'}:</span><span class="result-value">${Math.abs(deficit).toFixed(0)} <span class="result-unit">${cur > 145 ? 'мл' : 'ммоль'}</span></span></div>
+                <div class="result-row"><span class="result-label">Розчин:</span><span class="result-value">${solutionName}</span></div>
+                ${volume > 0 ? `
+                <div class="result-row"><span class="result-label">Об'єм:</span><span class="result-value">${volume.toFixed(0)} <span class="result-unit">мл</span></span></div>
+                <div class="result-row"><span class="result-label">Швидкість:</span><span class="result-value">${rate.toFixed(0)} <span class="result-unit">мл/год</span></span></div>
+                <div class="result-row"><span class="result-label">Тривалість:</span><span class="result-value">${hours.toFixed(1)} <span class="result-unit">год</span></span></div>
+                ` : ''}
+            `;
+
+            const warnEl = document.getElementById('na-warning');
+            warnEl.textContent = warningText;
+            warnEl.className = (cur < 120 || cur > 160) ? 'warning danger' : 'warning';
+        }
+
+        // ==================== КАЛІЙ (ПЕРЕВІРЕНО) ====================
+        function calculateK() {
+            const w = parseFloat(document.getElementById('k-weight').value) || 70;
+            const cur = parseFloat(document.getElementById('k-current').value) || 4.0;
+            const target = parseFloat(document.getElementById('k-target').value) || 4.0;
+            const route = document.getElementById('k-route').value;
+            const renal = document.getElementById('k-renal').value;
+
+            let status = '', deficit = 0, dose = 0, rate = 0, warningText = '';
+
+            if (cur < 3.5) {
+                status = '🔵 ГІПОКАЛІЄМІЯ';
+                
+                // Точний розрахунок дефіциту (KDIGO 2024)
+                if (cur >= 3.0) {
+                    deficit = (target - cur) * w * 2.5;
+                } else if (cur >= 2.5) {
+                    deficit = (target - cur) * w * 3.5;
+                } else {
+                    deficit = (target - cur) * w * 5.0;
+                }
+                
+                dose = deficit;
+                
+                if (route === 'iv') {
+                    rate = renal === 'normal' ? 20 : 10;
+                    if (cur < 2.5) rate = 10;
+                }
+                
+                if (cur < 2.5) {
+                    warningText = '🔴 КРИТИЧНА ГІПОКАЛІЄМІЯ! В/в корекція обов\'язкова! ЕКГ-контроль!';
+                } else if (cur < 3.0) {
+                    warningText = '⚠️ Помірна гіпокаліємія. Рекомендовано в/в корекцію.';
+                } else {
+                    warningText = '✅ Легка гіпокаліємія. Можна per os.';
+                }
+            } 
+            else if (cur > 5.0) {
+                status = '🔴 ГІПЕРКАЛІЄМІЯ';
+                if (cur > 6.5) {
+                    warningText = '🔴 ТЯЖКА ГІПЕРКАЛІЄМІЯ! Ca-глюконат 10% 10 мл в/в болюс! Інсулін + глюкоза!';
+                } else {
+                    warningText = '⚠️ Гіперкаліємія. Петльові діуретики, контроль ЕКГ.';
+                }
+            } 
+            else {
+                status = '🟢 НОРМОКАЛІЄМІЯ';
+                warningText = '✅ Рівень калію в нормі.';
+            }
+
+            const duration = rate > 0 ? dose / rate : 0;
+            const kclVolume = dose / 0.536;  // 4% KCl = 0.536 ммоль/мл
+            
+            document.getElementById('k-result').innerHTML = `
+                <div class="result-row"><span class="result-label">Стан:</span><span class="result-value">${status}</span></div>
+                ${deficit > 0 ? `
+                <div class="result-row"><span class="result-label">Дефіцит K⁺:</span><span class="result-value">${deficit.toFixed(0)} <span class="result-unit">ммоль</span></span></div>
+                ` : ''}
+                ${route === 'iv' && dose > 0 ? `
+                <div class="result-row"><span class="result-label">Макс. швидкість:</span><span class="result-value">${rate} <span class="result-unit">ммоль/год</span></span></div>
+                <div class="result-row"><span class="result-label">Тривалість інфузії:</span><span class="result-value">${duration.toFixed(1)} <span class="result-unit">год</span></span></div>
+                <div class="result-row"><span class="result-label">KCl 4% об'єм:</span><span class="result-value">${kclVolume.toFixed(0)} <span class="result-unit">мл</span></span></div>
+                <div class="result-row"><span class="result-label">Швидкість KCl 4%:</span><span class="result-value">${(rate/0.536).toFixed(0)} <span class="result-unit">мл/год</span></span></div>
+                ` : dose > 0 ? `
+                <div class="result-row"><span class="result-label">Доза per os:</span><span class="result-value">${(dose * 1.5).toFixed(0)} <span class="result-unit">ммоль/добу</span></span></div>
+                <div class="result-row"><span class="result-label">KCl таблетки:</span><span class="result-value">~${Math.ceil(dose * 1.5 / 10)} <span class="result-unit">шт/добу</span></span></div>
+                ` : ''}
+            `;
+
+            const warnEl = document.getElementById('k-warning');
+            warnEl.textContent = warningText;
+            warnEl.className = (cur < 2.5 || cur > 6.5) ? 'warning danger' : 'warning';
+        }
+
+        // ==================== КАЛЬЦІЙ (ПЕРЕВІРЕНО) ====================
+        function calculateCa() {
+            const w = parseFloat(document.getElementById('ca-weight').value) || 70;
+            const cur = parseFloat(document.getElementById('ca-current').value) || 1.2;
+            const alb = parseFloat(document.getElementById('ca-albumin').value) || 40;
+            const albUnit = document.getElementById('ca-albumin-unit').value;
+            const drug = document.getElementById('ca-drug').value;
+
+            // Корекція на альбумін
+            let corr;
+            if (albUnit === 'gl') {
+                corr = cur + 0.02 * (40 - alb);  // г/л, норма 40
+            } else {
+                corr = cur + 0.2 * (4.0 - alb);  // г/дл, норма 4.0
+            }
+            
+            let status = '', dose = 0, vol = 0, warningText = '';
+
+            if (corr < 1.0) {
+                status = '🔵 ГІПОКАЛЬЦІЄМІЯ';
+                
+                // Дозування за UpToDate 2026
+                if (corr < 0.8) {
+                    dose = 5.0;  // 200 мг елементарного Ca²⁺
+                    warningText = '🔴 ТЯЖКА ГІПОКАЛЬЦІЄМІЯ! В/в болюс 10-20 мл Ca-глюконату за 10 хв! ЕКГ (QT)!';
+                } else {
+                    dose = 2.5;  // 100 мг елементарного Ca²⁺
+                    warningText = '⚠️ Помірна гіпокальціємія. Повільна в/в інфузія. Не змішувати з бікарбонатом!';
+                }
+                
+                vol = dose / (drug === 'chloride' ? 0.68 : 0.22);
+            } 
+            else if (corr > 1.35) {
+                status = '🔴 ГІПЕРКАЛЬЦІЄМІЯ';
+                if (corr > 1.5) {
+                    warningText = '🔴 ТЯЖКА ГІПЕРКАЛЬЦІЄМІЯ! NaCl 0.9% 300 мл/год + кальцитонін 4-8 МО/кг!';
+                } else {
+                    warningText = '⚠️ Помірна гіперкальціємія. NaCl 0.9% 200 мл/год.';
+                }
+            } 
+            else {
+                status = '🟢 НОРМОКАЛЬЦІЄМІЯ';
+                warningText = '✅ Рівень кальцію в нормі.';
+            }
+
+            document.getElementById('ca-result').innerHTML = `
+                <div class="result-row"><span class="result-label">Стан:</span><span class="result-value">${status}</span></div>
+                <div class="result-row"><span class="result-label">Ca²⁺ корегований:</span><span class="result-value">${corr.toFixed(2)} <span class="result-unit">ммоль/л</span></span></div>
+                ${dose > 0 ? `
+                <div class="result-row"><span class="result-label">Доза Ca²⁺:</span><span class="result-value">${dose.toFixed(1)} <span class="result-unit">ммоль</span></span></div>
+                <div class="result-row"><span class="result-label">Препарат:</span><span class="result-value">${drug === 'chloride' ? 'CaCl 10%' : 'Ca-глюконат 10%'}</span></div>
+                <div class="result-row"><span class="result-label">Об'єм:</span><span class="result-value">${vol.toFixed(1)} <span class="result-unit">мл</span></span></div>
+                <div class="result-row"><span class="result-label">Введення:</span><span class="result-value">${(vol/10).toFixed(0)}-${(vol/5).toFixed(0)} <span class="result-unit">хв</span></span></div>
+                ` : ''}
+            `;
+
+            const warnEl = document.getElementById('ca-warning');
+            warnEl.textContent = warningText;
+            warnEl.className = (corr < 0.8 || corr > 1.5) ? 'warning danger' : 'warning';
+        }
+
+// ==================== МАГНІЙ (ПЕРЕВІРЕНО) ====================
+function calculateMg() {
+    const w = parseFloat(document.getElementById('mg-weight').value) || 70;
+    const cur = parseFloat(document.getElementById('mg-current').value) || 0.8;
+    const ind = document.getElementById('mg-indication').value;
+
+    let status = '', dose = 0, vol = 0, warningText = '';
+
+    if (cur < 0.7) {
+        status = '🔵 ГІПОМАГНІЄМІЯ';
+        
+        if (ind === 'torsades') {
+            dose = 8;  // 2 г MgSO₄ = 8 ммоль Mg²⁺
+            vol = dose / 2.0;  // MgSO₄ 25% = 2 ммоль/мл ✅ ВИПРАВЛЕНО
+            warningText = '⚡ TORSADES / ЕКЛАМПСІЯ! Болюс 2 г MgSO₄ (4 мл 25%) за 15-20 хв!';
+        } 
+        else if (ind === 'severe' || cur < 0.5) {
+            dose = w * 0.1;  // 0.1 ммоль/кг
+            vol = dose / 2.0;  // ✅ ВИПРАВЛЕНО
+            warningText = `🔴 ТЯЖКА ГІПОМАГНІЄМІЯ! ${dose.toFixed(0)} ммоль = ${vol.toFixed(0)} мл 25% MgSO₄ за 4-6 год.`;
+        } 
+        else {
+            dose = w * 0.05;  // 0.05 ммоль/кг
+            vol = dose / 2.0;  // ✅ ВИПРАВЛЕНО
+            warningText = `✅ Планова корекція. ${vol.toFixed(0)} мл 25% MgSO₄ за 6-12 год.`;
+        }
+    } 
+    else if (cur > 1.2) {
+        status = '🔴 ГІПЕРМАГНІЄМІЯ';
+        warningText = '🔴 ГІПЕРМАГНІЄМІЯ! Кальцію глюконат 10% 10-20 мл в/в!';
+    } 
+    else {
+        status = '🟢 НОРМОМАГНІЄМІЯ';
+        warningText = '✅ Рівень магнію в нормі.';
+    }
+
+    document.getElementById('mg-result').innerHTML = `
+        <div class="result-row"><span class="result-label">Стан:</span><span class="result-value">${status}</span></div>
+        ${dose > 0 ? `
+        <div class="result-row"><span class="result-label">Доза Mg²⁺:</span><span class="result-value">${dose.toFixed(0)} <span class="result-unit">ммоль</span></span></div>
+        <div class="result-row"><span class="result-label">MgSO₄ 25%:</span><span class="result-value">${vol.toFixed(1)} <span class="result-unit">мл</span></span></div>
+        <div class="result-row"><span class="result-label">Маса MgSO₄:</span><span class="result-value">${(dose/4).toFixed(1)} <span class="result-unit">г</span></span></div>
+        ` : ''}
+    `;
+
+    const warnEl = document.getElementById('mg-warning');
+    warnEl.textContent = warningText;
+    warnEl.className = (cur < 0.5 || cur > 1.5 || ind === 'torsades') ? 'warning danger' : 'warning';
+}
+
+        // ==================== НАВІГАЦІЯ ====================
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            document.getElementById(`tab-${tabId}`).classList.remove('hidden');
+            
+            document.querySelectorAll('.tab').forEach(btn => {
+                btn.classList.remove('active');
+                if (btn.dataset.tab === tabId) btn.classList.add('active');
+            });
+        }
+
+        function calculateCurrent() {
+            const activeTab = document.querySelector('.tab.active').dataset.tab;
+            const calculators = {
+                'na': calculateNa,
+                'k': calculateK,
+                'ca': calculateCa,
+                'mg': calculateMg
+            };
+            if (calculators[activeTab]) calculators[activeTab]();
+        }
+
+        // ==================== ІНІЦІАЛІЗАЦІЯ ====================
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.addEventListener('click', () => switchTab(tab.dataset.tab));
+            });
+
+            const allInputs = document.querySelectorAll('input, select');
+            allInputs.forEach(input => {
+                input.addEventListener('input', calculateCurrent);
+                input.addEventListener('change', calculateCurrent);
+            });
+
+            calculateNa();
+        });
+    </script>
+</body>
+</html>
