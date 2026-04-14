@@ -16,8 +16,20 @@
             "dest": "main.py"
         },
         {
-            "src": "/webapps/(.*)",
-            "dest": "/webapps/$1"
+            "src": "/webapps/electrolytes/(.*)",
+            "dest": "/webapps/electrolytes/$1"
+        },
+        {
+            "src": "/webapps/acidbase/(.*)",
+            "dest": "/webapps/acidbase/$1"
+        },
+        {
+            "src": "/webapps/infusions/(.*)",
+            "dest": "/webapps/infusions/$1"
+        },
+        {
+            "src": "/webapps/scales/(.*)",
+            "dest": "/webapps/scales/$1"
         }
     ]
 }
