@@ -12,12 +12,19 @@ TOKEN = os.environ.get('TOKEN')
 if not TOKEN:
     raise ValueError("TOKEN not found in environment")
 
-VERCEL_URL = "https://medical-bot-three.vercel.app/"
+VERCEL_URL = "https://medical-bot-three.vercel.app"
 CHANNEL_URL = "https://t.me/propofolcoffe"
 BASE_URL = f"{VERCEL_URL}/webapps"
 
 # ===== 3. ВІДКЛАДЕНА ІНІЦІАЛІЗАЦІЯ БОТА =====
 _bot_instance = None
+_bot_initialized = False
+
+async def init_bot():
+    global _bot_instance, _bot_initialized
+    if not _bot_initialized:
+        await _bot_instance.initialize()
+        _bot_initialized = True
 
 def get_bot():
     global _bot_instance
@@ -74,6 +81,11 @@ def webhook():
     data = request.get_json(force=True)
     update = Update.de_json(data, bot.bot)
     
-    asyncio.run(bot.process_update(update))
+    async def process():
+        if not _bot_initialized:
+            await bot.initialize()
+        await bot.process_update(update)
+    
+    asyncio.run(process())
     
     return jsonify({"status": "ok"})
