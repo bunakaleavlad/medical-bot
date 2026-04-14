@@ -556,7 +556,7 @@
             warnEl.className = (corr < 0.8 || corr > 1.5) ? 'warning danger' : 'warning';
         }
 
-// ==================== МАГНІЙ (ПЕРЕВІРЕНО) ====================
+// ==================== МАГНІЙ (ВИПРАВЛЕНО) ====================
 function calculateMg() {
     const w = parseFloat(document.getElementById('mg-weight').value) || 70;
     const cur = parseFloat(document.getElementById('mg-current').value) || 0.8;
@@ -569,17 +569,17 @@ function calculateMg() {
         
         if (ind === 'torsades') {
             dose = 8;  // 2 г MgSO₄ = 8 ммоль Mg²⁺
-            vol = dose / 2.0;  // MgSO₄ 25% = 2 ммоль/мл ✅ ВИПРАВЛЕНО
-            warningText = '⚡ TORSADES / ЕКЛАМПСІЯ! Болюс 2 г MgSO₄ (4 мл 25%) за 15-20 хв!';
+            vol = dose / 1.0;  // MgSO₄ 25% = 1 ммоль/мл ✅
+            warningText = '⚡ TORSADES / ЕКЛАМПСІЯ! Болюс 2 г MgSO₄ (8 мл 25%) за 15-20 хв!';
         } 
         else if (ind === 'severe' || cur < 0.5) {
             dose = w * 0.1;  // 0.1 ммоль/кг
-            vol = dose / 2.0;  // ✅ ВИПРАВЛЕНО
+            vol = dose / 1.0;  // ✅
             warningText = `🔴 ТЯЖКА ГІПОМАГНІЄМІЯ! ${dose.toFixed(0)} ммоль = ${vol.toFixed(0)} мл 25% MgSO₄ за 4-6 год.`;
         } 
         else {
             dose = w * 0.05;  // 0.05 ммоль/кг
-            vol = dose / 2.0;  // ✅ ВИПРАВЛЕНО
+            vol = dose / 1.0;  // ✅
             warningText = `✅ Планова корекція. ${vol.toFixed(0)} мл 25% MgSO₄ за 6-12 год.`;
         }
     } 
