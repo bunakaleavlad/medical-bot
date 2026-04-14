@@ -16,12 +16,20 @@
             "dest": "main.py"
         },
         {
-            "src": "/webapps/(?<path>.*)/",
-            "dest": "/webapps/$path/index.html"
+            "src": "/webapps/electrolytes",
+            "dest": "/webapps/electrolytes/index.html"
         },
         {
-            "src": "/webapps/(.*)",
-            "dest": "/webapps/$1"
+            "src": "/webapps/acidbase",
+            "dest": "/webapps/acidbase/index.html"
+        },
+        {
+            "src": "/webapps/infusions",
+            "dest": "/webapps/infusions/index.html"
+        },
+        {
+            "src": "/webapps/scales",
+            "dest": "/webapps/scales/index.html"
         }
     ]
 }
