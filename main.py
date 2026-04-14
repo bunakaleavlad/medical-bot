@@ -89,3 +89,7 @@ def webhook():
     asyncio.run(process())
     
     return jsonify({"status": "ok"})
+
+@app.route('/ping', methods=['GET'])
+def ping():
+    return 'pong'
