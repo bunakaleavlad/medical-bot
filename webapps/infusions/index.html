@@ -3,95 +3,102 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
-    <title>Інфузійний калькулятор</title>
+    <title>Інфузійний калькулятор ICU</title>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: #0f172a;
+            background: #0a0f1a;
             color: #e2e8f0;
             padding: 12px;
             min-height: 100vh;
         }
         .header {
-            background: linear-gradient(135deg, #1e3a5f 0%, #0f172a 100%);
-            border-radius: 16px;
-            padding: 16px;
-            margin-bottom: 16px;
+            background: linear-gradient(135deg, #1e3a5f 0%, #0a0f1a 100%);
+            border-radius: 20px;
+            padding: 18px 16px;
+            margin-bottom: 14px;
             border: 1px solid #2d4a6e;
             text-align: center;
         }
-        h1 { font-size: 20px; color: #fff; }
+        h1 { font-size: 22px; color: #fff; margin-bottom: 4px; }
         .disclaimer {
             background: #7f1d1d;
             color: #fecaca;
-            padding: 10px;
-            border-radius: 12px;
+            padding: 10px 14px;
+            border-radius: 14px;
             font-size: 11px;
-            margin-bottom: 16px;
+            margin-bottom: 14px;
             text-align: center;
+            border-left: 4px solid #ef4444;
         }
         .tabs {
             display: flex;
             gap: 4px;
-            margin-bottom: 16px;
+            margin-bottom: 14px;
             background: #1e293b;
             padding: 4px;
-            border-radius: 14px;
+            border-radius: 16px;
             flex-wrap: wrap;
         }
         .tab {
             flex: 1;
-            min-width: 60px;
+            min-width: 55px;
             padding: 10px 2px;
             background: transparent;
             border: none;
             color: #94a3b8;
             font-size: 10px;
             font-weight: 600;
-            border-radius: 10px;
+            border-radius: 12px;
             cursor: pointer;
             transition: all 0.2s;
+            line-height: 1.2;
         }
         .tab.active { background: #3b82f6; color: white; }
         .card {
-            background: #1e293b;
-            border-radius: 18px;
+            background: #111827;
+            border-radius: 20px;
             padding: 16px;
             margin-bottom: 14px;
-            border: 1px solid #334155;
+            border: 1px solid #2d3748;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
         }
         .card-title {
             font-size: 15px;
             color: #93c5fd;
             margin-bottom: 14px;
             font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
         .input-group { margin-bottom: 14px; }
         label {
             display: block;
             font-size: 12px;
-            color: #94a3b8;
-            margin-bottom: 5px;
+            color: #9ca3af;
+            margin-bottom: 6px;
+            font-weight: 500;
         }
         input, select {
             width: 100%;
-            padding: 12px;
-            background: #0f172a;
+            padding: 12px 14px;
+            background: #0a0f1a;
             border: 1.5px solid #334155;
-            border-radius: 12px;
+            border-radius: 14px;
             color: white;
             font-size: 15px;
+            transition: border-color 0.2s;
         }
         input:focus, select:focus {
             outline: none;
             border-color: #3b82f6;
         }
         .row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        .row-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
         .result {
-            background: linear-gradient(145deg, #1e293b 0%, #0f172a 100%);
-            border-radius: 18px;
+            background: linear-gradient(145deg, #111827 0%, #0a0f1a 100%);
+            border-radius: 20px;
             padding: 16px;
             border: 1px solid #2d4a6e;
             margin-bottom: 14px;
@@ -101,70 +108,108 @@
             justify-content: space-between;
             align-items: baseline;
             padding: 10px 0;
-            border-bottom: 1px solid #334155;
+            border-bottom: 1px solid #1e293b;
         }
         .result-row:last-child { border-bottom: none; }
-        .result-label { color: #94a3b8; font-size: 13px; }
+        .result-label { color: #9ca3af; font-size: 13px; }
         .result-value { font-size: 18px; font-weight: 700; color: #fbbf24; }
-        .result-unit { font-size: 12px; color: #64748b; font-weight: 400; }
+        .result-unit { font-size: 12px; color: #6b7280; font-weight: 400; margin-left: 4px; }
         .warning {
             background: #422006;
             color: #fde68a;
-            padding: 12px;
-            border-radius: 12px;
+            padding: 12px 14px;
+            border-radius: 14px;
             font-size: 12px;
-            line-height: 1.4;
+            line-height: 1.5;
             margin-top: 12px;
+            border-left: 4px solid #f59e0b;
         }
-        .warning.danger { background: #450a0a; color: #fecaca; }
-        .warning.info { background: #1e3a5f; color: #bfdbfe; }
-        .warning.success { background: #14532d; color: #bbf7d0; }
+        .warning.danger { background: #450a0a; color: #fecaca; border-left-color: #ef4444; }
+        .warning.info { background: #1e3a5f; color: #bfdbfe; border-left-color: #3b82f6; }
+        .warning.success { background: #14532d; color: #bbf7d0; border-left-color: #22c55e; }
         .button {
             width: 100%;
-            padding: 14px;
+            padding: 16px;
             background: #3b82f6;
             color: white;
             border: none;
-            border-radius: 14px;
+            border-radius: 16px;
             font-size: 16px;
-            font-weight: 600;
+            font-weight: 700;
             cursor: pointer;
             margin-top: 8px;
+            margin-bottom: 8px;
+            transition: background 0.2s;
+            box-shadow: 0 4px 6px rgba(59,130,246,0.2);
         }
         .button:active { background: #2563eb; }
         .hidden { display: none !important; }
         .protocol-badge {
             background: #1e3a5f;
             color: #93c5fd;
-            padding: 4px 10px;
+            padding: 4px 12px;
             border-radius: 20px;
-            font-size: 11px;
+            font-size: 10px;
             display: inline-block;
             margin-top: 6px;
+            font-weight: 500;
         }
         .critical { color: #ef4444 !important; }
         .success { color: #22c55e !important; }
         .checkbox-group {
             display: flex;
             align-items: center;
-            gap: 10px;
-            padding: 8px 0;
+            gap: 12px;
+            padding: 10px 0;
         }
         .checkbox-group input {
-            width: 20px;
-            height: 20px;
+            width: 22px;
+            height: 22px;
             accent-color: #3b82f6;
+        }
+        .checkbox-group label {
+            margin-bottom: 0;
+            font-size: 14px;
+            color: #e2e8f0;
+        }
+        .weight-badge {
+            background: #1e293b;
+            border-radius: 12px;
+            padding: 8px 12px;
+            display: inline-block;
+            color: #fbbf24;
+            font-weight: 700;
+        }
+        .divider {
+            height: 1px;
+            background: #2d3748;
+            margin: 16px 0;
+        }
+        .info-text {
+            color: #9ca3af;
+            font-size: 11px;
+            margin-top: 4px;
         }
     </style>
 </head>
 <body>
     <div class="header">
         <h1>💊 Інфузійний калькулятор</h1>
-        <span class="protocol-badge">Вазопресори • Інотропи • Седація • Аналгезія • Інсулін • Рідини</span>
+        <span class="protocol-badge">ESCIM 2025 • Вазопресори • Седація • Інсулін • Рідини</span>
     </div>
 
     <div class="disclaimer">
         ⚕️ Для медичних працівників. Перевіряйте розрахунки та концентрації!
+    </div>
+
+    <!-- СПІЛЬНЕ ПОЛЕ ВАГИ -->
+    <div class="card">
+        <div class="card-title">
+            <span>⚖️</span> Вага пацієнта
+        </div>
+        <div class="input-group">
+            <input type="number" id="global-weight" value="70" min="1" max="300" step="0.1" placeholder="Вага (кг)">
+        </div>
     </div>
 
     <div class="tabs">
@@ -175,15 +220,6 @@
         <button class="tab" data-tab="insulin">🩸 Інсулін</button>
         <button class="tab" data-tab="fluids">💧 Рідини</button>
         <button class="tab" data-tab="epidural">🩺 Епідуральна</button>
-    </div>
-
-    <!-- СПІЛЬНЕ ПОЛЕ ВАГИ -->
-    <div class="card">
-        <div class="card-title">⚖️ Вага пацієнта</div>
-        <div class="input-group">
-            <label>Вага (кг)</label>
-            <input type="number" id="global-weight" value="70" min="1" max="300" step="0.1">
-        </div>
     </div>
 
     <!-- ==================== ВАЗОПРЕСОРИ ==================== -->
@@ -206,7 +242,7 @@
             <div class="input-group">
                 <label>Доза</label>
                 <input type="number" id="vasopressor-dose" value="0.1" step="0.01" min="0.01">
-                <span id="vasopressor-dose-unit" style="color: #94a3b8; font-size: 12px;">мкг/кг/хв</span>
+                <div class="info-text" id="vasopressor-dose-unit">мкг/кг/хв</div>
             </div>
         </div>
         <div class="result" id="vasopressor-result"></div>
@@ -256,7 +292,7 @@
             <div class="input-group">
                 <label>Доза</label>
                 <input type="number" id="sedation-dose" value="2.0" step="0.1" min="0.1">
-                <span id="sedation-dose-unit" style="color: #94a3b8; font-size: 12px;">мг/кг/год</span>
+                <div class="info-text" id="sedation-dose-unit">мг/кг/год</div>
             </div>
             <div class="checkbox-group">
                 <input type="checkbox" id="sedation-bolus">
@@ -286,7 +322,7 @@
             <div class="input-group">
                 <label>Доза</label>
                 <input type="number" id="analgesia-dose" value="2.0" step="0.1" min="0.1">
-                <span id="analgesia-dose-unit" style="color: #94a3b8; font-size: 12px;">мкг/кг/год</span>
+                <div class="info-text" id="analgesia-dose-unit">мкг/кг/год</div>
             </div>
             <div class="checkbox-group">
                 <input type="checkbox" id="analgesia-bolus">
@@ -311,14 +347,14 @@
             </div>
             <div class="row-2">
                 <div class="input-group">
-                    <label>Глюкоза крові</label>
+                    <label>Глюкоза</label>
                     <input type="number" id="insulin-glucose" value="15.0" step="0.1" min="1.0" max="50.0">
-                    <span style="color: #94a3b8; font-size: 11px;">ммоль/л</span>
+                    <div class="info-text">ммоль/л</div>
                 </div>
                 <div class="input-group">
                     <label>Калій (K⁺)</label>
                     <input type="number" id="insulin-k" value="4.0" step="0.1" min="2.0" max="8.0">
-                    <span style="color: #94a3b8; font-size: 11px;">ммоль/л</span>
+                    <div class="info-text">ммоль/л</div>
                 </div>
             </div>
             <div class="input-group">
@@ -328,11 +364,6 @@
                     <option value="2">100 ОД / 50 мл (2 ОД/мл)</option>
                     <option value="0.2">10 ОД / 50 мл (0.2 ОД/мл) — педіатрія</option>
                 </select>
-            </div>
-            <div class="input-group">
-                <label>Швидкість інфузії (ОД/год)</label>
-                <input type="number" id="insulin-rate" value="0" step="0.1" min="0" max="50">
-                <span style="color: #94a3b8; font-size: 11px;">0 = автоматичний розрахунок</span>
             </div>
         </div>
         <div class="result" id="insulin-result"></div>
@@ -425,8 +456,8 @@
                 { name: '4 мг / 20 мл (200 мкг/мл)', conc: 200, vol: 20 }
             ],
             vaso: [
-                { name: '20 ОД / 50 мл (0.4 ОД/мл)', conc: 0.4, vol: 50, unit: 'ОД/мл' },
-                { name: '20 ОД / 20 мл (1.0 ОД/мл)', conc: 1.0, vol: 20, unit: 'ОД/мл' }
+                { name: '20 ОД / 50 мл (0.4 ОД/мл)', conc: 0.4, vol: 50 },
+                { name: '20 ОД / 20 мл (1.0 ОД/мл)', conc: 1.0, vol: 20 }
             ],
             phenylephrine: [
                 { name: '10 мг / 50 мл (200 мкг/мл)', conc: 200, vol: 50 },
@@ -441,8 +472,8 @@
                 { name: '200 мг / 20 мл (10 мг/мл)', conc: 10000, vol: 20 }
             ],
             propofol: [
-                { name: 'Пропофол 1% (10 мг/мл)', conc: 10, vol: 50, unit: 'мг/мл' },
-                { name: 'Пропофол 2% (20 мг/мл)', conc: 20, vol: 50, unit: 'мг/мл' }
+                { name: 'Пропофол 1% (10 мг/мл)', conc: 10, vol: 50 },
+                { name: 'Пропофол 2% (20 мг/мл)', conc: 20, vol: 50 }
             ],
             dexdor: [
                 { name: '200 мкг / 50 мл (4 мкг/мл)', conc: 4, vol: 50 },
@@ -460,9 +491,9 @@
                 { name: '1000 мкг / 50 мл (20 мкг/мл)', conc: 20, vol: 50 }
             ],
             morphine: [
-                { name: '50 мг / 50 мл (1 мг/мл)', conc: 1, vol: 50, unit: 'мг/мл' },
-                { name: '50 мг / 20 мл (2.5 мг/мл)', conc: 2.5, vol: 20, unit: 'мг/мл' },
-                { name: '100 мг / 50 мл (2 мг/мл)', conc: 2, vol: 50, unit: 'мг/мл' }
+                { name: '50 мг / 50 мл (1 мг/мл)', conc: 1, vol: 50 },
+                { name: '50 мг / 20 мл (2.5 мг/мл)', conc: 2.5, vol: 20 },
+                { name: '100 мг / 50 мл (2 мг/мл)', conc: 2, vol: 50 }
             ],
             ketamine: [
                 { name: '200 мг / 50 мл (4 мг/мл)', conc: 4, vol: 50 },
@@ -482,11 +513,15 @@
             updateSelect('sedation-dilution', sDrug);
             updateSelect('analgesia-dilution', aDrug);
 
-            // Оновлення одиниць дози
-            if (sDrug === 'propofol' || sDrug === 'midazolam') {
+            // Оновлення одиниць дози та значень за замовчуванням
+            if (sDrug === 'propofol') {
                 document.getElementById('sedation-dose-unit').textContent = 'мг/кг/год';
-                document.getElementById('sedation-dose').value = sDrug === 'propofol' ? '2.0' : '0.1';
-                document.getElementById('sedation-dose').step = sDrug === 'propofol' ? '0.5' : '0.01';
+                document.getElementById('sedation-dose').value = '2.0';
+                document.getElementById('sedation-dose').step = '0.5';
+            } else if (sDrug === 'midazolam') {
+                document.getElementById('sedation-dose-unit').textContent = 'мг/кг/год';
+                document.getElementById('sedation-dose').value = '0.1';
+                document.getElementById('sedation-dose').step = '0.01';
             } else {
                 document.getElementById('sedation-dose-unit').textContent = 'мкг/кг/год';
                 document.getElementById('sedation-dose').value = '0.7';
@@ -524,7 +559,7 @@
             if (!options) return;
             
             select.innerHTML = options.map(opt => 
-                `<option value="${opt.conc}" data-vol="${opt.vol}" data-unit="${opt.unit || ''}">${opt.name}</option>`
+                `<option value="${opt.conc}" data-vol="${opt.vol}">${opt.name}</option>`
             ).join('');
         }
 
@@ -533,7 +568,7 @@
             return parseFloat(document.getElementById('global-weight').value) || 70;
         }
 
-        // ==================== РОЗРАХУНКИ ====================
+        // ==================== ВАЗОПРЕСОРИ ====================
         function calculateVasopressor() {
             const weight = getWeight();
             const drug = document.getElementById('vasopressor-drug').value;
@@ -546,14 +581,13 @@
             
             if (drug === 'vaso') {
                 rate = (dose * 60) / conc;
-                warning = `⚕️ Вазопресин НЕ залежить від ваги. Швидкість: ${rate.toFixed(1)} мл/год.`;
                 if (dose > 0.04) warning = '⚠️ Доза > 0.04 ОД/хв! Ризик ішемії!';
             } else {
                 rate = (dose * weight * 60) / conc;
                 if (drug === 'norepi' && dose > 2.0) warning = '⚠️ Доза > 2.0 мкг/кг/хв!';
                 if (drug === 'epi' && dose > 1.0) warning = '⚠️ Доза > 1.0 мкг/кг/хв!';
                 if (drug === 'phenylephrine' && dose > 5.0) warning = '⚠️ Доза > 5.0 мкг/кг/хв!';
-                if (drug === 'norepi') warning += ' 🩸 Центральний доступ обов\'язковий!';
+                if (drug === 'norepi') warning += ' 🩸 В периферію тільки < 24 год!';
                 if (drug === 'phenylephrine') warning += ' ⚠️ Рефлекторна брадикардія!';
             }
 
@@ -562,16 +596,19 @@
 
             document.getElementById('vasopressor-result').innerHTML = `
                 <div class="result-row"><span class="result-label">Концентрація:</span><span class="result-value">${conc.toFixed(1)} ${drug === 'vaso' ? 'ОД/мл' : 'мкг/мл'}</span></div>
-                <div class="result-row"><span class="result-label">Швидкість інфузії:</span><span class="result-value">${rate.toFixed(1)} <span class="result-unit">мл/год</span></span></div>
-                <div class="result-row"><span class="result-label">Тривалість шприца:</span><span class="result-value">${duration.toFixed(1)} <span class="result-unit">год</span></span></div>
+                <div class="result-row"><span class="result-label">Швидкість інфузії:</span><span class="result-value">${rate.toFixed(1)}<span class="result-unit">мл/год</span></span></div>
+                <div class="result-row"><span class="result-label">Тривалість шприца:</span><span class="result-value">${duration.toFixed(1)}<span class="result-unit">год</span></span></div>
                 <div class="result-row"><span class="result-label">Добова потреба:</span><span class="result-value">${dailyDose.toFixed(1)} ${drug === 'vaso' ? 'ОД' : 'мг'}</span></div>
             `;
             
             document.getElementById('vasopressor-warning').textContent = warning || '✅ Доза в межах стандартного діапазону.';
+            document.getElementById('vasopressor-warning').className = warning ? 'warning danger' : 'warning success';
         }
 
+        // ==================== ІНОТРОПИ ====================
         function calculateInotrope() {
             const weight = getWeight();
+            const drug = document.getElementById('inotrope-drug').value;
             const select = document.getElementById('inotrope-dilution');
             const conc = parseFloat(select.value);
             const vol = parseFloat(select.selectedOptions[0].dataset.vol);
@@ -583,20 +620,20 @@
 
             let warning = '';
             if (dose > 20) warning = '⚠️ Доза > 20 мкг/кг/хв! Ризик аритмій!';
-            if (document.getElementById('inotrope-drug').value === 'dobutamine') {
-                warning += ' 🧪 Не змішувати з NaHCO₃!';
-            }
+            if (drug === 'dobutamine') warning += ' 🧪 Не змішувати з NaHCO₃!';
 
             document.getElementById('inotrope-result').innerHTML = `
-                <div class="result-row"><span class="result-label">Концентрація:</span><span class="result-value">${(conc/1000).toFixed(2)} <span class="result-unit">мг/мл</span></span></div>
-                <div class="result-row"><span class="result-label">Швидкість інфузії:</span><span class="result-value">${rate.toFixed(1)} <span class="result-unit">мл/год</span></span></div>
-                <div class="result-row"><span class="result-label">Тривалість шприца:</span><span class="result-value">${duration.toFixed(1)} <span class="result-unit">год</span></span></div>
-                <div class="result-row"><span class="result-label">Добова потреба:</span><span class="result-value">${dailyDose.toFixed(0)} <span class="result-unit">мг</span></span></div>
+                <div class="result-row"><span class="result-label">Концентрація:</span><span class="result-value">${(conc/1000).toFixed(2)}<span class="result-unit">мг/мл</span></span></div>
+                <div class="result-row"><span class="result-label">Швидкість інфузії:</span><span class="result-value">${rate.toFixed(1)}<span class="result-unit">мл/год</span></span></div>
+                <div class="result-row"><span class="result-label">Тривалість шприца:</span><span class="result-value">${duration.toFixed(1)}<span class="result-unit">год</span></span></div>
+                <div class="result-row"><span class="result-label">Добова потреба:</span><span class="result-value">${dailyDose.toFixed(0)}<span class="result-unit">мг</span></span></div>
             `;
             
             document.getElementById('inotrope-warning').textContent = warning || '✅ Доза в межах стандартного діапазону.';
+            document.getElementById('inotrope-warning').className = warning ? 'warning danger' : 'warning success';
         }
 
+        // ==================== СЕДАЦІЯ ====================
         function calculateSedation() {
             const weight = getWeight();
             const drug = document.getElementById('sedation-drug').value;
@@ -622,7 +659,7 @@
                 rate = (dose * weight) / conc;
                 bolusDose = bolus ? weight * 0.03 : 0;
                 if (dose > 0.2) warning = '⚠️ Доза > 0.2 мг/кг/год! Ризик кумуляції!';
-                warning += ' 🧠 При нирковій недостатності — зменшити дозу!';
+                warning += ' 🧠 При ХНН — зменшити дозу!';
             }
 
             const duration = rate > 0 ? vol / rate : 0;
@@ -630,20 +667,22 @@
 
             let bolusText = '';
             if (bolus && bolusDose > 0) {
-                bolusText = `<div class="result-row"><span class="result-label">Болюс:</span><span class="result-value">${bolusDose.toFixed(0)} <span class="result-unit">${drug === 'propofol' || drug === 'midazolam' ? 'мг' : 'мкг'}</span></span></div>`;
+                bolusText = `<div class="result-row"><span class="result-label">Болюс:</span><span class="result-value">${bolusDose.toFixed(0)}<span class="result-unit">${(drug === 'propofol' || drug === 'midazolam') ? 'мг' : 'мкг'}</span></span></div>`;
             }
 
             document.getElementById('sedation-result').innerHTML = `
-                <div class="result-row"><span class="result-label">Концентрація:</span><span class="result-value">${conc} ${(drug === 'propofol' || drug === 'midazolam') ? 'мг/мл' : 'мкг/мл'}</span></div>
+                <div class="result-row"><span class="result-label">Концентрація:</span><span class="result-value">${conc}<span class="result-unit">${(drug === 'propofol' || drug === 'midazolam') ? 'мг/мл' : 'мкг/мл'}</span></span></div>
                 ${bolusText}
-                <div class="result-row"><span class="result-label">Швидкість інфузії:</span><span class="result-value">${rate.toFixed(1)} <span class="result-unit">мл/год</span></span></div>
-                <div class="result-row"><span class="result-label">Тривалість шприца:</span><span class="result-value">${duration.toFixed(1)} <span class="result-unit">год</span></span></div>
-                <div class="result-row"><span class="result-label">Добова потреба:</span><span class="result-value">${dailyDose.toFixed(0)} ${(drug === 'propofol' || drug === 'midazolam') ? 'мг' : 'мкг'}</span></div>
+                <div class="result-row"><span class="result-label">Швидкість інфузії:</span><span class="result-value">${rate.toFixed(1)}<span class="result-unit">мл/год</span></span></div>
+                <div class="result-row"><span class="result-label">Тривалість шприца:</span><span class="result-value">${duration.toFixed(1)}<span class="result-unit">год</span></span></div>
+                <div class="result-row"><span class="result-label">Добова потреба:</span><span class="result-value">${dailyDose.toFixed(0)}<span class="result-unit">${(drug === 'propofol' || drug === 'midazolam') ? 'мг' : 'мкг'}</span></span></div>
             `;
             
             document.getElementById('sedation-warning').textContent = warning || '✅ Доза в межах стандартного діапазону.';
+            document.getElementById('sedation-warning').className = warning ? 'warning danger' : 'warning success';
         }
 
+        // ==================== АНАЛГЕЗІЯ ====================
         function calculateAnalgesia() {
             const weight = getWeight();
             const drug = document.getElementById('analgesia-drug').value;
@@ -676,39 +715,38 @@
 
             let bolusText = '';
             if (bolus && bolusDose > 0) {
-                bolusText = `<div class="result-row"><span class="result-label">Болюс:</span><span class="result-value">${bolusDose.toFixed(1)} <span class="result-unit">${drug === 'fentanyl' ? 'мкг' : 'мг'}</span></span></div>`;
+                bolusText = `<div class="result-row"><span class="result-label">Болюс:</span><span class="result-value">${bolusDose.toFixed(1)}<span class="result-unit">${drug === 'fentanyl' ? 'мкг' : 'мг'}</span></span></div>`;
             }
 
             document.getElementById('analgesia-result').innerHTML = `
-                <div class="result-row"><span class="result-label">Концентрація:</span><span class="result-value">${conc} ${drug === 'fentanyl' ? 'мкг/мл' : 'мг/мл'}</span></div>
+                <div class="result-row"><span class="result-label">Концентрація:</span><span class="result-value">${conc}<span class="result-unit">${drug === 'fentanyl' ? 'мкг/мл' : 'мг/мл'}</span></span></div>
                 ${bolusText}
-                <div class="result-row"><span class="result-label">Швидкість інфузії:</span><span class="result-value">${rate.toFixed(1)} <span class="result-unit">мл/год</span></span></div>
-                <div class="result-row"><span class="result-label">Тривалість шприца:</span><span class="result-value">${duration.toFixed(1)} <span class="result-unit">год</span></span></div>
-                <div class="result-row"><span class="result-label">Добова потреба:</span><span class="result-value">${dailyDose.toFixed(0)} <span class="result-unit">${dailyUnit}</span></span></div>
+                <div class="result-row"><span class="result-label">Швидкість інфузії:</span><span class="result-value">${rate.toFixed(1)}<span class="result-unit">мл/год</span></span></div>
+                <div class="result-row"><span class="result-label">Тривалість шприца:</span><span class="result-value">${duration.toFixed(1)}<span class="result-unit">год</span></span></div>
+                <div class="result-row"><span class="result-label">Добова потреба:</span><span class="result-value">${dailyDose.toFixed(0)}<span class="result-unit">${dailyUnit}</span></span></div>
             `;
             
             document.getElementById('analgesia-warning').textContent = warning || '✅ Доза в межах стандартного діапазону.';
+            document.getElementById('analgesia-warning').className = warning ? 'warning danger' : 'warning success';
         }
 
+        // ==================== ІНСУЛІН ====================
         function calculateInsulin() {
             const weight = getWeight();
             const mode = document.getElementById('insulin-mode').value;
             const glucose = parseFloat(document.getElementById('insulin-glucose').value) || 15.0;
             const potassium = parseFloat(document.getElementById('insulin-k').value) || 4.0;
             const dilution = parseFloat(document.getElementById('insulin-dilution').value);
-            let rate = parseFloat(document.getElementById('insulin-rate').value) || 0;
 
-            let warning = '', kSupplement = 0, kSupplementMl = 0, kWarning = '';
+            let rate = 0, warning = '', kSupplement = 0, kWarning = '';
             
-            // Автоматичний розрахунок швидкості якщо 0
-            if (rate === 0) {
-                if (mode === 'dka') {
-                    rate = weight * 0.1;
-                } else if (mode === 'hyperkalemia') {
-                    rate = 0;
-                } else {
-                    rate = 2.0;
-                }
+            // АВТОМАТИЧНИЙ розрахунок швидкості
+            if (mode === 'dka') {
+                rate = weight * 0.1;
+            } else if (mode === 'hyperkalemia') {
+                rate = 0;
+            } else {
+                rate = 2.0;
             }
 
             // Контроль калію
@@ -732,33 +770,38 @@
                     warning = '💉 Ввести 10 ОД інсуліну + 25 г глюкози (50 мл 40% або 125 мл 20%).';
                 } else if (potassium > 5.5) {
                     warning = '💉 5 ОД інсуліну + 12.5 г глюкози.';
+                } else {
+                    warning = '✅ K⁺ ≤ 5.5 ммоль/л. Інсулін не показаний.';
                 }
                 kWarning = '🧪 Контроль K⁺ через 1 год після введення!';
             }
 
             // Моніторинг глюкози
             if (glucose < 4.0) {
-                warning += ' 🔴 ГІПОГЛІКЕМІЯ! Ввести 40% глюкозу 50 мл болюсно!';
+                warning = '🔴 ГІПОГЛІКЕМІЯ! Ввести 40% глюкозу 50 мл болюсно!';
             } else if (glucose < 5.5 && mode === 'dka') {
-                warning += ' 🟡 Глюкоза < 5.5 ммоль/л. Перейти на глюкозу 5-10%.';
+                warning = '🟡 Глюкоза < 5.5 ммоль/л. Перейти на глюкозу 5-10%.';
             }
 
-            kSupplementMl = kSupplement / 0.536; // 4% KCl = 0.536 ммоль/мл
+            const kSupplementMl = kSupplement / 0.536; // 4% KCl = 0.536 ммоль/мл
             const rateMlH = rate / dilution;
 
             document.getElementById('insulin-result').innerHTML = `
                 <div class="result-row"><span class="result-label">Режим:</span><span class="result-value">${mode === 'dka' ? 'ДКА' : mode === 'hyperkalemia' ? 'Гіперкаліємія' : 'Стрес-гіперглікемія'}</span></div>
-                <div class="result-row"><span class="result-label">Глюкоза:</span><span class="result-value ${glucose < 4.0 ? 'critical' : ''}">${glucose.toFixed(1)} <span class="result-unit">ммоль/л</span></span></div>
-                <div class="result-row"><span class="result-label">Калій:</span><span class="result-value ${potassium < 3.3 || potassium > 5.5 ? 'critical' : ''}">${potassium.toFixed(1)} <span class="result-unit">ммоль/л</span></span></div>
-                <div class="result-row"><span class="result-label">Швидкість інсуліну:</span><span class="result-value">${rate.toFixed(1)} <span class="result-unit">ОД/год</span></span></div>
-                <div class="result-row"><span class="result-label">Швидкість інфузії:</span><span class="result-value">${rateMlH.toFixed(1)} <span class="result-unit">мл/год</span></span></div>
-                ${kSupplement > 0 ? `<div class="result-row"><span class="result-label">KCl 4% додати:</span><span class="result-value">${kSupplementMl.toFixed(1)} <span class="result-unit">мл/год</span></span></div>` : ''}
+                <div class="result-row"><span class="result-label">Глюкоза:</span><span class="result-value ${glucose < 4.0 ? 'critical' : ''}">${glucose.toFixed(1)}<span class="result-unit">ммоль/л</span></span></div>
+                <div class="result-row"><span class="result-label">Калій:</span><span class="result-value ${potassium < 3.3 || potassium > 5.5 ? 'critical' : ''}">${potassium.toFixed(1)}<span class="result-unit">ммоль/л</span></span></div>
+                <div class="result-row"><span class="result-label">Швидкість інсуліну:</span><span class="result-value">${rate.toFixed(1)}<span class="result-unit">ОД/год</span></span></div>
+                <div class="result-row"><span class="result-label">Швидкість інфузії:</span><span class="result-value">${rateMlH.toFixed(1)}<span class="result-unit">мл/год</span></span></div>
+                ${kSupplement > 0 ? `<div class="result-row"><span class="result-label">KCl 4% додати:</span><span class="result-value">${kSupplementMl.toFixed(1)}<span class="result-unit">мл/год</span></span></div>` : ''}
             `;
             
             document.getElementById('insulin-warning').textContent = warning || '✅ Моніторинг глюкози щогодини.';
+            document.getElementById('insulin-warning').className = warning.includes('ГІПОГЛІКЕМІЯ') ? 'warning danger' : 'warning info';
             document.getElementById('insulin-k-warning').textContent = kWarning;
+            document.getElementById('insulin-k-warning').className = kWarning.includes('🔴') ? 'warning danger' : 'warning info';
         }
 
+        // ==================== РІДИНИ ====================
         function calculateFluids() {
             const weight = getWeight();
             const method = document.getElementById('fluids-method').value;
@@ -787,15 +830,18 @@
             const infusionRate = volume / time;
 
             document.getElementById('fluids-result').innerHTML = `
-                <div class="result-row"><span class="result-label">Підтримуюча інфузія:</span><span class="result-value">${maintenanceRate.toFixed(0)} <span class="result-unit">мл/год</span></span></div>
-                <div class="result-row"><span class="result-label">Добова потреба:</span><span class="result-value">${maintenanceDaily.toFixed(0)} <span class="result-unit">мл/добу</span></span></div>
-                <div class="result-row" style="margin-top: 12px;"><span class="result-label">Крапельниця ${volume} мл:</span><span class="result-value">${infusionRate.toFixed(0)} <span class="result-unit">мл/год</span></span></div>
-                <div class="result-row"><span class="result-label">Швидкість крапель:</span><span class="result-value">${dripRate.toFixed(1)} <span class="result-unit">крап/хв</span></span></div>
+                <div class="result-row"><span class="result-label">Підтримуюча інфузія:</span><span class="result-value">${maintenanceRate.toFixed(0)}<span class="result-unit">мл/год</span></span></div>
+                <div class="result-row"><span class="result-label">Добова потреба:</span><span class="result-value">${maintenanceDaily.toFixed(0)}<span class="result-unit">мл/добу</span></span></div>
+                <div class="divider"></div>
+                <div class="result-row"><span class="result-label">Крапельниця ${volume} мл:</span><span class="result-value">${infusionRate.toFixed(0)}<span class="result-unit">мл/год</span></span></div>
+                <div class="result-row"><span class="result-label">Швидкість крапель:</span><span class="result-value">${dripRate.toFixed(1)}<span class="result-unit">крап/хв</span></span></div>
             `;
             
             document.getElementById('fluids-warning').textContent = weight > 100 ? '⚠️ При ожирінні використовувати ідеальну вагу!' : '✅ Розрахунок за стандартною формулою.';
+            document.getElementById('fluids-warning').className = weight > 100 ? 'warning danger' : 'warning success';
         }
 
+        // ==================== ЕПІДУРАЛЬНА ====================
         function calculateEpidural() {
             const solution = document.getElementById('epidural-solution').value;
             const rate = parseFloat(document.getElementById('epidural-rate').value) || 6;
@@ -811,13 +857,14 @@
             const warning = dailyDose > maxDailyMg ? '⚠️ Перевищення максимальної добової дози бупівакаїну (400 мг)!' : '✅ Доза в межах безпечної.';
 
             document.getElementById('epidural-result').innerHTML = `
-                <div class="result-row"><span class="result-label">Концентрація бупівакаїну:</span><span class="result-value">${conc} <span class="result-unit">мг/мл</span></span></div>
-                <div class="result-row"><span class="result-label">Швидкість інфузії:</span><span class="result-value">${rate} <span class="result-unit">мл/год</span></span></div>
-                <div class="result-row"><span class="result-label">Болюс:</span><span class="result-value">${bolus} <span class="result-unit">мл</span></span></div>
-                <div class="result-row"><span class="result-label">Добова доза:</span><span class="result-value">${dailyDose.toFixed(0)} <span class="result-unit">мг/добу</span></span></div>
+                <div class="result-row"><span class="result-label">Концентрація бупівакаїну:</span><span class="result-value">${conc}<span class="result-unit">мг/мл</span></span></div>
+                <div class="result-row"><span class="result-label">Швидкість інфузії:</span><span class="result-value">${rate}<span class="result-unit">мл/год</span></span></div>
+                <div class="result-row"><span class="result-label">Болюс:</span><span class="result-value">${bolus}<span class="result-unit">мл</span></span></div>
+                <div class="result-row"><span class="result-label">Добова доза:</span><span class="result-value">${dailyDose.toFixed(0)}<span class="result-unit">мг/добу</span></span></div>
             `;
             
             document.getElementById('epidural-warning').textContent = warning + ' 🩺 Кардіотоксичність! Не в/в!';
+            document.getElementById('epidural-warning').className = dailyDose > maxDailyMg ? 'warning danger' : 'warning success';
         }
 
         // ==================== НАВІГАЦІЯ ====================
@@ -832,7 +879,7 @@
         }
 
         function calculateCurrent() {
-            const activeTab = document.querySelector('.tab.active').dataset.tab;
+            const activeTab = document.querySelector('.tab.active')?.dataset.tab;
             const calculators = {
                 'vasopressors': calculateVasopressor,
                 'inotropes': calculateInotrope,
@@ -842,7 +889,7 @@
                 'fluids': calculateFluids,
                 'epidural': calculateEpidural
             };
-            if (calculators[activeTab]) calculators[activeTab]();
+            if (activeTab && calculators[activeTab]) calculators[activeTab]();
         }
 
         // ==================== ІНІЦІАЛІЗАЦІЯ ====================
@@ -856,7 +903,7 @@
                 'inotrope-drug', 'inotrope-dilution', 'inotrope-dose',
                 'sedation-drug', 'sedation-dilution', 'sedation-dose', 'sedation-bolus',
                 'analgesia-drug', 'analgesia-dilution', 'analgesia-dose', 'analgesia-bolus',
-                'insulin-mode', 'insulin-glucose', 'insulin-k', 'insulin-dilution', 'insulin-rate',
+                'insulin-mode', 'insulin-glucose', 'insulin-k', 'insulin-dilution',
                 'fluids-method', 'fluids-volume', 'fluids-time', 'fluids-dropset',
                 'epidural-solution', 'epidural-rate', 'epidural-bolus',
                 'global-weight'
