@@ -187,20 +187,34 @@
 <body>
     <div class="header">
         <h1>💊 Інфузійний калькулятор</h1>
-        <span class="protocol-badge">ESCIM 2025 • Вазопресори • Седація • Рідини</span>
+        <span class="protocol-badge">ESCIM 2025 • Вазопресори • Седація • Вага</span>
     </div>
 
     <div class="disclaimer">
         ⚕️ Для медичних працівників. Перевіряйте розрахунки та концентрації!
     </div>
 
-    <!-- СПІЛЬНЕ ПОЛЕ ВАГИ -->
+    <!-- СПІЛЬНЕ ПОЛЕ ВАГИ (БАЗОВЕ) -->
     <div class="card">
         <div class="card-title">
             <span>⚖️</span> Вага пацієнта
         </div>
+        <div class="row-2">
+            <div class="input-group">
+                <label>Вага (кг)</label>
+                <input type="number" id="global-weight" value="70" min="1" max="300" step="0.1" placeholder="Вага (кг)">
+            </div>
+            <div class="input-group">
+                <label>Зріст (см)</label>
+                <input type="number" id="global-height" value="170" min="50" max="250" step="0.1" placeholder="Зріст (см)">
+            </div>
+        </div>
         <div class="input-group">
-            <input type="number" id="global-weight" value="70" min="1" max="300" step="0.1" placeholder="Вага (кг)">
+            <label>Стать</label>
+            <select id="global-gender">
+                <option value="male">Чоловік</option>
+                <option value="female">Жінка</option>
+            </select>
         </div>
     </div>
 
@@ -209,7 +223,7 @@
         <button class="tab" data-tab="inotropes">❤️ Інотропи</button>
         <button class="tab" data-tab="sedation">😴 Седація</button>
         <button class="tab" data-tab="analgesia">💊 Аналгезія</button>
-        <button class="tab" data-tab="fluids">💧 Рідини</button>
+        <button class="tab" data-tab="weights">⚖️ Ідеальна вага</button>
         <button class="tab" data-tab="epidural">🩺 Епідуральна</button>
     </div>
 
@@ -324,45 +338,14 @@
         <div class="warning info" id="analgesia-warning"></div>
     </div>
 
-    <!-- ==================== РІДИНИ ==================== -->
-    <div id="tab-fluids" class="tab-content hidden">
+    <!-- ==================== ІДЕАЛЬНА / СКОРИГОВАНА ВАГА ==================== -->
+    <div id="tab-weights" class="tab-content hidden">
         <div class="card">
-            <div class="card-title">💧 Підтримуюча інфузія</div>
-            <div class="input-group">
-                <label>Метод розрахунку</label>
-                <select id="fluids-method">
-                    <option value="421">Правило 4-2-1 (Holliday-Segar)</option>
-                    <option value="30ml">30 мл/кг/добу</option>
-                    <option value="35ml">35 мл/кг/добу</option>
-                    <option value="40ml">40 мл/кг/добу</option>
-                </select>
-            </div>
+            <div class="card-title">📊 Розрахунок маси тіла</div>
+            <div class="info-text" style="margin-bottom: 16px;">Розрахунок на основі введених вище ваги, зросту та статі</div>
         </div>
-        
-        <div class="card">
-            <div class="card-title">💉 Крапельниця</div>
-            <div class="row-2">
-                <div class="input-group">
-                    <label>Об'єм (мл)</label>
-                    <input type="number" id="fluids-volume" value="500" min="10" max="1000">
-                </div>
-                <div class="input-group">
-                    <label>Час (год)</label>
-                    <input type="number" id="fluids-time" value="2" min="0.1" max="24" step="0.5">
-                </div>
-            </div>
-            <div class="input-group">
-                <label>Система</label>
-                <select id="fluids-dropset">
-                    <option value="20">Стандартна (20 крап/мл)</option>
-                    <option value="60">Мікроструменева (60 крап/мл)</option>
-                    <option value="15">Кров/плазма (15 крап/мл)</option>
-                </select>
-            </div>
-        </div>
-        
-        <div class="result" id="fluids-result"></div>
-        <div class="warning info" id="fluids-warning"></div>
+        <div class="result" id="weights-result"></div>
+        <div class="warning info" id="weights-warning"></div>
     </div>
 
     <!-- ==================== ЕПІДУРАЛЬНА ==================== -->
@@ -518,6 +501,14 @@
 
         function getWeight() {
             return parseFloat(document.getElementById('global-weight').value) || 70;
+        }
+        
+        function getHeight() {
+            return parseFloat(document.getElementById('global-height').value) || 170;
+        }
+        
+        function getGender() {
+            return document.getElementById('global-gender').value;
         }
 
         // ==================== ВАЗОПРЕСОРИ ====================
@@ -682,44 +673,48 @@
             document.getElementById('analgesia-warning').className = warning ? 'warning danger' : 'warning success';
         }
 
-        // ==================== РІДИНИ ====================
-        function calculateFluids() {
+        // ==================== РОЗРАХУНОК ВАГИ (ІМТ, Ідеальна, Скоригована) ====================
+        function calculateWeights() {
             const weight = getWeight();
-            const method = document.getElementById('fluids-method').value;
-            const volume = parseFloat(document.getElementById('fluids-volume').value) || 500;
-            const time = parseFloat(document.getElementById('fluids-time').value) || 2;
-            const dropFactor = parseFloat(document.getElementById('fluids-dropset').value) || 20;
-
-            let maintenanceRate = 0, maintenanceDaily = 0;
-
-            if (method === '421') {
-                if (weight <= 10) {
-                    maintenanceRate = weight * 4;
-                } else if (weight <= 20) {
-                    maintenanceRate = 40 + (weight - 10) * 2;
-                } else {
-                    maintenanceRate = 60 + (weight - 20) * 1;
-                }
-                maintenanceDaily = maintenanceRate * 24;
+            const heightCm = getHeight();
+            const gender = getGender();
+            const heightM = heightCm / 100;
+            
+            const bmi = weight / (heightM * heightM);
+            
+            // Ідеальна маса тіла (формула Devine)
+            let ibw = 0;
+            if (gender === 'male') {
+                ibw = 50 + 2.3 * (heightCm - 152.4) / 2.54;
             } else {
-                const mlPerKg = parseFloat(method.replace('ml', ''));
-                maintenanceDaily = weight * mlPerKg;
-                maintenanceRate = maintenanceDaily / 24;
+                ibw = 45.5 + 2.3 * (heightCm - 152.4) / 2.54;
             }
-
-            const dripRate = (volume * dropFactor) / (time * 60);
-            const infusionRate = volume / time;
-
-            document.getElementById('fluids-result').innerHTML = `
-                <div class="result-row"><span class="result-label">Підтримуюча інфузія:</span><span class="result-value">${maintenanceRate.toFixed(0)}<span class="result-unit">мл/год</span></span></div>
-                <div class="result-row"><span class="result-label">Добова потреба:</span><span class="result-value">${maintenanceDaily.toFixed(0)}<span class="result-unit">мл/добу</span></span></div>
-                <div class="divider"></div>
-                <div class="result-row"><span class="result-label">Крапельниця ${volume} мл:</span><span class="result-value">${infusionRate.toFixed(0)}<span class="result-unit">мл/год</span></span></div>
-                <div class="result-row"><span class="result-label">Швидкість крапель:</span><span class="result-value">${dripRate.toFixed(1)}<span class="result-unit">крап/хв</span></span></div>
+            
+            // Скоригована маса тіла (Adjusted Body Weight) для ожиріння
+            let abw = weight;
+            let warning = '';
+            if (bmi > 30) {
+                abw = ibw + 0.4 * (weight - ibw);
+                warning = `⚠️ ІМТ > 30. Скоригована вага: ${abw.toFixed(1)} кг (IBW + 0.4*(Фактична - IBW))`;
+            } else if (bmi > 25) {
+                warning = `⚠️ ІМТ > 25 (надмірна вага). IBW = ${ibw.toFixed(1)} кг`;
+            } else {
+                warning = `✅ ІМТ в межах норми. IBW = ${ibw.toFixed(1)} кг`;
+            }
+            
+            document.getElementById('weights-result').innerHTML = `
+                <div class="result-row"><span class="result-label">Фактична вага:</span><span class="result-value">${weight.toFixed(1)}<span class="result-unit">кг</span></span></div>
+                <div class="result-row"><span class="result-label">ІМТ (BMI):</span><span class="result-value">${bmi.toFixed(1)}<span class="result-unit">кг/м²</span></span></div>
+                <div class="result-row"><span class="result-label">Ідеальна вага (IBW):</span><span class="result-value">${ibw.toFixed(1)}<span class="result-unit">кг</span></span></div>
+                <div class="result-row"><span class="result-label">Скоригована вага (AdjBW):</span><span class="result-value">${abw.toFixed(1)}<span class="result-unit">кг</span></span></div>
             `;
             
-            document.getElementById('fluids-warning').textContent = weight > 100 ? '⚠️ При ожирінні використовувати ідеальну вагу!' : '✅ Розрахунок за стандартною формулою.';
-            document.getElementById('fluids-warning').className = weight > 100 ? 'warning danger' : 'warning success';
+            let warnClass = 'warning success';
+            if (bmi > 30) warnClass = 'warning danger';
+            else if (bmi > 25) warnClass = 'warning info';
+            
+            document.getElementById('weights-warning').textContent = warning;
+            document.getElementById('weights-warning').className = warnClass;
         }
 
         // ==================== ЕПІДУРАЛЬНА ====================
@@ -766,7 +761,7 @@
                 'inotropes': calculateInotrope,
                 'sedation': calculateSedation,
                 'analgesia': calculateAnalgesia,
-                'fluids': calculateFluids,
+                'weights': calculateWeights,
                 'epidural': calculateEpidural
             };
             if (activeTab && calculators[activeTab]) calculators[activeTab]();
@@ -783,9 +778,8 @@
                 'inotrope-drug', 'inotrope-dilution', 'inotrope-dose',
                 'sedation-drug', 'sedation-dilution', 'sedation-dose', 'sedation-bolus',
                 'analgesia-drug', 'analgesia-dilution', 'analgesia-dose', 'analgesia-bolus',
-                'fluids-method', 'fluids-volume', 'fluids-time', 'fluids-dropset',
                 'epidural-solution', 'epidural-rate', 'epidural-bolus',
-                'global-weight'
+                'global-weight', 'global-height', 'global-gender'
             ];
             
             inputs.forEach(id => {
