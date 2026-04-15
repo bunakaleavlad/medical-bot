@@ -12,9 +12,16 @@ TOKEN = os.environ.get('TOKEN')
 if not TOKEN:
     raise ValueError("TOKEN not found in environment")
 
-VERCEL_URL = "https://medical-bot-three.vercel.app"
+# ===== ВАЖЛИВО: АВТОМАТИЧНЕ ВИЗНАЧЕННЯ URL =====
+# Render автоматично надає URL сервісу в змінну RENDER_EXTERNAL_URL
+# Для локальної розробки використовуємо localhost
+RENDER_URL = os.environ.get('RENDER_EXTERNAL_URL', 'http://localhost:5000')
+# Якщо RENDER_EXTERNAL_URL немає (локально), використовуємо фіксовану URL
+if 'localhost' in RENDER_URL:
+    RENDER_URL = 'http://localhost:5000'
+
 CHANNEL_URL = "https://t.me/propofolcoffe"
-BASE_URL = f"{VERCEL_URL}/webapps"
+BASE_URL = f"{RENDER_URL}/webapps"
 
 # ===== 3. ВІДКЛАДЕНА ІНІЦІАЛІЗАЦІЯ БОТА =====
 _bot_instance = None
@@ -73,7 +80,7 @@ def get_bot():
 # ===== 4. РОУТИ =====
 @app.route('/')
 def home():
-    return '✅ MediCalc Bot is running!'
+    return '✅ MediCalc Bot is running on Render!'
 
 @app.route('/webhook', methods=['POST'])
 def webhook():
@@ -93,3 +100,7 @@ def webhook():
 @app.route('/ping', methods=['GET'])
 def ping():
     return 'pong'
+
+# ===== 5. ДЛЯ ЛОКАЛЬНОЇ РОЗРОБКИ =====
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=5000)
