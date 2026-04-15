@@ -4,7 +4,7 @@ from flask import Flask, request, jsonify
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup, WebAppInfo
 from telegram.ext import Application, CommandHandler, ContextTypes
 
-# ===== 1. FLASK =====
+# ===== 1. СПОЧАТКУ FLASK =====
 app = Flask(__name__)
 
 # ===== 2. ТОКЕН =====
@@ -12,22 +12,24 @@ TOKEN = os.environ.get('TOKEN')
 if not TOKEN:
     raise ValueError("TOKEN not found in environment")
 
-# ===== 3. URL =====
-RENDER_URL = os.environ.get('RENDER_EXTERNAL_URL', 'http://localhost:5000')
-if 'localhost' in RENDER_URL:
-    RENDER_URL = 'http://localhost:5000'
-
+VERCEL_URL = "https://medical-bot-three.vercel.app"
 CHANNEL_URL = "https://t.me/propofolcoffe"
-BASE_URL = f"{RENDER_URL}/webapps"
+BASE_URL = f"{VERCEL_URL}/webapps"
 
-# ===== 4. БОТ (ПРАВИЛЬНЕ НАЛАШТУВАННЯ ДЛЯ ВЕБХУКІВ) =====
+# ===== 3. ВІДКЛАДЕНА ІНІЦІАЛІЗАЦІЯ БОТА =====
 _bot_instance = None
+_bot_initialized = False
+
+async def init_bot():
+    global _bot_instance, _bot_initialized
+    if not _bot_initialized:
+        await _bot_instance.initialize()
+        _bot_initialized = True
 
 def get_bot():
     global _bot_instance
     if _bot_instance is None:
-        # ВАЖЛИВО: .updater(None) — штатне відключення polling для вебхуків
-        _bot_instance = Application.builder().token(TOKEN).updater(None).build()
+        _bot_instance = Application.builder().token(TOKEN).build()
         
         async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
             keyboard = [
@@ -68,34 +70,26 @@ def get_bot():
     
     return _bot_instance
 
-# ===== 5. ІНІЦІАЛІЗАЦІЯ ПРИ СТАРТІ =====
-@app.before_request
-def init_on_first_request():
-    get_bot()
-
-# ===== 6. РОУТИ =====
+# ===== 4. РОУТИ =====
 @app.route('/')
 def home():
-    return '✅ MediCalc Bot is running on Render!'
-
-@app.route('/ping', methods=['GET'])
-def ping():
-    return 'pong'
+    return '✅ MediCalc Bot is running!'
 
 @app.route('/webhook', methods=['POST'])
 def webhook():
     bot = get_bot()
     data = request.get_json(force=True)
+    update = Update.de_json(data, bot.bot)
     
     async def process():
-        await bot.initialize()
-        update = Update.de_json(data, bot.bot)
+        if not _bot_initialized:
+            await bot.initialize()
         await bot.process_update(update)
     
     asyncio.run(process())
     
     return jsonify({"status": "ok"})
 
-# ===== 7. ЛОКАЛЬНИЙ ЗАПУСК =====
-if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000)
+@app.route('/ping', methods=['GET'])
+def ping():
+    return 'pong'
