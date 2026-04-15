@@ -12,7 +12,7 @@ TOKEN = os.environ.get('TOKEN')
 if not TOKEN:
     raise ValueError("TOKEN not found in environment")
 
-VERCEL_URL = "https://medical-bot-three.vercel.app"
+VERCEL_URL = "https://medical-bot-green.vercel.app""
 CHANNEL_URL = "https://t.me/propofolcoffe"
 BASE_URL = f"{VERCEL_URL}/webapps"
 
