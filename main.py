@@ -4,7 +4,7 @@ from flask import Flask, request, jsonify
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup, WebAppInfo
 from telegram.ext import Application, CommandHandler, ContextTypes
 
-# ===== 1. СПОЧАТКУ FLASK =====
+# ===== 1. FLASK =====
 app = Flask(__name__)
 
 # ===== 2. ТОКЕН =====
@@ -12,31 +12,22 @@ TOKEN = os.environ.get('TOKEN')
 if not TOKEN:
     raise ValueError("TOKEN not found in environment")
 
-# ===== ВАЖЛИВО: АВТОМАТИЧНЕ ВИЗНАЧЕННЯ URL =====
-# Render автоматично надає URL сервісу в змінну RENDER_EXTERNAL_URL
-# Для локальної розробки використовуємо localhost
+# ===== 3. URL =====
 RENDER_URL = os.environ.get('RENDER_EXTERNAL_URL', 'http://localhost:5000')
-# Якщо RENDER_EXTERNAL_URL немає (локально), використовуємо фіксовану URL
 if 'localhost' in RENDER_URL:
     RENDER_URL = 'http://localhost:5000'
 
 CHANNEL_URL = "https://t.me/propofolcoffe"
 BASE_URL = f"{RENDER_URL}/webapps"
 
-# ===== 3. ВІДКЛАДЕНА ІНІЦІАЛІЗАЦІЯ БОТА =====
+# ===== 4. БОТ (ПРАВИЛЬНЕ НАЛАШТУВАННЯ ДЛЯ ВЕБХУКІВ) =====
 _bot_instance = None
-_bot_initialized = False
-
-async def init_bot():
-    global _bot_instance, _bot_initialized
-    if not _bot_initialized:
-        await _bot_instance.initialize()
-        _bot_initialized = True
 
 def get_bot():
     global _bot_instance
     if _bot_instance is None:
-        _bot_instance = Application.builder().token(TOKEN).build()
+        # ВАЖЛИВО: .updater(None) — штатне відключення polling для вебхуків
+        _bot_instance = Application.builder().token(TOKEN).updater(None).build()
         
         async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
             keyboard = [
@@ -77,30 +68,34 @@ def get_bot():
     
     return _bot_instance
 
-# ===== 4. РОУТИ =====
+# ===== 5. ІНІЦІАЛІЗАЦІЯ ПРИ СТАРТІ =====
+@app.before_request
+def init_on_first_request():
+    get_bot()
+
+# ===== 6. РОУТИ =====
 @app.route('/')
 def home():
     return '✅ MediCalc Bot is running on Render!'
+
+@app.route('/ping', methods=['GET'])
+def ping():
+    return 'pong'
 
 @app.route('/webhook', methods=['POST'])
 def webhook():
     bot = get_bot()
     data = request.get_json(force=True)
-    update = Update.de_json(data, bot.bot)
     
     async def process():
-        if not _bot_initialized:
-            await bot.initialize()
+        await bot.initialize()
+        update = Update.de_json(data, bot.bot)
         await bot.process_update(update)
     
     asyncio.run(process())
     
     return jsonify({"status": "ok"})
 
-@app.route('/ping', methods=['GET'])
-def ping():
-    return 'pong'
-
-# ===== 5. ДЛЯ ЛОКАЛЬНОЇ РОЗРОБКИ =====
+# ===== 7. ЛОКАЛЬНИЙ ЗАПУСК =====
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)
