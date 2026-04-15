@@ -6,13 +6,17 @@
             "use": "@vercel/python"
         },
         {
-            "src": "webapps/**/*.html",
+            "src": "webapps/**",
             "use": "@vercel/static"
         }
     ],
     "routes": [
         {
             "src": "/webhook",
+            "dest": "main.py"
+        },
+        {
+            "src": "/ping",
             "dest": "main.py"
         },
         {
