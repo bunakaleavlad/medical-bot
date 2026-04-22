@@ -547,25 +547,31 @@
             return { ok: false, error: 'Введіть вагу пацієнта' };
         }
 
-        // CHANGE 1: && замість ||
+        // CHANGE 1: покази до корекції
         var needBicarb = (BE < -5) && (pH < 7.2);
         if (!needBicarb) return { ok: false };
+
+        // КОРЕКТНА КОНВЕРТАЦІЯ КОНЦЕНТРАЦІЇ
+        var concentration = parseFloat(conc);
+        if (isNaN(concentration) || concentration <= 0) {
+            concentration = 1.0;
+        }
 
         var dist = 0.3;
         if (pH < 7.1) dist = 0.5;
         else if (pH <= 7.2) dist = 0.4;
 
         var def = Math.abs(BE) * wt * dist;
-        var vol = def / conc;
+        var vol = def / concentration;  // ВИПРАВЛЕНО
         
         var maxRate = (pH < 7.1) ? C.MAX_RATE_SEVERE : C.MAX_RATE_DEFAULT;
         var rate = maxRate;
         var dur = rate > 0 ? vol / rate : 0;
 
         var bolusMax = C.BOLUS_MAX;
-        var bolusVol = Math.min(def, bolusMax) / conc;
+        var bolusVol = Math.min(def, bolusMax) / concentration;  // ВИПРАВЛЕНО
         var remainingDef = def > bolusMax ? def - bolusMax : 0;
-        var remainingVol = remainingDef / conc;
+        var remainingVol = remainingDef / concentration;         // ВИПРАВЛЕНО
 
         var caut = '⚠️ Розрахунок приблизний. Титрувати за клінічною відповіддю.';
         if (lac !== null && lac > 4) caut += ' При лактат-ацидозі — бікарбонат обережно.';
