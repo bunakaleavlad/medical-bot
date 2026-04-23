@@ -540,75 +540,64 @@
         return { v: corr, dr: dr, st: st, isAG: isAG };
     }
 
-       // ── КОРЕКЦІЯ БІКАРБОНАТУ ) ──────────────────────────
+         // ── КОРЕКЦІЯ БІКАРБОНАТУ (ФІНАЛЬНА ВЕРСІЯ) ──────────────────────────
     function bicarb(BE, HCO3, wt, conc, pH, lac) {
-        // Перевірка ваги
         if (wt === null || isNaN(wt) || !isFinite(wt) || wt <= 0) {
             return { ok: false, error: 'Введіть вагу пацієнта' };
         }
 
-        // КОРЕКТНА КОНВЕРТАЦІЯ КОНЦЕНТРАЦІЇ З SELECT
         var concentration = parseFloat(conc);
         if (isNaN(concentration) || concentration <= 0) {
-            concentration = 1.0; // за замовчуванням 8.4% (1.0 ммоль/мл)
+            concentration = 1.0;
         }
 
-        // Покази до корекції (згідно з протоколами)
         var needBicarb = (BE < -5) && (pH < 7.2);
         if (!needBicarb) return { ok: false };
 
-        // ВИПРАВЛЕНО: Фіксований коефіцієнт 0.3 для всіх значень pH
-        // (згідно з UpToDate, ESCIM, формула розподілу бікарбонату)
-        var dist = 0.3;
-
-        // Розрахунок дефіциту за стандартною формулою
-        var def = Math.abs(BE) * wt * dist;
+        // Стандартний коефіцієнт 0.3
+        var def = Math.abs(BE) * wt * 0.3;
         
-        // БЕЗПЕКОВЕ ОБМЕЖЕННЯ №1: не більше 2 ммоль/кг
-        var maxDeficitPerKg = 2.0 * wt;
-        if (def > maxDeficitPerKg) {
-            def = maxDeficitPerKg;
+        // Безпечне обмеження: макс 2 ммоль/кг
+        var maxDeficit = 2.0 * wt;
+        if (def > maxDeficit) {
+            def = maxDeficit;
         }
         
-        // Розрахунок об'єму з урахуванням концентрації
         var vol = def / concentration;
         
-        // БЕЗПЕКОВЕ ОБМЕЖЕННЯ №2: не більше 500 мл 4.2% (екв. 250 мл 8.4%) за 24 год
-        var maxDailyVolume = 250; // мл для 8.4% розчину
-        var maxVol = maxDailyVolume / concentration; // перерахунок для обраної концентрації
+        // Безпечний об'єм: макс 500 мл 8.4% (екв. 1000 мл 4.2%) за 24 год
+        var maxDailyVolume = 500;
+        var maxVol = maxDailyVolume / concentration;
         var originalVol = vol;
         if (vol > maxVol) {
             vol = maxVol;
-            def = vol * concentration; // перераховуємо дефіцит під безпечний об'єм
+            def = vol * concentration;
         }
         
-        // Швидкість інфузії
-        var maxRate = (pH < 7.1) ? 200 : 100; // мл/год
+        var maxRate = (pH < 7.1) ? 200 : 100;
         var rate = maxRate;
         var dur = rate > 0 ? vol / rate : 0;
 
-        // Розрахунок болюсу
-        var bolusMax = 100; // ммоль
+        // Болюс: макс 50 ммоль при лактат-ацидозі
+        var bolusMax = (lac !== null && lac > 4) ? 50 : 100;
         var bolusVol = Math.min(def, bolusMax) / concentration;
         var remainingDef = def > bolusMax ? def - bolusMax : 0;
         var remainingVol = remainingDef / concentration;
 
-        // Застереження
-        var caut = '⚠️ Титрувати до pH ≥ 7.30, а не до повної нормалізації HCO₃⁻! Контроль газів через 30-60 хв.';
+        var caut = '⚠️ Титрувати до pH ≥ 7.30! Контроль газів через 30-60 хв.';
         if (lac !== null && lac > 4) {
             caut += ' 🩸 Лактат-ацидоз: бікарбонат ТІЛЬКИ при нестабільній гемодинаміці (BICAR-ICU, Lancet 2018).';
         }
 
-        // Повідомлення про введення
         var bolusMsg = '';
         if (originalVol > maxVol) {
-            bolusMsg = '🔴 УВАГА! Повна доза (' + originalVol.toFixed(0) + ' мл) перевищує безпечну! Обмежено до ' + vol.toFixed(0) + ' мл.';
+            bolusMsg = '🔴 УВАГА! Повна доза (' + originalVol.toFixed(0) + ' мл) обмежена до безпечної (' + vol.toFixed(0) + ' мл/24 год). ';
         }
         if (def > bolusMax) {
-            bolusMsg += ' 💡 Болюс ' + bolusVol.toFixed(0) + ' мл за 10-15 хв, потім ' + 
+            bolusMsg += '💡 Болюс ' + bolusVol.toFixed(0) + ' мл за 10-15 хв, потім ' + 
                         remainingVol.toFixed(0) + ' мл зі швидкістю ' + rate.toFixed(0) + ' мл/год.';
         } else {
-            bolusMsg += ' 💡 Ввести ' + vol.toFixed(0) + ' мл зі швидкістю ' + rate.toFixed(0) + ' мл/год.';
+            bolusMsg += '💡 Ввести ' + vol.toFixed(0) + ' мл зі швидкістю ' + rate.toFixed(0) + ' мл/год.';
         }
 
         return { 
@@ -623,7 +612,6 @@
             remainingVol: remainingVol
         };
     }
-
     // ── ПОПЕРЕДЖЕННЯ ──────────────────────────────────────────────────────────
     function warns(pH, lac, pCO2, agv, HCO3, sid) {
         var w = [];
