@@ -1,4 +1,31 @@
 {
-  "buildCommand": "mkdir -p public && cp -r webapps/* public/",
-  "outputDirectory": "public"
+    "version": 2,
+    "builds": [
+        {
+            "src": "main.py",
+            "use": "@vercel/python"
+        },
+        {
+            "src": "webapps/**",
+            "use": "@vercel/static"
+        }
+    ],
+    "routes": [
+        {
+            "src": "/webhook",
+            "dest": "main.py"
+        },
+        {
+            "src": "/ping",
+            "dest": "main.py"
+        },
+        {
+            "src": "/",
+            "dest": "main.py"
+        },
+        {
+            "src": "/webapps/(.*)",
+            "dest": "/webapps/$1"
+        }
+    ]
 }
