@@ -1,0 +1,20 @@
+{
+  "rewrites": [
+    {
+      "source": "/webapps/electrolytes/:path*",
+      "destination": "/webapps/electrolytes/index.html"
+    },
+    {
+      "source": "/webapps/acidbase/:path*",
+      "destination": "/webapps/acidbase/index.html"
+    },
+    {
+      "source": "/webapps/infusions/:path*",
+      "destination": "/webapps/infusions/index.html"
+    },
+    {
+      "source": "/webapps/scales/:path*",
+      "destination": "/webapps/scales/index.html"
+    }
+  ]
+}
