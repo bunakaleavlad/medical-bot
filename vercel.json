@@ -1,20 +1,21 @@
 {
+  "outputDirectory": "webapps",
   "rewrites": [
     {
-      "source": "/webapps/electrolytes/:path*",
-      "destination": "/webapps/electrolytes/index.html"
+      "source": "/electrolytes/:path*",
+      "destination": "/electrolytes/index.html"
     },
     {
-      "source": "/webapps/acidbase/:path*",
-      "destination": "/webapps/acidbase/index.html"
+      "source": "/acidbase/:path*",
+      "destination": "/acidbase/index.html"
     },
     {
-      "source": "/webapps/infusions/:path*",
-      "destination": "/webapps/infusions/index.html"
+      "source": "/infusions/:path*",
+      "destination": "/infusions/index.html"
     },
     {
-      "source": "/webapps/scales/:path*",
-      "destination": "/webapps/scales/index.html"
+      "source": "/scales/:path*",
+      "destination": "/scales/index.html"
     }
   ]
 }
