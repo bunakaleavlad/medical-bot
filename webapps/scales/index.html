@@ -523,59 +523,97 @@
             }
 
             // ==================== ARDS (ВИПРАВЛЕНО) ====================
-            function calcARDS() {
-                const pao2 = val('ards-pao2');
-                const fio2 = val('ards-fio2');
-                const peep = val('ards-peep');
-                const bi = checked('ards-bilateral');
-                const ac = checked('ards-acute');
-                const nc = checked('ards-noncardiac');
+function calcARDS() {
+    const pao2 = val('ards-pao2');
+    const fio2 = val('ards-fio2');
+    const peep = val('ards-peep');
+    const bi = checked('ards-bilateral');
+    const ac = checked('ards-acute');
+    const nc = checked('ards-noncardiac');
 
-                if (isNaN(fio2) || fio2 <= 0) {
-                    setResult('ards-result', '<div class="interpretation danger">INVALID INPUT: FiO₂ ≤ 0 або NaN</div>');
-                    return;
-                }
-                if (isNaN(pao2)) {
-                    setResult('ards-result', '<div class="interpretation danger">Введіть PaO₂</div>');
-                    return;
-                }
+    if (isNaN(pao2) && isNaN(fio2)) {
+        setResult('ards-result', '<div class="interpretation">Введіть PaO₂ та FiO₂</div>');
+        return;
+    }
+    if (isNaN(fio2)) {
+        setResult('ards-result', '<div class="interpretation danger">Введіть FiO₂</div>');
+        return;
+    }
+    if (fio2 < 0.21 || fio2 > 1.0) {
+        setResult('ards-result', '<div class="interpretation danger">FiO₂ має бути 0.21–1.0</div>');
+        return;
+    }
+    if (isNaN(pao2)) {
+        setResult('ards-result', '<div class="interpretation danger">Введіть PaO₂</div>');
+        return;
+    }
+    if (pao2 <= 0) {
+        setResult('ards-result', '<div class="interpretation danger">PaO₂ має бути > 0</div>');
+        return;
+    }
 
-                // PEEP має бути ≥ 5 для ГРДС. Якщо не введено — критерій не виконано.
-                const peepOk = !isNaN(peep) && peep >= 5;
-                const pf = pao2 / fio2;
-                let sev = '';
-                if (!bi || !ac || !nc || !peepOk) sev = 'Критерії НЕ виконано';
-                else if (pf <= 100) sev = 'ТЯЖКИЙ (лет. ~45%)';
-                else if (pf <= 200) sev = 'ПОМІРНИЙ (лет. ~32%)';
-                else if (pf <= 300) sev = 'ЛЕГКИЙ (лет. ~27%)';
-                else sev = 'PaO₂/FiO₂ > 300';
+    const peepOk = !isNaN(peep) && peep >= 5;
+    const pf = pao2 / fio2;
+    let sev = '';
+    if (!bi || !ac || !nc || !peepOk) sev = 'Критерії ARDS НЕ виконано';
+    else if (pf <= 100) sev = 'ТЯЖКИЙ (лет. ~45%)';
+    else if (pf <= 200) sev = 'ПОМІРНИЙ (лет. ~32%)';
+    else if (pf <= 300) sev = 'ЛЕГКИЙ (лет. ~27%)';
+    else sev = 'P/F > 300';
 
-                const cls = sev.includes('ТЯЖКИЙ') ? 'danger' : (sev.includes('ПОМІРНИЙ') ? 'warning-box' : 'success');
-                setResult('ards-result', `
-                    <div class="result-row"><span class="result-label">P/F</span><span class="result-value">${pf.toFixed(0)}</span></div>
-                    <div class="interpretation ${cls}"><b>${sev}</b></div>
-                `);
-            }
+    const cls = sev.includes('ТЯЖКИЙ') ? 'danger' : (sev.includes('ПОМІРНИЙ') ? 'warning-box' : 'success');
+    setResult('ards-result', `
+        <div class="result-row"><span class="result-label">P/F</span><span class="result-value">${pf.toFixed(0)}</span></div>
+        <div class="interpretation ${cls}"><b>${sev}</b></div>
+    `);
+}
 
-            // ==================== SpO2/FiO2 (ВИПРАВЛЕНО) ====================
-            function calcSF() {
-                const spo2 = val('sf-spo2');
-                const fio2 = val('sf-fio2');
-                if (isNaN(fio2) || fio2 <= 0 || isNaN(spo2)) {
-                    setResult('sf-result', '<div class="interpretation danger">INVALID INPUT</div>');
-                    return;
-                }
-                if (spo2 > 100) {
-                    setResult('sf-result', '<div class="interpretation danger">SpO₂ не може бути > 100%</div>');
-                    return;
-                }
-                const sf = spo2 / fio2;
-                const sev = sf <= 235 ? 'Співставно з P/F ≤ 200 (ГРДС)' : (sf <= 315 ? 'Співставно з P/F ≤ 300' : 'Норма');
-                setResult('sf-result', `
-                    <div class="result-row"><span class="result-label">S/F</span><span class="result-value">${sf.toFixed(0)}</span></div>
-                    <div class="interpretation info">${sev}</div>
-                `);
-            }
+// ==================== SpO2/FiO2 (ВИПРАВЛЕНО) ====================
+function calcSF() {
+    const spo2 = val('sf-spo2');
+    const fio2 = val('sf-fio2');
+    
+    if (isNaN(spo2) && isNaN(fio2)) {
+        setResult('sf-result', '<div class="interpretation">Введіть SpO₂ та FiO₂</div>');
+        return;
+    }
+    if (isNaN(spo2)) {
+        setResult('sf-result', '<div class="interpretation danger">Введіть SpO₂</div>');
+        return;
+    }
+    if (isNaN(fio2)) {
+        setResult('sf-result', '<div class="interpretation danger">Введіть FiO₂</div>');
+        return;
+    }
+    if (spo2 < 1 || spo2 > 100) {
+        setResult('sf-result', '<div class="interpretation danger">SpO₂ має бути 1–100%</div>');
+        return;
+    }
+    if (fio2 < 0.21 || fio2 > 1.0) {
+        setResult('sf-result', '<div class="interpretation danger">FiO₂ має бути 0.21–1.0</div>');
+        return;
+    }
+    
+    const sf = spo2 / fio2;
+    let sev, cls;
+    if (sf < 235) {
+        sev = 'Співставно з P/F < 200 (ГРДС)';
+        cls = 'danger';
+    } else if (sf < 315) {
+        sev = 'Співставно з P/F < 300';
+        cls = 'warning-box';
+    } else {
+        sev = 'Норма (P/F > 300)';
+        cls = 'success';
+    }
+    
+    setResult('sf-result', `
+        <div class="result-row"><span class="result-label">S/F</span><span class="result-value">${sf.toFixed(0)}</span></div>
+        <div class="interpretation ${cls}">${sev}</div>
+    `);
+}
+
+        
 
             // ==================== SHOCK (ВИПРАВЛЕНО) ====================
             function calcShock() {
