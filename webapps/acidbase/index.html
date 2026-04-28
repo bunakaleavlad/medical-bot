@@ -298,10 +298,19 @@
             <input id="abg-lactate" class="input-field" type="number" step="0.1" value="4.2">
             <span class="input-unit">ммоль/л</span>
         </div>
+        <!-- ЗМІНА 3: Альбумін з перемикачем одиниць -->
         <div class="input-row">
             <span class="input-label">Альбумін</span>
             <input id="abg-albumin" class="input-field" type="number" step="1" value="32">
-            <span class="input-unit">г/л</span>
+            <span class="input-unit" id="abg-albumin-unit-label">г/л</span>
+        </div>
+        <div class="input-row" style="margin-top:-6px;">
+            <span class="input-label"></span>
+            <select id="abg-albumin-unit" class="input-field" style="font-size:12px;padding:8px;">
+                <option value="gl" selected>г/л (норма 40)</option>
+                <option value="gdl">г/дл (норма 4.0)</option>
+            </select>
+            <span class="input-unit"></span>
         </div>
         <div class="input-row">
             <span class="input-label">Вага пацієнта</span>
@@ -540,13 +549,20 @@
     }
 
     // ── КРОК 2: AG + DELTA RATIO + LACTATE-CORRECTED AG ───────────────────────
-    function ag(Na, K, Cl, HCO3, alb, pH, lac, ca, mg) {
+    // ЗМІНА 5: Додано параметр albUnit
+    function ag(Na, K, Cl, HCO3, alb, pH, lac, ca, mg, albUnit) {
         var safeAlb = isFinite(alb) ? alb : C.N.ALB;
+        // Перерахунок альбуміну в г/л якщо введено в г/дл
+        var albGL = safeAlb;
+        if (albUnit === 'gdl') {
+            albGL = safeAlb * 10; // г/дл → г/л
+        }
         var raw = Na - Cl - HCO3;
-        var corr = raw + C.ALB_K * (C.N.ALB - safeAlb);
+        // ЗМІНА 5: використовуємо albGL замість safeAlb
+        var corr = raw + C.ALB_K * (C.N.ALB - albGL);
 
         if (!isFinite(corr)) {
-            return { v: null, lacCorr: null, dr: null, st: '⚠️ Некоректний AG', isAG: false };
+            return { v: null, lacCorr: null, dr: null, st: '⚠️ Некоректний AG', isAG: false, albGL: albGL };
         }
 
         var dAG   = corr - C.N.AG;
@@ -578,7 +594,8 @@
             st = '⚠️ Негативний AG — перевірте Na⁺/K⁺/Cl⁻/HCO₃⁻';
         }
 
-        return { v: corr, lacCorr: lacCorr, dr: dr, st: st, isAG: isAG };
+        // ЗМІНА 5: додано albGL у return-об'єкт
+        return { v: corr, lacCorr: lacCorr, dr: dr, st: st, isAG: isAG, albGL: albGL };
     }
 
     // ── ЕФЕКТИВНИЙ SID (Stewart Approach) ─────────────────────────────────────
@@ -628,11 +645,11 @@
         
         var maxRate = (pH < 7.1) ? C.MAX_RATE_SEVERE : C.MAX_RATE_DEFAULT;
         var rate = Math.min(maxRate, vol); // Не перевищуємо об'єм
+
         var dur = rate > 0 ? vol / rate : 0;
 
-        // Болюс: макс 50% дефіциту або 100 мл (стандарт ICU)
-        var bolusMax = Math.min(C.BOLUS_MAX, def * 0.5 / conc);
-        var bolusVol = Math.min(def * 0.5, C.BOLUS_MAX) / conc;
+        // ЗМІНА 1: Болюс — правильне порівняння мл з мл
+        var bolusVol = Math.min(def * 0.5 / conc, C.BOLUS_MAX); // обидва в мл
         var remainingDef = def > (bolusVol * conc) ? def - (bolusVol * conc) : 0;
         var remainingVol = remainingDef / conc;
 
@@ -741,7 +758,8 @@
     }
 
     // ── РЕНДЕР ────────────────────────────────────────────────────────────────
-    function renderInterp(d, agv, lacCorr, dr, ec, effSid, appSid) {
+    // ДОДАТКОВА ВИМОГА: додано параметр albGL
+    function renderInterp(d, agv, lacCorr, dr, ec, effSid, appSid, albGL) {
         var pHcl  = d.pH < 7.35 ? 'critical' : d.pH > 7.45 ? 'warning-text' : 'success';
         var co2cl = d.pCO2 < 35 ? 'warning-text' : d.pCO2 > 45 ? 'critical' : '';
         var h3cl  = d.HCO3 < 22 ? 'critical' : d.HCO3 > 26 ? 'warning-text' : '';
@@ -760,6 +778,9 @@
           + (lacCorr !== null ? rowHtml('AG (lac-corr)', span(lacCorrCl, lacCorr.toFixed(1)), 'ммоль/л') : '')
           + rowHtml('SID apparent',       span('', appSid !== null ? appSid.toFixed(1) : '—'), appSid !== null ? 'Na−Cl' : '')
           + rowHtml('SID effective',      span(sidcl, effSid !== null ? effSid.toFixed(1) : '—'), effSid !== null ? 'мЕкв/л' : '')
+          + (albGL !== null && albGL !== undefined 
+              ? rowHtml('Альбумін (AG-кор)', span('', albGL.toFixed(0)), 'г/л') 
+              : '')
           + (dr !== null ? rowHtml('Delta Ratio', span('', dr.toFixed(2)), '') : '')
           + rowHtml('Лактат',             span(laccl, d.lac !== null ? d.lac.toFixed(1) : '—'), d.lac !== null ? 'ммоль/л' : '')
           + (ec !== null ? rowHtml('Очікувана компенсація', span('', ec.toFixed(1)), '') : '');
@@ -932,9 +953,16 @@
 
         var an  = primary(d.pH, d.pCO2, d.HCO3);
         var hasLytes = hasElectrolytes();
+        // ЗМІНА 6: зчитуємо albUnit та пробрасуємо в ag()
+        var albUnitVal = (document.getElementById('abg-albumin-unit') 
+                          && document.getElementById('abg-albumin-unit').value === 'gdl') 
+                          ? 'gdl' : 'gl';
         var agR = hasLytes 
-            ? ag(d.Na, d.K, d.Cl, d.HCO3, d.alb, d.pH, d.lac, d.ca, d.mg) 
-            : { v: null, lacCorr: null, dr: null, st: 'Дані не введені', isAG: false };
+            ? ag(d.Na, d.K, d.Cl, d.HCO3, d.alb, d.pH, d.lac, d.ca, d.mg, albUnitVal) 
+            : { v: null, lacCorr: null, dr: null, st: 'Дані не введені', isAG: false, albGL: null };
+        
+        // ЗМІНА 6: зберігаємо albGL у d
+        d.albGL = agR.albGL || null;
         
         var appSid = hasLytes ? (d.Na - d.Cl) : null;
         var effSid = hasLytes ? calcEffectiveSID(d.Na, d.K, d.ca, d.mg, d.Cl, d.lac) : null;
@@ -943,7 +971,8 @@
 
         var showEC = an.p.indexOf('Метаболічний ацидоз') >= 0 ? an.ec : null;
 
-        renderInterp(d, agR.v, agR.lacCorr, agR.dr, showEC, effSid, appSid);
+        // ЗМІНА 6: передаємо d.albGL останнім параметром у renderInterp
+        renderInterp(d, agR.v, agR.lacCorr, agR.dr, showEC, effSid, appSid, d.albGL);
         renderDiag(an, agR.v, agR.lacCorr, agR.st, agR.dr, d.lac, agR.isAG, effSid);
         renderCorr(bic);
         renderWarns(warns(d.pH, d.lac, d.pCO2, agR.v, agR.lacCorr, d.HCO3, effSid));
@@ -992,6 +1021,13 @@
                     }
                 });
             }
+        });
+        
+        // ЗМІНА 2: Очищення помилок при фокусі
+        document.querySelectorAll('input').forEach(function(el) {
+            el.addEventListener('focus', function() {
+                this.classList.remove('error-input');
+            });
         });
         
         var doneBtn = document.getElementById('doneButton');
