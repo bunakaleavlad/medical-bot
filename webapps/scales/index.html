@@ -3,18 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <meta name="theme-color" content="#0a0f1a">
     <title>ICU SCALES</title>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: #0a0f1a;
+            background: #060913;
             color: #e2e8f0;
             padding: 12px;
             min-height: 100vh;
         }
         .header {
-            background: linear-gradient(135deg, #1e3a5f 0%, #0a0f1a 100%);
+            background: linear-gradient(135deg, #1e3a5f 0%, #0d1b2a 100%);
             border-radius: 20px;
             padding: 18px 16px;
             margin-bottom: 14px;
@@ -27,37 +28,39 @@
             margin-bottom: 4px;
         }
         .disclaimer {
-            background: #7f1d1d;
-            color: #fecaca;
+            background: #1e293b;
+            color: #94a3b8;
             padding: 10px 14px;
             border-radius: 14px;
             font-size: 11px;
             margin-bottom: 14px;
             text-align: center;
-            border-left: 4px solid #ef4444;
+            border-left: 4px solid #3b82f6;
+            line-height: 1.4;
         }
         .main-tabs {
             display: flex;
             gap: 4px;
             margin-bottom: 14px;
-            background: #1e293b;
+            background: #1a2332;
             padding: 4px;
             border-radius: 16px;
             flex-wrap: wrap;
         }
         .main-tab {
             flex: 1;
-            min-width: 70px;
-            padding: 10px 4px;
+            min-width: 72px;
+            padding: 10px 6px;
             background: transparent;
             border: none;
             color: #94a3b8;
-            font-size: 10px;
+            font-size: 11px;
             font-weight: 600;
             border-radius: 12px;
             cursor: pointer;
             transition: all 0.2s;
             line-height: 1.2;
+            white-space: nowrap;
         }
         .main-tab.active {
             background: #3b82f6;
@@ -67,9 +70,9 @@
             background: #111827;
             border-radius: 20px;
             padding: 16px;
-            margin-bottom: 14px;
+            margin-bottom: 16px;
             border: 1px solid #2d3748;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.4);
         }
         .card-title {
             font-size: 15px;
@@ -105,6 +108,7 @@
         select:focus {
             outline: none;
             border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59,130,246,0.1);
         }
         .row-2 {
             display: grid;
@@ -112,11 +116,12 @@
             gap: 10px;
         }
         .result-box {
-            background: linear-gradient(145deg, #111827 0%, #0a0f1a 100%);
+            background: linear-gradient(145deg, #111827 0%, #0d1520 100%);
             border-radius: 20px;
             padding: 16px;
             border: 1px solid #2d4a6e;
             margin-bottom: 14px;
+            min-height: 50px;
         }
         .result-row {
             display: flex;
@@ -168,6 +173,11 @@
             border-left-color: #22c55e;
             color: #bbf7d0;
         }
+        .interpretation.empty {
+            background: #1e293b;
+            border-left-color: #64748b;
+            color: #94a3b8;
+        }
         .checkbox-group {
             display: flex;
             align-items: center;
@@ -183,6 +193,18 @@
             margin-bottom: 0;
             font-size: 14px;
             color: #e2e8f0;
+        }
+        .temp-group {
+            background: #0d1520;
+            border-radius: 14px;
+            padding: 12px;
+            margin-bottom: 14px;
+            border: 1px solid #1e293b;
+        }
+        .temp-group .checkbox-row {
+            display: flex;
+            gap: 12px;
+            margin-top: 8px;
         }
         .hidden {
             display: none !important;
@@ -200,7 +222,7 @@
         .sirs-criteria {
             font-size: 11px;
             color: #94a3b8;
-            line-height: 1.5;
+            line-height: 1.6;
             margin-top: 8px;
         }
         .sirs-positive {
@@ -208,6 +230,11 @@
         }
         .sirs-negative {
             color: #22c55e !important;
+        }
+        .helper-text {
+            font-size: 10px;
+            color: #64748b;
+            margin-top: 4px;
         }
         button {
             width: 100%;
@@ -232,17 +259,19 @@
         <h1>📊 ICU SCALES</h1>
         <span class="protocol-badge">NEWS2 · ARDS · SHOCK · SOFA · BISAP</span>
     </div>
+
     <div class="disclaimer">
-        ⚕️ Детерміновані шкали без підміни значень. 0 ≠ порожнє поле.
+        ⚕️ Для медичних працівників. Шкали не замінюють клінічне мислення.<br>
+        <small>0 = внесений показник (норма). Порожнє поле = дані відсутні.</small>
     </div>
 
     <!-- ГОЛОВНІ ВКЛАДКИ -->
     <div class="main-tabs">
-        <button class="main-tab active" data-tab="screening">🚨 SCREENING</button>
+        <button class="main-tab active" data-tab="screening">🚨 SCREEN</button>
         <button class="main-tab" data-tab="respiratory">💨 RESP</button>
         <button class="main-tab" data-tab="shock">💔 SHOCK</button>
         <button class="main-tab" data-tab="sofa">🫀 SOFA</button>
-        <button class="main-tab" data-tab="special">🧬 SPECIAL</button>
+        <button class="main-tab" data-tab="special">🧬 SPEC</button>
     </div>
 
     <!-- ==================== SCREENING ==================== -->
@@ -250,67 +279,99 @@
         <div class="card">
             <div class="card-title">📊 NEWS2</div>
             <div class="row-2">
-                <div class="input-group"><label>ЧД (за хв)</label><input type="number" id="news2-rr" placeholder="18"></div>
-                <div class="input-group"><label>SpO₂ (%)</label><input type="number" id="news2-spo2" placeholder="96"></div>
+                <div class="input-group"><label>ЧД (за хв)</label><input type="number" id="news2-rr" placeholder="18" min="0" max="60"></div>
+                <div class="input-group"><label>SpO₂ (%)</label><input type="number" id="news2-spo2" placeholder="96" min="0" max="100"></div>
             </div>
-            <div class="checkbox-group"><input type="checkbox" id="news2-copd"><label>ХОЗЛ (шкала 2)</label></div>
+            <div class="checkbox-group"><input type="checkbox" id="news2-copd"><label>ХОЗЛ (шкала SpO₂ 2)</label></div>
+            <div class="helper-text">При ХОЗЛ використовується альтернативна шкала SpO₂</div>
             <div class="row-2">
-                <div class="input-group"><label>САТ (мм рт.ст.)</label><input type="number" id="news2-sbp" placeholder="120"></div>
-                <div class="input-group"><label>Пульс (за хв)</label><input type="number" id="news2-hr" placeholder="80"></div>
+                <div class="input-group"><label>САТ (мм рт.ст.)</label><input type="number" id="news2-sbp" placeholder="120" min="0" max="300"></div>
+                <div class="input-group"><label>Пульс (за хв)</label><input type="number" id="news2-hr" placeholder="80" min="0" max="300"></div>
             </div>
             <div class="row-2">
-                <div class="input-group"><label>Свідомість</label><select id="news2-acvpu"><option value="A">A (Alert)</option><option value="C">C</option><option value="V">V</option><option value="P">P</option><option value="U">U</option></select></div>
-                <div class="input-group"><label>Темп. (°C)</label><input type="number" id="news2-temp" placeholder="36.6" step="0.1"></div>
+                <div class="input-group">
+                    <label>Свідомість (ACVPU)</label>
+                    <select id="news2-acvpu">
+                        <option value="A">A — Alert (ясна)</option>
+                        <option value="C">C — Confused (сплутана)</option>
+                        <option value="V">V — Voice (на голос)</option>
+                        <option value="P">P — Pain (на біль)</option>
+                        <option value="U">U — Unresponsive (немає)</option>
+                    </select>
+                </div>
+                <div class="input-group"><label>Темп. (°C)</label><input type="number" id="news2-temp" placeholder="36.6" step="0.1" min="25" max="45"></div>
             </div>
-            <div class="checkbox-group"><input type="checkbox" id="news2-oxygen"><label>Кисень</label></div>
+            <div class="checkbox-group"><input type="checkbox" id="news2-oxygen"><label>Киснева терапія</label></div>
         </div>
-        <div class="result-box" id="news2-result"></div>
+        <div class="result-box" id="news2-result">
+            <div class="interpretation empty">Введіть дані для розрахунку NEWS2</div>
+        </div>
 
         <div class="card">
-            <div class="card-title">⚡ qSOFA</div>
+            <div class="card-title">⚡ qSOFA (скринінг сепсису)</div>
             <div class="checkbox-group"><input type="checkbox" id="qsofa-rr"><label>ЧД ≥ 22/хв</label></div>
             <div class="checkbox-group"><input type="checkbox" id="qsofa-gcs"><label>GCS < 15</label></div>
-            <div class="checkbox-group"><input type="checkbox" id="qsofa-sbp"><label>САТ ≤ 100</label></div>
+            <div class="checkbox-group"><input type="checkbox" id="qsofa-sbp"><label>САТ ≤ 100 мм рт.ст.</label></div>
         </div>
-        <div class="result-box" id="qsofa-result"></div>
+        <div class="result-box" id="qsofa-result">
+            <div class="interpretation empty">Відмітьте критерії qSOFA</div>
+        </div>
 
         <div class="card">
             <div class="card-title">🩸 SIRS</div>
-            <div class="input-group"><label>Температура (°C)</label><input type="number" id="sirs-temp" placeholder="36.6" step="0.1"></div>
-            <div class="checkbox-group"><input type="checkbox" id="sirs-temp-high"><label>> 38.0°C</label></div>
-            <div class="checkbox-group"><input type="checkbox" id="sirs-temp-low"><label>< 36.0°C</label></div>
-            <div class="input-group"><label>Пульс (за хв)</label><input type="number" id="sirs-hr" placeholder="80"></div>
-            <div class="input-group"><label>ЧД (за хв)</label><input type="number" id="sirs-rr" placeholder="16"></div>
-            <div class="checkbox-group"><input type="checkbox" id="sirs-paco2"><label>PaCO₂ < 32 (якщо відомо)</label></div>
-            <div class="input-group"><label>Лейкоцити (×10⁹/л)</label><input type="number" id="sirs-wbc" placeholder="7.0" step="0.1"></div>
+            <div class="temp-group">
+                <label style="margin-bottom:0;">🌡️ Температура (°C)</label>
+                <input type="number" id="sirs-temp" placeholder="36.6" step="0.1" min="25" max="45">
+                <div class="checkbox-row">
+                    <div class="checkbox-group" style="padding:0;">
+                        <input type="checkbox" id="sirs-temp-high">
+                        <label>> 38.0°C</label>
+                    </div>
+                    <div class="checkbox-group" style="padding:0;">
+                        <input type="checkbox" id="sirs-temp-low">
+                        <label>< 36.0°C</label>
+                    </div>
+                </div>
+            </div>
+            <div class="input-group"><label>💓 Пульс (за хв)</label><input type="number" id="sirs-hr" placeholder="80" min="0" max="300"></div>
+            <div class="input-group"><label>🫁 ЧД (за хв)</label><input type="number" id="sirs-rr" placeholder="16" min="0" max="60"></div>
+            <div class="checkbox-group"><input type="checkbox" id="sirs-paco2"><label>PaCO₂ < 32 мм рт.ст. (якщо відомо)</label></div>
+            <div class="input-group"><label>🔬 Лейкоцити (×10⁹/л)</label><input type="number" id="sirs-wbc" placeholder="7.0" step="0.1" min="0" max="100"></div>
             <div class="checkbox-group"><input type="checkbox" id="sirs-bands"><label>Незрілі форми > 10%</label></div>
         </div>
-        <div class="result-box" id="sirs-result"></div>
+        <div class="result-box" id="sirs-result">
+            <div class="interpretation empty">Введіть дані для оцінки SIRS</div>
+        </div>
     </div>
 
     <!-- ==================== RESPIRATORY ==================== -->
     <div id="tab-respiratory" class="tab-content hidden">
         <div class="card">
-            <div class="card-title">💨 ARDS (Berlin)</div>
+            <div class="card-title">💨 ARDS (Berlin Definition)</div>
             <div class="row-2">
-                <div class="input-group"><label>PaO₂ (мм рт.ст.)</label><input type="number" id="ards-pao2" placeholder="80"></div>
-                <div class="input-group"><label>FiO₂</label><input type="number" id="ards-fio2" placeholder="0.5" step="0.05"></div>
+                <div class="input-group"><label>PaO₂ (мм рт.ст.)</label><input type="number" id="ards-pao2" placeholder="80" min="1" max="600"></div>
+                <div class="input-group"><label>FiO₂ (0.21–1.0)</label><input type="number" id="ards-fio2" placeholder="0.5" step="0.05" min="0.21" max="1.0"></div>
             </div>
-            <div class="input-group"><label>PEEP (см H₂O)</label><input type="number" id="ards-peep" placeholder="5"></div>
+            <div class="input-group"><label>PEEP (см H₂O)</label><input type="number" id="ards-peep" placeholder="5" min="0" max="30"></div>
             <div class="checkbox-group"><input type="checkbox" id="ards-bilateral" checked><label>Двобічні інфільтрати</label></div>
-            <div class="checkbox-group"><input type="checkbox" id="ards-acute" checked><label>Гострий початок < 1 тиж</label></div>
-            <div class="checkbox-group"><input type="checkbox" id="ards-noncardiac" checked><label>Не кардіогенний</label></div>
+            <div class="checkbox-group"><input type="checkbox" id="ards-acute" checked><label>Гострий початок (< 1 тижня)</label></div>
+            <div class="checkbox-group"><input type="checkbox" id="ards-noncardiac" checked><label>Не кардіогенний набряк</label></div>
         </div>
-        <div class="result-box" id="ards-result"></div>
+        <div class="result-box" id="ards-result">
+            <div class="interpretation empty">Введіть PaO₂ та FiO₂</div>
+        </div>
 
         <div class="card">
-            <div class="card-title">💨 SpO₂ / FiO₂ (S/F)</div>
+            <div class="card-title">💨 SpO₂ / FiO₂ (S/F Ratio)</div>
             <div class="row-2">
-                <div class="input-group"><label>SpO₂ (%)</label><input type="number" id="sf-spo2" placeholder="95" max="100"></div>
-                <div class="input-group"><label>FiO₂</label><input type="number" id="sf-fio2" placeholder="0.21" step="0.05"></div>
+                <div class="input-group"><label>SpO₂ (1–100%)</label><input type="number" id="sf-spo2" placeholder="95" min="1" max="100"></div>
+                <div class="input-group"><label>FiO₂ (0.21–1.0)</label><input type="number" id="sf-fio2" placeholder="0.21" step="0.05" min="0.21" max="1.0"></div>
             </div>
+            <div class="helper-text">S/F < 235 ≈ P/F < 200 (ARDS)</div>
         </div>
-        <div class="result-box" id="sf-result"></div>
+        <div class="result-box" id="sf-result">
+            <div class="interpretation empty">Введіть SpO₂ та FiO₂</div>
+        </div>
     </div>
 
     <!-- ==================== SHOCK ==================== -->
@@ -318,53 +379,87 @@
         <div class="card">
             <div class="card-title">💔 MAP + Lactate</div>
             <div class="row-2">
-                <div class="input-group"><label>САТ (мм рт.ст.)</label><input type="number" id="shock-sbp" placeholder="90"></div>
-                <div class="input-group"><label>ДАТ (мм рт.ст.)</label><input type="number" id="shock-dbp" placeholder="60"></div>
+                <div class="input-group"><label>САТ (мм рт.ст.)</label><input type="number" id="shock-sbp" placeholder="90" min="0" max="300"></div>
+                <div class="input-group"><label>ДАТ (мм рт.ст.)</label><input type="number" id="shock-dbp" placeholder="60" min="0" max="200"></div>
             </div>
-            <div class="input-group"><label>MAP (готове значення)</label><input type="number" id="shock-map-direct" placeholder="70"></div>
+            <div class="input-group">
+                <label>MAP — готове значення (якщо є)</label>
+                <input type="number" id="shock-map-direct" placeholder="70" min="0" max="200">
+                <div class="helper-text">Якщо вказано — САТ/ДАТ ігноруються</div>
+            </div>
             <div class="row-2">
-                <div class="input-group"><label>Лактат (ммоль/л)</label><input type="number" id="shock-lactate" placeholder="1.5" step="0.1"></div>
-                <div class="input-group"><label>Попередній лактат</label><input type="number" id="shock-lactate-prev" placeholder="3.0" step="0.1"></div>
+                <div class="input-group"><label>Лактат (ммоль/л)</label><input type="number" id="shock-lactate" placeholder="1.5" step="0.1" min="0" max="30"></div>
+                <div class="input-group"><label>Попередній лактат (ммоль/л)</label><input type="number" id="shock-lactate-prev" placeholder="3.0" step="0.1" min="0" max="30"></div>
             </div>
         </div>
-        <div class="result-box" id="shock-map-result"></div>
+        <div class="result-box" id="shock-map-result">
+            <div class="interpretation empty">Введіть САТ/ДАТ або MAP</div>
+        </div>
 
         <div class="card">
-            <div class="card-title">💉 Норадреналін</div>
+            <div class="card-title">💉 Норадреналін (НА)</div>
             <div class="row-2">
-                <div class="input-group"><label>Доза (мкг/кг/хв)</label><input type="number" id="shock-ne-dose" placeholder="0.1" step="0.01"></div>
-                <div class="input-group"><label>Вага (кг)</label><input type="number" id="shock-weight" placeholder="70"></div>
+                <div class="input-group"><label>Доза НА (мкг/кг/хв)</label><input type="number" id="shock-ne-dose" placeholder="0.1" step="0.01" min="0" max="10"></div>
+                <div class="input-group"><label>Вага (кг)</label><input type="number" id="shock-weight" placeholder="70" min="20" max="300"></div>
             </div>
         </div>
-        <div class="result-box" id="shock-stage-result"></div>
+        <div class="result-box" id="shock-stage-result">
+            <div class="interpretation empty">Введіть лактат та дозу НА</div>
+        </div>
     </div>
 
     <!-- ==================== SOFA ==================== -->
     <div id="tab-sofa" class="tab-content hidden">
         <div class="card">
-            <div class="card-title">🫀 SOFA</div>
-            <div class="input-group"><label>PaO₂/FiO₂</label><input type="number" id="sofa-pf" placeholder="300"></div>
-            <div class="input-group"><label>Тромбоцити (×10⁹/л)</label><input type="number" id="sofa-plt" placeholder="200"></div>
-            <div class="input-group"><label>Білірубін (мкмоль/л)</label><input type="number" id="sofa-bili" placeholder="15"></div>
-            <div class="input-group"><label>ССС</label><select id="sofa-cv"><option value="0">САТ≥70 без вазопресорів</option><option value="1">САТ<70 без вазопресорів</option><option value="2">ДА≤5 / Добутамін</option><option value="3">ДА>5 / НА≤0.1</option><option value="4">ДА>15 / НА>0.1</option></select></div>
-            <div class="input-group"><label>GCS</label><input type="number" id="sofa-gcs" placeholder="15"></div>
-            <div class="input-group"><label>Креатинін / діурез</label><select id="sofa-renal"><option value="0"><110</option><option value="1">110-170</option><option value="2">171-299</option><option value="3">300-440 / діурез<500</option><option value="4">>440 / діурез<200</option></select></div>
+            <div class="card-title">🫀 SOFA (Sequential Organ Failure Assessment)</div>
+            <div class="input-group"><label>PaO₂/FiO₂</label><input type="number" id="sofa-pf" placeholder="300" min="0" max="600"></div>
+            <div class="input-group"><label>Тромбоцити (×10⁹/л)</label><input type="number" id="sofa-plt" placeholder="200" min="0" max="2000"></div>
+            <div class="input-group"><label>Білірубін (мкмоль/л)</label><input type="number" id="sofa-bili" placeholder="15" min="0" max="500"></div>
+            <div class="input-group">
+                <label>ССС (вазопресори)</label>
+                <select id="sofa-cv">
+                    <option value="0">САТ ≥ 70 без вазопресорів</option>
+                    <option value="1">САТ < 70 без вазопресорів</option>
+                    <option value="2">ДА ≤ 5 / Добутамін (будь-яка доза)</option>
+                    <option value="3">ДА > 5 / НА ≤ 0.1</option>
+                    <option value="4">ДА > 15 / НА > 0.1</option>
+                </select>
+                <div class="helper-text">ДА, НА — мкг/кг/хв</div>
+            </div>
+            <div class="input-group"><label>GCS (3–15)</label><input type="number" id="sofa-gcs" placeholder="15" min="3" max="15"></div>
+            <div class="input-group">
+                <label>Креатинін (мкмоль/л) / діурез</label>
+                <select id="sofa-renal">
+                    <option value="0">< 110</option>
+                    <option value="1">110–170</option>
+                    <option value="2">171–299</option>
+                    <option value="3">300–440 / діурез < 500 мл/добу</option>
+                    <option value="4">> 440 / діурез < 200 мл/добу</option>
+                </select>
+            </div>
         </div>
-        <div class="result-box" id="sofa-result"></div>
+        <div class="result-box" id="sofa-result">
+            <div class="interpretation empty">Введіть дані для розрахунку SOFA</div>
+        </div>
     </div>
 
     <!-- ==================== SPECIAL ==================== -->
     <div id="tab-special" class="tab-content hidden">
         <div class="card">
-            <div class="card-title">🩸 BISAP</div>
-            <div class="input-group"><label>BUN (ммоль/л)</label><input type="number" id="bisap-bun" placeholder="6.0" step="0.1"></div>
-            <div class="checkbox-group"><input type="checkbox" id="bisap-mental"><label>Порушення свідомості</label></div>
-            <div class="checkbox-group"><input type="checkbox" id="bisap-sirs"><label>SIRS (≥2 критерії)</label></div>
-            <div class="input-group"><label>Вік (років)</label><input type="number" id="bisap-age" placeholder="50"></div>
+            <div class="card-title">🩸 BISAP (Pancreatitis Severity)</div>
+            <div class="input-group"><label>Сечовина (ммоль/л)</label><input type="number" id="bisap-bun" placeholder="6.0" step="0.1" min="0" max="100"></div>
+            <div class="helper-text">BUN ≥ 9.0 ммоль/л = 1 бал</div>
+            <div class="checkbox-group"><input type="checkbox" id="bisap-mental"><label>Порушення свідомості (GCS < 15)</label></div>
+            <div class="checkbox-group"><input type="checkbox" id="bisap-sirs"><label>SIRS (≥ 2 критерії)</label></div>
+            <div class="input-group"><label>Вік (років)</label><input type="number" id="bisap-age" placeholder="50" min="18" max="120"></div>
             <div class="checkbox-group"><input type="checkbox" id="bisap-effusion"><label>Плевральний випіт</label></div>
         </div>
-        <div class="result-box" id="bisap-result"></div>
+        <div class="result-box" id="bisap-result">
+            <div class="interpretation empty">Введіть дані для розрахунку BISAP</div>
+        </div>
     </div>
+
+    <button onclick="calculateAll()">🔄 ОНОВИТИ РОЗРАХУНКИ</button>
 
     <script>
         (function() {
@@ -401,8 +496,9 @@
                 const temp = val('news2-temp');
                 const oxygen = checked('news2-oxygen');
 
-                if (isNaN(rr) && isNaN(spo2) && isNaN(sbp) && isNaN(hr) && isNaN(temp)) {
-                    setResult('news2-result', '<div class="interpretation danger">Введіть дані</div>');
+                const hasAny = !isNaN(rr) || !isNaN(spo2) || !isNaN(sbp) || !isNaN(hr) || !isNaN(temp) || oxygen || acvpu !== 'A';
+                if (!hasAny) {
+                    setResult('news2-result', '<div class="interpretation empty">Введіть дані для розрахунку NEWS2</div>');
                     return;
                 }
 
@@ -456,7 +552,7 @@
                 }
 
                 const risk = score <= 4 ? 'LOW' : (score <= 6 ? 'MEDIUM' : 'HIGH');
-                const action = score <= 4 ? 'Спостереження 12 год' : (score <= 6 ? 'Терміновий огляд' : 'ЕКСТРЕНА ДОПОМОГА');
+                const action = score <= 4 ? 'Спостереження кожні 12 год' : (score <= 6 ? 'Терміновий огляд лікаря' : 'ЕКСТРЕНА ДОПОМОГА');
                 const cls = risk === 'HIGH' ? 'danger' : (risk === 'MEDIUM' ? 'warning-box' : 'success');
 
                 setResult('news2-result', `
@@ -467,155 +563,175 @@
 
             // ==================== qSOFA ====================
             function calcQSOFA() {
+                const anyChecked = checked('qsofa-rr') || checked('qsofa-gcs') || checked('qsofa-sbp');
+                if (!anyChecked && !checked('qsofa-rr') && !checked('qsofa-gcs') && !checked('qsofa-sbp')) {
+                    // Всі не відмічені — показуємо 0
+                }
                 const s = (checked('qsofa-rr') ? 1 : 0) + (checked('qsofa-gcs') ? 1 : 0) + (checked('qsofa-sbp') ? 1 : 0);
                 const cls = s >= 2 ? 'danger' : 'success';
                 setResult('qsofa-result', `
                     <div class="result-row"><span class="result-label">qSOFA</span><span class="result-value">${s}/3</span></div>
-                    <div class="interpretation ${cls}">${s >= 2 ? 'Високий ризик сепсису' : 'Низький ризик'}</div>
+                    <div class="interpretation ${cls}">${s >= 2 ? '⚠️ Високий ризик сепсису — негайне обстеження' : '✅ Низький ризик'}</div>
                 `);
             }
 
-            // ==================== SIRS (ВИПРАВЛЕНО) ====================
+            // ==================== SIRS ====================
             function calcSIRS() {
+                // Взаємовиключення чекбоксів температури
+                const thEl = $('sirs-temp-high');
+                const tlEl = $('sirs-temp-low');
+                if (thEl && tlEl) {
+                    thEl.addEventListener('change', function() { if (this.checked) tlEl.checked = false; });
+                    tlEl.addEventListener('change', function() { if (this.checked) thEl.checked = false; });
+                }
+
                 let score = 0;
                 const details = [];
+                let hasAny = false;
 
-                // Температура: ТІЛЬКИ чекбокси (або авто за введеним значенням якщо чекбокси не відмічені)
                 const th = checked('sirs-temp-high');
                 const tl = checked('sirs-temp-low');
                 const temp = val('sirs-temp');
 
+                if (!isNaN(temp)) hasAny = true;
+                if (th || tl) hasAny = true;
+
                 if (th || tl) {
-                    // Чекбокси — єдине джерело
-                    if (th && tl) { score++; details.push('🌡️ Гіпер/гіпотермія'); }
-                    else if (th) { score++; details.push('🌡️ > 38.0°C'); }
-                    else if (tl) { score++; details.push('🌡️ < 36.0°C'); }
-                } else if (!isNaN(temp) && (temp > 38.0 || temp < 36.0)) {
-                    // Авто за введеним значенням, якщо чекбокси не відмічені
+                    if (th) { score++; details.push('🌡️ Температура > 38.0°C'); }
+                    else { score++; details.push('🌡️ Температура < 36.0°C'); }
+                } else if (!isNaN(temp) && temp > 25 && (temp > 38.0 || temp < 36.0)) {
                     score++;
-                    details.push('🌡️ Температура ' + temp + '°C (поза нормою)');
+                    details.push('🌡️ Температура ' + temp.toFixed(1) + '°C (поза нормою)');
                 } else {
                     details.push('🌡️ Температура в нормі');
                 }
 
                 const hr = val('sirs-hr');
-                if (!isNaN(hr) && hr > 90) { score++; details.push('💓 Пульс > 90'); }
+                if (!isNaN(hr)) hasAny = true;
+                if (!isNaN(hr) && hr > 90) { score++; details.push('💓 Пульс > 90/хв'); }
                 else details.push('💓 Пульс у нормі');
 
                 const rr = val('sirs-rr');
                 const paco2 = checked('sirs-paco2');
-                if ((!isNaN(rr) && rr > 20) || paco2) { score++; details.push('🫁 ЧД > 20 / PaCO₂ < 32'); }
+                if (!isNaN(rr)) hasAny = true;
+                if (paco2) hasAny = true;
+                if ((!isNaN(rr) && rr > 20) || paco2) { score++; details.push('🫁 ЧД > 20/хв або PaCO₂ < 32'); }
                 else details.push('🫁 Дихання в нормі');
 
                 const wbc = val('sirs-wbc');
                 const bands = checked('sirs-bands');
-                if (!isNaN(wbc) && (wbc > 12.0 || wbc < 4.0)) { score++; details.push('🔬 Лейкоцити поза нормою'); }
+                if (!isNaN(wbc)) hasAny = true;
+                if (bands) hasAny = true;
+                if (!isNaN(wbc) && (wbc > 12.0 || wbc < 4.0)) { score++; details.push('🔬 Лейкоцити ' + wbc.toFixed(1) + ' (поза нормою)'); }
                 else if (bands) { score++; details.push('🔬 Незрілі форми > 10%'); }
                 else details.push('🔬 Лейкоцити в нормі');
+
+                if (!hasAny) {
+                    setResult('sirs-result', '<div class="interpretation empty">Введіть дані для оцінки SIRS</div>');
+                    return;
+                }
 
                 const cls = score >= 2 ? 'sirs-positive' : 'sirs-negative';
                 const icls = score >= 2 ? 'danger' : 'success';
                 setResult('sirs-result', `
                     <div class="result-row"><span class="result-label">SIRS</span><span class="result-value ${cls}">${score}/4</span></div>
-                    <div class="interpretation ${icls}">${score >= 2 ? 'SIRS ПОЗИТИВНИЙ' : 'SIRS НЕГАТИВНИЙ'}</div>
-                    <div class="sirs-criteria">${details.join('<br>') || 'Введіть дані'}</div>
+                    <div class="interpretation ${icls}">${score >= 2 ? '🔴 SIRS ПОЗИТИВНИЙ (≥2 критерії)' : '🟢 SIRS НЕГАТИВНИЙ'}</div>
+                    <div class="sirs-criteria">${details.join('<br>')}</div>
                 `);
             }
 
-            // ==================== ARDS (ВИПРАВЛЕНО) ====================
-function calcARDS() {
-    const pao2 = val('ards-pao2');
-    const fio2 = val('ards-fio2');
-    const peep = val('ards-peep');
-    const bi = checked('ards-bilateral');
-    const ac = checked('ards-acute');
-    const nc = checked('ards-noncardiac');
+            // ==================== ARDS ====================
+            function calcARDS() {
+                const pao2 = val('ards-pao2');
+                const fio2 = val('ards-fio2');
+                const peep = val('ards-peep');
+                const bi = checked('ards-bilateral');
+                const ac = checked('ards-acute');
+                const nc = checked('ards-noncardiac');
 
-    if (isNaN(pao2) && isNaN(fio2)) {
-        setResult('ards-result', '<div class="interpretation">Введіть PaO₂ та FiO₂</div>');
-        return;
-    }
-    if (isNaN(fio2)) {
-        setResult('ards-result', '<div class="interpretation danger">Введіть FiO₂</div>');
-        return;
-    }
-    if (fio2 < 0.21 || fio2 > 1.0) {
-        setResult('ards-result', '<div class="interpretation danger">FiO₂ має бути 0.21–1.0</div>');
-        return;
-    }
-    if (isNaN(pao2)) {
-        setResult('ards-result', '<div class="interpretation danger">Введіть PaO₂</div>');
-        return;
-    }
-    if (pao2 <= 0) {
-        setResult('ards-result', '<div class="interpretation danger">PaO₂ має бути > 0</div>');
-        return;
-    }
+                if (isNaN(pao2) && isNaN(fio2)) {
+                    setResult('ards-result', '<div class="interpretation empty">Введіть PaO₂ та FiO₂</div>');
+                    return;
+                }
+                if (isNaN(fio2) || fio2 < 0.21 || fio2 > 1.0) {
+                    setResult('ards-result', '<div class="interpretation danger">FiO₂ має бути 0.21–1.0</div>');
+                    return;
+                }
+                if (isNaN(pao2) || pao2 <= 0) {
+                    setResult('ards-result', '<div class="interpretation danger">PaO₂ має бути > 0</div>');
+                    return;
+                }
 
-    const peepOk = !isNaN(peep) && peep >= 5;
-    const pf = pao2 / fio2;
-    let sev = '';
-    if (!bi || !ac || !nc || !peepOk) sev = 'Критерії ARDS НЕ виконано';
-    else if (pf <= 100) sev = 'ТЯЖКИЙ (лет. ~45%)';
-    else if (pf <= 200) sev = 'ПОМІРНИЙ (лет. ~32%)';
-    else if (pf <= 300) sev = 'ЛЕГКИЙ (лет. ~27%)';
-    else sev = 'P/F > 300';
+                const peepOk = !isNaN(peep) && peep >= 5;
+                const pf = pao2 / fio2;
+                let sev = '';
+                let cls = 'empty';
 
-    const cls = sev.includes('ТЯЖКИЙ') ? 'danger' : (sev.includes('ПОМІРНИЙ') ? 'warning-box' : 'success');
-    setResult('ards-result', `
-        <div class="result-row"><span class="result-label">P/F</span><span class="result-value">${pf.toFixed(0)}</span></div>
-        <div class="interpretation ${cls}"><b>${sev}</b></div>
-    `);
-}
+                if (!bi || !ac || !nc || !peepOk) {
+                    sev = '❌ Критерії ARDS НЕ виконано';
+                    if (!bi) sev += ' (інфільтрати)';
+                    if (!ac) sev += ' (початок)';
+                    if (!nc) sev += ' (кардіогенний?)';
+                    if (!peepOk) sev += ' (PEEP < 5)';
+                    cls = 'warning-box';
+                } else if (pf <= 100) {
+                    sev = '🔴 ТЯЖКИЙ ARDS (лет. ~45%)';
+                    cls = 'danger';
+                } else if (pf <= 200) {
+                    sev = '🟠 ПОМІРНИЙ ARDS (лет. ~32%)';
+                    cls = 'warning-box';
+                } else if (pf <= 300) {
+                    sev = '🟡 ЛЕГКИЙ ARDS (лет. ~27%)';
+                    cls = 'warning-box';
+                } else {
+                    sev = '🟢 P/F > 300 — ARDS немає';
+                    cls = 'success';
+                }
 
-// ==================== SpO2/FiO2 (ВИПРАВЛЕНО) ====================
-function calcSF() {
-    const spo2 = val('sf-spo2');
-    const fio2 = val('sf-fio2');
-    
-    if (isNaN(spo2) && isNaN(fio2)) {
-        setResult('sf-result', '<div class="interpretation">Введіть SpO₂ та FiO₂</div>');
-        return;
-    }
-    if (isNaN(spo2)) {
-        setResult('sf-result', '<div class="interpretation danger">Введіть SpO₂</div>');
-        return;
-    }
-    if (isNaN(fio2)) {
-        setResult('sf-result', '<div class="interpretation danger">Введіть FiO₂</div>');
-        return;
-    }
-    if (spo2 < 1 || spo2 > 100) {
-        setResult('sf-result', '<div class="interpretation danger">SpO₂ має бути 1–100%</div>');
-        return;
-    }
-    if (fio2 < 0.21 || fio2 > 1.0) {
-        setResult('sf-result', '<div class="interpretation danger">FiO₂ має бути 0.21–1.0</div>');
-        return;
-    }
-    
-    const sf = spo2 / fio2;
-    let sev, cls;
-    if (sf < 235) {
-        sev = 'Співставно з P/F < 200 (ГРДС)';
-        cls = 'danger';
-    } else if (sf < 315) {
-        sev = 'Співставно з P/F < 300';
-        cls = 'warning-box';
-    } else {
-        sev = 'Норма (P/F > 300)';
-        cls = 'success';
-    }
-    
-    setResult('sf-result', `
-        <div class="result-row"><span class="result-label">S/F</span><span class="result-value">${sf.toFixed(0)}</span></div>
-        <div class="interpretation ${cls}">${sev}</div>
-    `);
-}
+                setResult('ards-result', `
+                    <div class="result-row"><span class="result-label">P/F</span><span class="result-value">${pf.toFixed(0)}</span></div>
+                    <div class="interpretation ${cls}"><b>${sev}</b></div>
+                `);
+            }
 
-        
+            // ==================== SpO2/FiO2 ====================
+            function calcSF() {
+                const spo2 = val('sf-spo2');
+                const fio2 = val('sf-fio2');
+                
+                if (isNaN(spo2) && isNaN(fio2)) {
+                    setResult('sf-result', '<div class="interpretation empty">Введіть SpO₂ та FiO₂</div>');
+                    return;
+                }
+                if (isNaN(spo2) || spo2 < 1 || spo2 > 100) {
+                    setResult('sf-result', '<div class="interpretation danger">SpO₂ має бути 1–100%</div>');
+                    return;
+                }
+                if (isNaN(fio2) || fio2 < 0.21 || fio2 > 1.0) {
+                    setResult('sf-result', '<div class="interpretation danger">FiO₂ має бути 0.21–1.0</div>');
+                    return;
+                }
+                
+                const sf = spo2 / fio2;
+                let sev, cls;
+                if (sf < 235) {
+                    sev = '🔴 S/F < 235 — співставно з P/F < 200 (ARDS)';
+                    cls = 'danger';
+                } else if (sf < 315) {
+                    sev = '🟡 S/F < 315 — співставно з P/F < 300';
+                    cls = 'warning-box';
+                } else {
+                    sev = '🟢 S/F ≥ 315 — норма (P/F > 300)';
+                    cls = 'success';
+                }
+                
+                setResult('sf-result', `
+                    <div class="result-row"><span class="result-label">S/F</span><span class="result-value">${sf.toFixed(0)}</span></div>
+                    <div class="interpretation ${cls}">${sev}</div>
+                `);
+            }
 
-            // ==================== SHOCK (ВИПРАВЛЕНО) ====================
+            // ==================== SHOCK ====================
             function calcShock() {
                 const sbp = val('shock-sbp');
                 const dbp = val('shock-dbp');
@@ -624,6 +740,13 @@ function calcSF() {
                 const lacP = val('shock-lactate-prev');
                 const neDose = val('shock-ne-dose');
                 const w = val('shock-weight');
+
+                let hasMapData = !isNaN(mapDirect) || (!isNaN(sbp) && !isNaN(dbp));
+                if (!hasMapData && isNaN(lac) && isNaN(neDose)) {
+                    setResult('shock-map-result', '<div class="interpretation empty">Введіть САТ/ДАТ або MAP</div>');
+                    setResult('shock-stage-result', '');
+                    return;
+                }
 
                 let map = NaN;
                 if (!isNaN(mapDirect)) {
@@ -638,27 +761,29 @@ function calcSF() {
 
                 if (!isNaN(map)) {
                     let mapText = `MAP = ${map.toFixed(0)} мм рт.ст.`;
-                    if (map < 65) mapText += ' — ГІПОТЕНЗІЯ';
+                    let mapCls = 'success';
+                    if (map < 65) { mapText += ' — ГІПОТЕНЗІЯ'; mapCls = 'danger'; }
                     setResult('shock-map-result', `
                         <div class="result-row"><span class="result-label">MAP</span><span class="result-value">${map.toFixed(0)}<span class="result-unit">мм рт.ст.</span></span></div>
-                        <div class="interpretation ${map < 65 ? 'danger' : 'success'}">${mapText}</div>
+                        <div class="interpretation ${mapCls}">${mapText}</div>
                     `);
+                } else if (!hasMapData) {
+                    setResult('shock-map-result', '<div class="interpretation empty">Введіть САТ/ДАТ або MAP</div>');
                 }
 
                 let stage = '';
                 let cls = 'success';
                 if (!isNaN(lac) && !isNaN(neDose) && !isNaN(w)) {
-                    if (lac > 2 && neDose > 0.2) { stage = 'REFRACTORY SHOCK'; cls = 'danger'; }
-                    else if (lac > 2 && neDose > 0.05) { stage = 'DECOMPENSATED'; cls = 'danger'; }
-                    else if (lac > 2 || neDose > 0.05) { stage = 'COMPENSATED'; cls = 'warning-box'; }
-                    else { stage = 'NO SHOCK'; }
+                    if (lac > 2 && neDose > 0.2) { stage = '🔴 REFRACTORY SHOCK'; cls = 'danger'; }
+                    else if (lac > 2 && neDose > 0.05) { stage = '🔴 DECOMPENSATED SHOCK'; cls = 'danger'; }
+                    else if (lac > 2 || neDose > 0.05) { stage = '🟡 COMPENSATED SHOCK'; cls = 'warning-box'; }
+                    else { stage = '🟢 NO SHOCK'; }
                 } else if (!isNaN(lac)) {
-                    if (lac > 4) { stage = 'Ймовірно DECOMPENSATED'; cls = 'danger'; }
-                    else if (lac > 2) { stage = 'Підвищений лактат'; cls = 'warning-box'; }
-                    else { stage = 'NO SHOCK (за лактатом)'; }
+                    if (lac > 4) { stage = '🔴 Ймовірно DECOMPENSATED (лактат > 4)'; cls = 'danger'; }
+                    else if (lac > 2) { stage = '🟡 Підвищений лактат (> 2)'; cls = 'warning-box'; }
+                    else { stage = '🟢 Лактат у нормі'; }
                 }
 
-                // Кліренс лактату — захист від ділення на нуль
                 if (!isNaN(lac) && !isNaN(lacP) && lacP > 0) {
                     const cl = ((lacP - lac) / lacP) * 100;
                     if (stage) stage += ' | ';
@@ -670,10 +795,12 @@ function calcSF() {
                     setResult('shock-stage-result', `
                         <div class="interpretation ${cls}"><b>${stage}</b></div>
                     `);
+                } else {
+                    setResult('shock-stage-result', '<div class="interpretation empty">Введіть лактат та дозу НА</div>');
                 }
             }
 
-            // ==================== SOFA (ВИПРАВЛЕНО) ====================
+            // ==================== SOFA ====================
             function calcSOFA() {
                 const pf = val('sofa-pf');
                 const plt = val('sofa-plt');
@@ -682,7 +809,12 @@ function calcSF() {
                 const gcs = val('sofa-gcs');
                 const renal = parseInt($('sofa-renal')?.value || 0);
 
-                // Дефолт 0 для порожніх полів (не 4)
+                const hasAny = !isNaN(pf) || !isNaN(plt) || !isNaN(bili) || cv > 0 || !isNaN(gcs) || renal > 0;
+                if (!hasAny) {
+                    setResult('sofa-result', '<div class="interpretation empty">Введіть дані для розрахунку SOFA</div>');
+                    return;
+                }
+
                 let pfS = 0, pltS = 0, biliS = 0, gcsS = 0;
                 let missingCount = 0;
 
@@ -692,7 +824,7 @@ function calcSF() {
                     else if (pf >= 200) pfS = 2;
                     else if (pf >= 100) pfS = 3;
                     else pfS = 4;
-                } else { pfS = 0; missingCount++; }
+                } else { missingCount++; }
 
                 if (!isNaN(plt)) {
                     if (plt >= 150) pltS = 0;
@@ -700,23 +832,23 @@ function calcSF() {
                     else if (plt >= 50) pltS = 2;
                     else if (plt >= 20) pltS = 3;
                     else pltS = 4;
-                } else { pltS = 0; missingCount++; }
+                } else { missingCount++; }
 
                 if (!isNaN(bili)) {
                     if (bili < 20) biliS = 0;
-                    else if (bili <= 32) biliS = 1;
-                    else if (bili <= 101) biliS = 2;
+                    else if (bili <= 33) biliS = 1;
+                    else if (bili <= 102) biliS = 2;
                     else if (bili <= 204) biliS = 3;
                     else biliS = 4;
-                } else { biliS = 0; missingCount++; }
+                } else { missingCount++; }
 
-                if (!isNaN(gcs)) {
+                if (!isNaN(gcs) && gcs >= 3 && gcs <= 15) {
                     if (gcs === 15) gcsS = 0;
                     else if (gcs >= 13) gcsS = 1;
                     else if (gcs >= 10) gcsS = 2;
                     else if (gcs >= 6) gcsS = 3;
                     else gcsS = 4;
-                } else { gcsS = 0; missingCount++; }
+                } else { missingCount++; }
 
                 const total = pfS + pltS + biliS + cv + gcsS + renal;
                 let band = '';
@@ -729,35 +861,46 @@ function calcSF() {
                 const missingNote = missingCount > 0 ? `<br><small style="color:#94a3b8">(${missingCount} систем без даних — 0 балів)</small>` : '';
 
                 setResult('sofa-result', `
-                    <div class="result-row"><span class="result-label">SOFA</span><span class="result-value">${total}/24${missingNote}</span></div>
+                    <div class="result-row"><span class="result-label">SOFA</span><span class="result-value">${total}/24</span></div>
+                    ${missingNote}
                     <div class="interpretation ${cls}"><b>${band}</b></div>
                 `);
             }
 
             // ==================== BISAP ====================
             function calcBISAP() {
-                let score = 0;
                 const bun = val('bisap-bun');
-                if (!isNaN(bun) && bun >= 9.0) score++;
-                if (checked('bisap-mental')) score++;
-                if (checked('bisap-sirs')) score++;
+                const mental = checked('bisap-mental');
+                const sirs = checked('bisap-sirs');
                 const age = val('bisap-age');
+                const effusion = checked('bisap-effusion');
+
+                const hasAny = !isNaN(bun) || mental || sirs || !isNaN(age) || effusion;
+                if (!hasAny) {
+                    setResult('bisap-result', '<div class="interpretation empty">Введіть дані для розрахунку BISAP</div>');
+                    return;
+                }
+
+                let score = 0;
+                if (!isNaN(bun) && bun >= 9.0) score++;
+                if (mental) score++;
+                if (sirs) score++;
                 if (!isNaN(age) && age > 60) score++;
-                if (checked('bisap-effusion')) score++;
+                if (effusion) score++;
 
                 let mort = '';
-                if (score === 0) mort = '<1%';
-                else if (score === 1) mort = '~2%';
-                else if (score === 2) mort = '~5%';
-                else if (score === 3) mort = '~10%';
-                else if (score === 4) mort = '~15%';
-                else mort = '~22%';
+                if (score === 0) mort = '< 1%';
+                else if (score === 1) mort = '~ 2%';
+                else if (score === 2) mort = '~ 5%';
+                else if (score === 3) mort = '~ 10%';
+                else if (score === 4) mort = '~ 15%';
+                else mort = '~ 22%';
 
                 const cls = score >= 3 ? 'danger' : (score >= 2 ? 'warning-box' : 'success');
                 setResult('bisap-result', `
                     <div class="result-row"><span class="result-label">BISAP</span><span class="result-value">${score}/5</span></div>
                     <div class="result-row"><span class="result-label">Летальність</span><span class="result-value">${mort}</span></div>
-                    <div class="interpretation ${cls}">${score >= 3 ? 'ВИСОКИЙ РИЗИК' : (score >= 1 ? 'ПОМІРНИЙ' : 'НИЗЬКИЙ')}</div>
+                    <div class="interpretation ${cls}">${score >= 3 ? '🔴 ВИСОКИЙ РИЗИК' : (score >= 1 ? '🟡 ПОМІРНИЙ РИЗИК' : '🟢 НИЗЬКИЙ РИЗИК')}</div>
                 `);
             }
 
