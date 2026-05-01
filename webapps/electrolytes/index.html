@@ -211,48 +211,48 @@
         <div class="warning" id="na-warning"></div>
     </div>
 
-    <!-- ==================== КАЛІЙ ==================== -->
-    <div id="tab-k" class="tab-content hidden">
-        <div class="card">
-            <div class="card-title">👤 Дані пацієнта</div>
-            <div class="input-group">
-                <label>Вага (кг)</label>
-                <input type="number" id="k-weight" value="70" min="20" max="300" step="0.1">
-            </div>
+   <!-- ==================== КАЛІЙ ==================== -->
+<div id="tab-k" class="tab-content hidden">
+    <div class="card">
+        <div class="card-title">👤 Дані пацієнта</div>
+        <div class="input-group">
+            <label>Вага (кг)</label>
+            <input type="number" id="k-weight" value="70" min="20" max="300" step="0.1">
         </div>
-
-        <div class="card">
-            <div class="card-title">🔬 Лабораторні дані</div>
-            <div class="row-2">
-                <div class="input-group">
-                    <label>K⁺ зараз (ммоль/л)</label>
-                    <input type="number" id="k-current" value="2.8" min="1.5" max="8.0" step="0.1">
-                </div>
-                <div class="input-group">
-                    <label>K⁺ цільовий (ммоль/л)</label>
-                    <input type="number" id="k-target" value="4.0" min="3.5" max="5.0" step="0.1">
-                </div>
-            </div>
-            <div class="input-group">
-                <label>Шлях введення</label>
-                <select id="k-route">
-                    <option value="iv">Внутрішньовенно</option>
-                    <option value="po">Перорально</option>
-                </select>
-            </div>
-            <div class="input-group">
-                <label>Функція нирок (ШКФ)</label>
-                <select id="k-renal">
-                    <option value="normal">Нормальна (&gt;60 мл/хв)</option>
-                    <option value="impaired">Порушена (30-60 мл/хв)</option>
-                    <option value="severe">Тяжка (&lt;30 мл/хв)</option>
-                </select>
-            </div>
-        </div>
-
-        <div class="result" id="k-result"></div>
-        <div class="warning" id="k-warning"></div>
     </div>
+
+    <div class="card">
+        <div class="card-title">🔬 Лабораторні дані</div>
+        <div class="row-2">
+            <div class="input-group">
+                <label>K⁺ зараз (ммоль/л)</label>
+                <input type="number" id="k-current" value="2.8" min="1.5" max="8.0" step="0.1">
+            </div>
+            <div class="input-group">
+                <label>K⁺ цільовий (ммоль/л)</label>
+                <input type="number" id="k-target" value="4.0" min="3.5" max="5.0" step="0.1">
+            </div>
+        </div>
+        <div class="input-group">
+            <label>Концентрація KCl</label>
+            <select id="k-solution">
+                <option value="4" selected>KCl 4% — 0.536 ммоль/мл</option>
+                <option value="7.5">KCl 7.5% — 1.0 ммоль/мл</option>
+            </select>
+        </div>
+        <div class="input-group">
+            <label>Функція нирок (ШКФ)</label>
+            <select id="k-renal">
+                <option value="normal">Нормальна (&gt;60 мл/хв)</option>
+                <option value="impaired">Порушена (30–60 мл/хв)</option>
+                <option value="severe">Тяжка (&lt;30 мл/хв)</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="result" id="k-result"></div>
+    <div class="warning" id="k-warning"></div>
+</div>
 
     <!-- ==================== КАЛЬЦІЙ ==================== -->
     <div id="tab-ca" class="tab-content hidden">
@@ -421,79 +421,96 @@
             warnEl.className = (cur < 120 || cur > 160) ? 'warning danger' : 'warning';
         }
 
-        // ==================== КАЛІЙ (ПЕРЕВІРЕНО) ====================
-        function calculateK() {
-            const w = parseFloat(document.getElementById('k-weight').value) || 70;
-            const cur = parseFloat(document.getElementById('k-current').value) || 4.0;
-            const target = parseFloat(document.getElementById('k-target').value) || 4.0;
-            const route = document.getElementById('k-route').value;
-            const renal = document.getElementById('k-renal').value;
+// ==================== КАЛІЙ (тільки в/в, вибір 4% або 7.5%) ====================
+function calculateK() {
+    const w = parseFloat(document.getElementById('k-weight').value) || 70;
+    const cur = parseFloat(document.getElementById('k-current').value) || 4.0;
+    const target = parseFloat(document.getElementById('k-target').value) || 4.0;
+    const solution = document.getElementById('k-solution').value;
+    const renal = document.getElementById('k-renal').value;
 
-            let status = '', deficit = 0, dose = 0, rate = 0, warningText = '';
+    // Концентрації KCl
+    const mmolPerMl = solution === '7.5' ? 1.0 : 0.536;
+    const solutionName = solution === '7.5' ? 'KCl 7.5%' : 'KCl 4%';
 
-            if (cur < 3.5) {
-                status = '🔵 ГІПОКАЛІЄМІЯ';
-                
-                // Точний розрахунок дефіциту (KDIGO 2024)
-                if (cur >= 3.0) {
-                    deficit = (target - cur) * w * 2.5;
-                } else if (cur >= 2.5) {
-                    deficit = (target - cur) * w * 3.5;
-                } else {
-                    deficit = (target - cur) * w * 5.0;
-                }
-                
-                dose = deficit;
-                
-                if (route === 'iv') {
-                    rate = renal === 'normal' ? 20 : 10;
-                    if (cur < 2.5) rate = 10;
-                }
-                
-                if (cur < 2.5) {
-                    warningText = '🔴 КРИТИЧНА ГІПОКАЛІЄМІЯ! В/в корекція обов\'язкова! ЕКГ-контроль!';
-                } else if (cur < 3.0) {
-                    warningText = '⚠️ Помірна гіпокаліємія. Рекомендовано в/в корекцію.';
-                } else {
-                    warningText = '✅ Легка гіпокаліємія. Можна per os.';
-                }
-            } 
-            else if (cur > 5.0) {
-                status = '🔴 ГІПЕРКАЛІЄМІЯ';
-                if (cur > 6.5) {
-                    warningText = '🔴 ТЯЖКА ГІПЕРКАЛІЄМІЯ! Ca-глюконат 10% 10 мл в/в болюс! Інсулін + глюкоза!';
-                } else {
-                    warningText = '⚠️ Гіперкаліємія. Петльові діуретики, контроль ЕКГ.';
-                }
-            } 
-            else {
-                status = '🟢 НОРМОКАЛІЄМІЯ';
-                warningText = '✅ Рівень калію в нормі.';
-            }
+    let status = '', deficit = 0, rate = 0, vol = 0, duration = 0, warningText = '';
 
-            const duration = rate > 0 ? dose / rate : 0;
-            const kclVolume = dose / 0.536;  // 4% KCl = 0.536 ммоль/мл
-            
-            document.getElementById('k-result').innerHTML = `
-                <div class="result-row"><span class="result-label">Стан:</span><span class="result-value">${status}</span></div>
-                ${deficit > 0 ? `
-                <div class="result-row"><span class="result-label">Дефіцит K⁺:</span><span class="result-value">${deficit.toFixed(0)} <span class="result-unit">ммоль</span></span></div>
-                ` : ''}
-                ${route === 'iv' && dose > 0 ? `
-                <div class="result-row"><span class="result-label">Макс. швидкість:</span><span class="result-value">${rate} <span class="result-unit">ммоль/год</span></span></div>
-                <div class="result-row"><span class="result-label">Тривалість інфузії:</span><span class="result-value">${duration.toFixed(1)} <span class="result-unit">год</span></span></div>
-                <div class="result-row"><span class="result-label">KCl 4% об'єм:</span><span class="result-value">${kclVolume.toFixed(0)} <span class="result-unit">мл</span></span></div>
-                <div class="result-row"><span class="result-label">Швидкість KCl 4%:</span><span class="result-value">${(rate/0.536).toFixed(0)} <span class="result-unit">мл/год</span></span></div>
-                ` : dose > 0 ? `
-                <div class="result-row"><span class="result-label">Доза per os:</span><span class="result-value">${(dose * 1.5).toFixed(0)} <span class="result-unit">ммоль/добу</span></span></div>
-                <div class="result-row"><span class="result-label">KCl таблетки:</span><span class="result-value">~${Math.ceil(dose * 1.5 / 10)} <span class="result-unit">шт/добу</span></span></div>
-                ` : ''}
-            `;
+    if (cur < 3.5) {
+        status = '🔵 ГІПОКАЛІЄМІЯ';
 
-            const warnEl = document.getElementById('k-warning');
-            warnEl.textContent = warningText;
-            warnEl.className = (cur < 2.5 || cur > 6.5) ? 'warning danger' : 'warning';
+        // Розрахунок дефіциту (KDIGO 2024)
+        if (cur >= 3.0) {
+            deficit = (target - cur) * w * 2.5;
+        } else if (cur >= 2.5) {
+            deficit = (target - cur) * w * 3.5;
+        } else {
+            deficit = (target - cur) * w * 5.0;
         }
+
+        // Максимальна швидкість інфузії
+        if (renal === 'normal') {
+            rate = 20; // ммоль/год
+        } else if (renal === 'impaired') {
+            rate = 10;
+        } else {
+            rate = 5; // тяжка ниркова недостатність
+        }
+
+        // Додаткове обмеження для 7.5%
+        if (solution === '7.5' && rate > 10) {
+            rate = 10;
+        }
+
+        if (cur < 2.5) {
+            rate = Math.min(rate, 10);
+        }
+
+        // Розрахунок об'єму та тривалості
+        vol = deficit / mmolPerMl;
+        duration = deficit / rate;
+
+        // Попередження
+        if (cur < 2.5) {
+            warningText = '🔴 КРИТИЧНА ГІПОКАЛІЄМІЯ! В/в корекція через центральний катетер! ЕКГ-контроль!';
+        } else if (cur < 3.0) {
+            warningText = '⚠️ Помірна гіпокаліємія. В/в корекція, контроль K⁺ через 6 год.';
+        } else {
+            warningText = '✅ Легка гіпокаліємія. В/в корекція, контроль K⁺ через 12 год.';
+        }
+
+        if (solution === '7.5') {
+            warningText += ' KCl 7.5% — ТІЛЬКИ в центральну вену!';
+        }
+    }
+    else if (cur > 5.0) {
+        status = '🔴 ГІПЕРКАЛІЄМІЯ';
+        if (cur > 6.5) {
+            warningText = '🔴 ТЯЖКА ГІПЕРКАЛІЄМІЯ! Ca-глюконат 10% 10 мл в/в болюс! Інсулін + глюкоза!';
+        } else {
+            warningText = '⚠️ Гіперкаліємія. Петльові діуретики, контроль ЕКГ.';
+        }
+    }
+    else {
+        status = '🟢 НОРМОКАЛІЄМІЯ';
+        warningText = '✅ Рівень калію в межах норми.';
+    }
+
+    document.getElementById('k-result').innerHTML = `
+        <div class="result-row"><span class="result-label">Стан:</span><span class="result-value">${status}</span></div>
+        ${deficit > 0 ? `
+        <div class="result-row"><span class="result-label">Дефіцит K⁺:</span><span class="result-value">${deficit.toFixed(0)} <span class="result-unit">ммоль</span></span></div>
+        <div class="result-row"><span class="result-label">Розчин:</span><span class="result-value">${solutionName}</span></div>
+        <div class="result-row"><span class="result-label">Об'єм:</span><span class="result-value">${vol.toFixed(0)} <span class="result-unit">мл</span></span></div>
+        <div class="result-row"><span class="result-label">Макс. швидкість:</span><span class="result-value">${rate} <span class="result-unit">ммоль/год</span></span></div>
+        <div class="result-row"><span class="result-label">Швидкість інфузії:</span><span class="result-value">${(rate / mmolPerMl).toFixed(1)} <span class="result-unit">мл/год</span></span></div>
+        <div class="result-row"><span class="result-label">Тривалість:</span><span class="result-value">${duration.toFixed(1)} <span class="result-unit">год</span></span></div>
+        ` : ''}
+    `;
+
+    const warnEl = document.getElementById('k-warning');
+    warnEl.textContent = warningText;
+    warnEl.className = (cur < 2.5 || cur > 6.5) ? 'warning danger' : 'warning';
+}
 
         // ==================== КАЛЬЦІЙ (ПЕРЕВІРЕНО) ====================
         function calculateCa() {
