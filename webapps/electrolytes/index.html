@@ -512,67 +512,93 @@ function calculateK() {
     warnEl.className = (cur < 2.5 || cur > 6.5) ? 'warning danger' : 'warning';
 }
 
-        // ==================== КАЛЬЦІЙ (ПЕРЕВІРЕНО) ====================
-        function calculateCa() {
-            const w = parseFloat(document.getElementById('ca-weight').value) || 70;
-            const cur = parseFloat(document.getElementById('ca-current').value) || 1.2;
-            const alb = parseFloat(document.getElementById('ca-albumin').value) || 40;
-            const albUnit = document.getElementById('ca-albumin-unit').value;
-            const drug = document.getElementById('ca-drug').value;
+      // ==================== КАЛЬЦІЙ (ВИПРАВЛЕНО) ====================
+function calculateCa() {
+    const w = parseFloat(document.getElementById('ca-weight').value) || 70;
+    const cur = parseFloat(document.getElementById('ca-current').value) || 1.2;
+    const alb = parseFloat(document.getElementById('ca-albumin').value) || 40;
+    const albUnit = document.getElementById('ca-albumin-unit').value;
+    const drug = document.getElementById('ca-drug').value;
 
-            // Корекція на альбумін
-            let corr;
-            if (albUnit === 'gl') {
-                corr = cur + 0.02 * (40 - alb);  // г/л, норма 40
-            } else {
-                corr = cur + 0.2 * (4.0 - alb);  // г/дл, норма 4.0
-            }
-            
-            let status = '', dose = 0, vol = 0, warningText = '';
+    // Корекція на альбумін
+    let corr;
+    if (albUnit === 'gl') {
+        corr = cur + 0.02 * (40 - alb);  // г/л, норма 40, коефіцієнт 0.02
+    } else {
+        corr = cur + 0.8 * (4.0 - alb);  // г/дл, норма 4.0, коефіцієнт 0.8 ✅ ВИПРАВЛЕНО
+    }
+    
+    let status = '', dose = 0, vol = 0, warningText = '';
 
-            if (corr < 1.0) {
-                status = '🔵 ГІПОКАЛЬЦІЄМІЯ';
-                
-                // Дозування за UpToDate 2026
-                if (corr < 0.8) {
-                    dose = 5.0;  // 200 мг елементарного Ca²⁺
-                    warningText = '🔴 ТЯЖКА ГІПОКАЛЬЦІЄМІЯ! В/в болюс 10-20 мл Ca-глюконату за 10 хв! ЕКГ (QT)!';
-                } else {
-                    dose = 2.5;  // 100 мг елементарного Ca²⁺
-                    warningText = '⚠️ Помірна гіпокальціємія. Повільна в/в інфузія. Не змішувати з бікарбонатом!';
-                }
-                
-                vol = dose / (drug === 'chloride' ? 0.68 : 0.22);
-            } 
-            else if (corr > 1.35) {
-                status = '🔴 ГІПЕРКАЛЬЦІЄМІЯ';
-                if (corr > 1.5) {
-                    warningText = '🔴 ТЯЖКА ГІПЕРКАЛЬЦІЄМІЯ! NaCl 0.9% 300 мл/год + кальцитонін 4-8 МО/кг!';
-                } else {
-                    warningText = '⚠️ Помірна гіперкальціємія. NaCl 0.9% 200 мл/год.';
-                }
-            } 
-            else {
-                status = '🟢 НОРМОКАЛЬЦІЄМІЯ';
-                warningText = '✅ Рівень кальцію в нормі.';
-            }
-
-            document.getElementById('ca-result').innerHTML = `
-                <div class="result-row"><span class="result-label">Стан:</span><span class="result-value">${status}</span></div>
-                <div class="result-row"><span class="result-label">Ca²⁺ корегований:</span><span class="result-value">${corr.toFixed(2)} <span class="result-unit">ммоль/л</span></span></div>
-                ${dose > 0 ? `
-                <div class="result-row"><span class="result-label">Доза Ca²⁺:</span><span class="result-value">${dose.toFixed(1)} <span class="result-unit">ммоль</span></span></div>
-                <div class="result-row"><span class="result-label">Препарат:</span><span class="result-value">${drug === 'chloride' ? 'CaCl 10%' : 'Ca-глюконат 10%'}</span></div>
-                <div class="result-row"><span class="result-label">Об'єм:</span><span class="result-value">${vol.toFixed(1)} <span class="result-unit">мл</span></span></div>
-                <div class="result-row"><span class="result-label">Введення:</span><span class="result-value">${(vol/10).toFixed(0)}-${(vol/5).toFixed(0)} <span class="result-unit">хв</span></span></div>
-                ` : ''}
-            `;
-
-            const warnEl = document.getElementById('ca-warning');
-            warnEl.textContent = warningText;
-            warnEl.className = (corr < 0.8 || corr > 1.5) ? 'warning danger' : 'warning';
+    if (corr < 1.0) {
+        status = '🔵 ГІПОКАЛЬЦІЄМІЯ';
+        
+        // Дозування за симптомами та рівнем
+        if (corr < 0.8) {
+            dose = 4.5;  // ~2 г Ca-глюконату (тяжка/симптоматична)
+            warningText = '🔴 ТЯЖКА ГІПОКАЛЬЦІЄМІЯ! В/в болюс 1-2 г Ca-глюконату за 10-20 хв! ЕКГ (QT)! Можна повторити.';
+        } else {
+            dose = 2.25;  // ~1 г Ca-глюконату (помірна)
+            warningText = '⚠️ Помірна гіпокальціємія. В/в 1 г Ca-глюконату за 10-20 хв. При симптомах — збільшити дозу.';
         }
+        
+        vol = dose / (drug === 'chloride' ? 0.68 : 0.22);
+        
+        // Уточнення для CaCl (в 3 рази більше елементарного Ca²⁺)
+        if (drug === 'chloride') {
+            warningText += ' CaCl₂ — тільки центральна вена!';
+        }
+    } 
+    else if (corr > 1.35) {
+        status = '🔴 ГІПЕРКАЛЬЦІЄМІЯ';
+        if (corr > 1.5) {
+            warningText = '🔴 ТЯЖКА ГІПЕРКАЛЬЦІЄМІЯ! NaCl 0.9% 300 мл/год + кальцитонін 4-8 МО/кг!';
+        } else {
+            warningText = '⚠️ Помірна гіперкальціємія. NaCl 0.9% 200 мл/год.';
+        }
+    } 
+    else {
+        status = '🟢 НОРМОКАЛЬЦІЄМІЯ';
+        warningText = '✅ Рівень кальцію в нормі.';
+    }
 
+    document.getElementById('ca-result').innerHTML = `
+        <div class="result-row">
+            <span class="result-label">Стан:</span>
+            <span class="result-value">${status}</span>
+        </div>
+        <div class="result-row">
+            <span class="result-label">Ca²⁺ корегований:</span>
+            <span class="result-value">${corr.toFixed(2)} <span class="result-unit">ммоль/л</span></span>
+        </div>
+        ${dose > 0 ? `
+        <div class="result-row">
+            <span class="result-label">Доза Ca²⁺:</span>
+            <span class="result-value">${dose.toFixed(1)} <span class="result-unit">ммоль</span></span>
+        </div>
+        <div class="result-row">
+            <span class="result-label">Препарат:</span>
+            <span class="result-value">${drug === 'chloride' ? 'CaCl₂ 10%' : 'Ca-глюконат 10%'}</span>
+        </div>
+        <div class="result-row">
+            <span class="result-label">Об'єм:</span>
+            <span class="result-value">${vol.toFixed(1)} <span class="result-unit">мл</span></span>
+        </div>
+        <div class="result-row">
+            <span class="result-label">Введення:</span>
+            <span class="result-value">10-20 <span class="result-unit">хв</span></span>
+        </div>
+        <div class="result-row">
+            <span class="result-label">Маса солі:</span>
+            <span class="result-value">${drug === 'chloride' ? (dose * 147 / 1000).toFixed(1) : (dose * 448 / 1000).toFixed(1)} <span class="result-unit">г</span></span>
+        </div>
+        ` : ''}
+    `;
+
+    const warnEl = document.getElementById('ca-warning');
+    warnEl.textContent = warningText;
+    warnEl.className = (corr < 0.8 || corr > 1.5) ? 'warning danger' : 'warning';
+}
 // ==================== МАГНІЙ (ВИПРАВЛЕНО) ====================
 function calculateMg() {
     const w = parseFloat(document.getElementById('mg-weight').value) || 70;
