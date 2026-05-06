@@ -3,135 +3,206 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
-    <title>ICU Advanced Calculator</title>
+    <title>ICU Infusion Calculator</title>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: #0a0f1a; color: #e2e8f0; padding: 12px; min-height: 100vh;
+            background: #0a0f1a;
+            color: #e2e8f0;
+            padding: 12px;
+            min-height: 100vh;
         }
         .header {
             background: linear-gradient(135deg, #1e3a5f 0%, #0a0f1a 100%);
-            border-radius: 20px; padding: 18px 16px; margin-bottom: 14px;
-            border: 1px solid #2d4a6e; text-align: center;
+            border-radius: 20px;
+            padding: 18px 16px;
+            margin-bottom: 14px;
+            border: 1px solid #2d4a6e;
+            text-align: center;
         }
         h1 { font-size: 22px; color: #fff; margin-bottom: 4px; }
         .disclaimer {
-            background: #7f1d1d; color: #fecaca; padding: 10px 14px;
-            border-radius: 14px; font-size: 11px; margin-bottom: 14px; text-align: center;
+            background: #7f1d1d;
+            color: #fecaca;
+            padding: 10px 14px;
+            border-radius: 14px;
+            font-size: 11px;
+            margin-bottom: 14px;
+            text-align: center;
             border-left: 4px solid #ef4444;
         }
         .tabs {
-            display: flex; gap: 4px; margin-bottom: 14px; background: #1e293b;
-            padding: 4px; border-radius: 16px; flex-wrap: wrap;
+            display: flex;
+            gap: 4px;
+            margin-bottom: 14px;
+            background: #1e293b;
+            padding: 4px;
+            border-radius: 16px;
         }
         .tab {
-            flex: 1; min-width: 65px; padding: 10px 2px; background: transparent;
-            border: none; color: #94a3b8; font-size: 10px; font-weight: 600;
-            border-radius: 12px; cursor: pointer; transition: all 0.2s; line-height: 1.2;
+            flex: 1;
+            padding: 12px 4px;
+            background: transparent;
+            border: none;
+            color: #94a3b8;
+            font-size: 13px;
+            font-weight: 600;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: center;
         }
-        .tab.active { background: #3b82f6; color: white; }
+        .tab.active {
+            background: #3b82f6;
+            color: white;
+        }
         .card {
-            background: #111827; border-radius: 20px; padding: 16px; margin-bottom: 14px;
-            border: 1px solid #2d3748; box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+            background: #111827;
+            border-radius: 20px;
+            padding: 16px;
+            margin-bottom: 14px;
+            border: 1px solid #2d3748;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
         }
         .card-title {
-            font-size: 15px; color: #93c5fd; margin-bottom: 14px; font-weight: 600;
-            display: flex; align-items: center; gap: 8px;
+            font-size: 15px;
+            color: #93c5fd;
+            margin-bottom: 14px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
         .input-group { margin-bottom: 14px; }
         label {
-            display: block; font-size: 12px; color: #9ca3af; margin-bottom: 6px; font-weight: 500;
+            display: block;
+            font-size: 12px;
+            color: #9ca3af;
+            margin-bottom: 6px;
+            font-weight: 500;
         }
         input, select {
-            width: 100%; padding: 12px 14px; background: #0a0f1a; border: 1.5px solid #334155;
-            border-radius: 14px; color: white; font-size: 15px; transition: border-color 0.2s;
+            width: 100%;
+            padding: 12px 14px;
+            background: #0a0f1a;
+            border: 1.5px solid #334155;
+            border-radius: 14px;
+            color: white;
+            font-size: 15px;
+            transition: border-color 0.2s;
         }
         input:focus, select:focus { outline: none; border-color: #3b82f6; }
         input.danger-input { border-color: #ef4444 !important; background: #1a0505 !important; }
-        input:disabled, select:disabled { opacity: 0.5; cursor: not-allowed; }
         .row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        .row-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
         .result {
             background: linear-gradient(145deg, #111827 0%, #0a0f1a 100%);
-            border-radius: 20px; padding: 16px; border: 1px solid #2d4a6e; margin-bottom: 14px;
+            border-radius: 20px;
+            padding: 16px;
+            border: 1px solid #2d4a6e;
+            margin-bottom: 14px;
         }
         .result-row {
-            display: flex; justify-content: space-between; align-items: baseline;
-            padding: 10px 0; border-bottom: 1px solid #1e293b;
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            padding: 10px 0;
+            border-bottom: 1px solid #1e293b;
         }
         .result-row:last-child { border-bottom: none; }
         .result-label { color: #9ca3af; font-size: 13px; }
         .result-value { font-size: 18px; font-weight: 700; color: #fbbf24; }
         .result-unit { font-size: 12px; color: #6b7280; font-weight: 400; margin-left: 4px; }
         .warning {
-            background: #422006; color: #fde68a; padding: 12px 14px; border-radius: 14px;
-            font-size: 12px; line-height: 1.5; margin-top: 12px; border-left: 4px solid #f59e0b;
+            background: #422006;
+            color: #fde68a;
+            padding: 12px 14px;
+            border-radius: 14px;
+            font-size: 12px;
+            line-height: 1.5;
+            margin-top: 12px;
+            border-left: 4px solid #f59e0b;
         }
         .warning.danger { background: #450a0a; color: #fecaca; border-left-color: #ef4444; }
-        .warning.info { background: #1e3a5f; color: #bfdbfe; border-left-color: #3b82f6; }
         .warning.success { background: #14532d; color: #bbf7d0; border-left-color: #22c55e; }
+        .warning.info { background: #1e3a5f; color: #bfdbfe; border-left-color: #3b82f6; }
         .hidden { display: none !important; }
         .protocol-badge {
-            background: #1e3a5f; color: #93c5fd; padding: 4px 12px; border-radius: 20px;
-            font-size: 10px; display: inline-block; margin-top: 6px; font-weight: 500;
+            background: #1e3a5f;
+            color: #93c5fd;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 10px;
+            display: inline-block;
+            margin-top: 6px;
+            font-weight: 500;
         }
         .checkbox-group {
-            display: flex; align-items: center; gap: 12px; padding: 10px 0;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 0;
         }
         .checkbox-group input { width: 22px; height: 22px; accent-color: #3b82f6; }
-        .divider { height: 1px; background: #2d3748; margin: 16px 0; }
         .info-text { color: #9ca3af; font-size: 11px; margin-top: 4px; }
         .manual-dilution {
-            background: #1a2333; padding: 12px; border-radius: 12px; margin-top: 8px;
+            background: #1a2333;
+            padding: 12px;
+            border-radius: 12px;
+            margin-top: 8px;
         }
         .dose-bar {
-            width: 100%; height: 6px; background: #1e293b; border-radius: 3px; margin-top: 6px;
+            width: 100%;
+            height: 6px;
+            background: #1e293b;
+            border-radius: 3px;
+            margin-top: 8px;
             overflow: hidden;
         }
         .dose-fill {
-            height: 100%; border-radius: 3px; transition: width 0.3s;
+            height: 100%;
+            border-radius: 3px;
+            transition: width 0.3s;
         }
         .dose-fill.safe { background: #22c55e; }
         .dose-fill.warning { background: #f59e0b; }
         .dose-fill.danger { background: #ef4444; }
-        .last-entry {
-            background: #1a2333; padding: 10px; border-radius: 12px; margin-bottom: 10px;
-            position: relative;
+        .highlight-box {
+            background: #1a2333;
+            border-radius: 14px;
+            padding: 14px;
+            margin-top: 10px;
+            border: 1px solid #2d3748;
         }
-        .remove-entry {
-            position: absolute; top: 8px; right: 8px; background: #ef4444; color: white;
-            border: none; border-radius: 50%; width: 24px; height: 24px; font-weight: bold;
-            cursor: pointer; line-height: 24px; text-align: center;
+        .highlight-box .big-number {
+            font-size: 28px;
+            font-weight: 800;
+            color: #fbbf24;
         }
-        button.primary {
-            background: #3b82f6; color: white; border: none; padding: 10px 16px;
-            border-radius: 12px; font-size: 14px; cursor: pointer; width: 100%;
-            margin-top: 8px;
-        }
-        button.primary:hover { background: #2563eb; }
     </style>
 </head>
 <body>
+
 <div class="header">
-    <h1>💊 ICU Advanced Calc</h1>
-    <span class="protocol-badge">Vasoactive • LAST • Weights • ESCIM 2025</span>
+    <h1>💊 ICU Infusion Calculator</h1>
+    <span class="protocol-badge">Vasoactive • Sedation • Analgesia • Weights • ESCIM 2025</span>
 </div>
+
 <div class="disclaimer">
     ⚕️ Для медичних працівників. Власноручне введення розведень!
 </div>
 
-<!-- Загальні поля -->
+<!-- ==================== ЗАГАЛЬНІ ПОЛЯ ==================== -->
 <div class="card">
     <div class="card-title"><span>⚖️</span> Вага пацієнта</div>
     <div class="row-2">
         <div class="input-group">
             <label for="global-weight">Вага (кг)</label>
-            <input type="number" id="global-weight" placeholder="70" min="1" max="300" step="0.1" aria-label="Вага в кг">
+            <input type="number" id="global-weight" placeholder="70" min="1" max="300" step="0.1">
         </div>
         <div class="input-group">
             <label for="global-height">Зріст (см)</label>
-            <input type="number" id="global-height" placeholder="170" min="50" max="250" step="0.1" aria-label="Зріст в см">
+            <input type="number" id="global-height" placeholder="170" min="50" max="250" step="0.1">
         </div>
     </div>
     <div class="input-group">
@@ -143,16 +214,15 @@
     </div>
 </div>
 
-<!-- Вкладки -->
+<!-- ==================== ВКЛАДКИ ==================== -->
 <div class="tabs">
-    <button class="tab active" data-tab="vasoactive" aria-selected="true">💉 Вазоактивні</button>
-    <button class="tab" data-tab="sedation" aria-selected="false">😴 Седація</button>
-    <button class="tab" data-tab="analgesia" aria-selected="false">💊 Аналгезія</button>
-    <button class="tab" data-tab="last" aria-selected="false">🧪 LAST</button>
-    <button class="tab" data-tab="weights" aria-selected="false">⚖️ Вага</button>
+    <button class="tab active" data-tab="vasoactive">💉 Вазоактивні</button>
+    <button class="tab" data-tab="sedation">😴 Седація</button>
+    <button class="tab" data-tab="analgesia">💊 Аналгезія</button>
+    <button class="tab" data-tab="weights">⚖️ Вага</button>
 </div>
 
-<!-- ВАЗОАКТИВНІ -->
+<!-- ==================== ВАЗОАКТИВНІ ==================== -->
 <div id="tab-vasoactive" class="tab-content">
     <div class="card">
         <div class="card-title">💉 Вибір препарату</div>
@@ -207,10 +277,10 @@
         </div>
     </div>
     <div class="result" id="vasoactive-result"></div>
-    <div class="warning info" id="vasoactive-warning"></div>
+    <div class="warning" id="vasoactive-warning"></div>
 </div>
 
-<!-- СЕДАЦІЯ -->
+<!-- ==================== СЕДАЦІЯ ==================== -->
 <div id="tab-sedation" class="tab-content hidden">
     <div class="card">
         <div class="card-title">😴 Вибір препарату</div>
@@ -253,10 +323,10 @@
         </div>
     </div>
     <div class="result" id="sedation-result"></div>
-    <div class="warning info" id="sedation-warning"></div>
+    <div class="warning" id="sedation-warning"></div>
 </div>
 
-<!-- АНАЛГЕЗІЯ -->
+<!-- ==================== АНАЛГЕЗІЯ ==================== -->
 <div id="tab-analgesia" class="tab-content hidden">
     <div class="card">
         <div class="card-title">💊 Вибір препарату</div>
@@ -299,710 +369,359 @@
         </div>
     </div>
     <div class="result" id="analgesia-result"></div>
-    <div class="warning info" id="analgesia-warning"></div>
+    <div class="warning" id="analgesia-warning"></div>
 </div>
 
-<!-- LAST -->
-<div id="tab-last" class="tab-content hidden">
-    <div class="card">
-        <div class="card-title">🧪 Місцеві анестетики (LAST) – Кошик препаратів</div>
-        <div id="last-entries"></div>
-        <button class="primary" id="add-last-entry">+ Додати препарат</button>
-        <div class="input-group" style="margin-top: 14px;">
-            <label for="last-weight-type">Вага для розрахунку</label>
-            <select id="last-weight-type">
-                <option value="actual">Фактична вага</option>
-                <option value="ideal">Ідеальна вага (IBW)</option>
-                <option value="adjusted">Скоригована вага (AdjBW)</option>
-            </select>
-        </div>
-    </div>
-    <div class="result" id="last-result"></div>
-    <div class="warning info" id="last-warning"></div>
-</div>
-
-<!-- ВАГА -->
+<!-- ==================== ВАГА ==================== -->
 <div id="tab-weights" class="tab-content hidden">
     <div class="card">
         <div class="card-title">📊 Розрахунок маси тіла</div>
     </div>
     <div class="result" id="weights-result"></div>
-    <div class="warning info" id="weights-warning"></div>
+    <div class="warning" id="weights-warning"></div>
 </div>
 
 <script>
-    (function() {
-        // КОНСТАНТИ
-        const MAX_DOSES = {
-            bupivacaine: { single: 2.5, daily: 400 },
-            ropivacaine: { single: 3.0, daily: 800 },
-            lidocaine: { single: 4.5, daily: 300, withEpiSingle: 7.0, withEpiDaily: 500 }
-        };
-        const SAFETY_ALERTS = {
-            norepinephrine: { limit: 2.0, unit: 'мкг/кг/хв', msg: '⚠️ Доза > 2.0 мкг/кг/хв — висока вазопресорна доза' },
-            epinephrine: { limit: 1.0, unit: 'мкг/кг/хв', msg: '⚠️ Доза > 1.0 мкг/кг/хв — висока доза адреналіну' },
-            phenylephrine: { limit: 5.0, unit: 'мкг/кг/хв', msg: '⚠️ Доза > 5.0 мкг/кг/хв — ризик рефлекторної брадикардії' },
-            dobutamine: { limit: 20, unit: 'мкг/кг/хв', msg: '⚠️ Доза > 20 мкг/кг/хв — ризик аритмій' },
-            dopamine: { limit: 10, unit: 'мкг/кг/хв', msg: '⚠️ Доза > 10 мкг/кг/хв — вазопресорний ефект' },
-            vasopressin: { limit: 0.04, unit: 'ОД/хв', msg: '⚠️ Доза > 0.04 ОД/хв — ризик ішемії органів' },
-            propofol: { limit: 4.0, unit: 'мг/кг/год', msg: '⚠️ Доза > 4 мг/кг/год — ризик PRIS-синдрому' },
-            dexmedetomidine: { limit: 1.4, unit: 'мкг/кг/год', msg: '⚠️ Доза > 1.4 мкг/кг/год — вище рекомендованого діапазону' },
-            midazolam: { limit: 0.2, unit: 'мг/кг/год', msg: '⚠️ Доза > 0.2 мг/кг/год — ризик кумуляції' },
-            fentanyl: { limit: 5.0, unit: 'мкг/кг/год', msg: '⚠️ Доза > 5 мкг/кг/год — ризик ригідності грудної клітки' },
-            morphine: { limit: 0.1, unit: 'мг/кг/год', msg: '⚠️ Доза > 0.1 мг/кг/год — ризик депресії дихання' },
-            ketamine: { limit: 0.4, unit: 'мг/кг/год', msg: '⚠️ Доза > 0.4 мг/кг/год — вище аналгетичного діапазону' }
-        };
-        const FACTORY_CONC = {
-            propofol: 10, // мг/мл
-            dexmedetomidine: 100, // мкг/мл
-            midazolam: 1, // мг/мл (5 мг/5 мл)
-            fentanyl: 50, // мкг/мл
-            morphine: 10, // мг/мл
-            ketamine: 50 // мг/мл
-        };
-        let _updatingFields = false;
-        let lastEntries = [];
+(function() {
+    // ==================== КОНСТАНТИ ====================
+    const SAFETY_ALERTS = {
+        norepinephrine: { limit: 2.0, unit: 'мкг/кг/хв', msg: '⚠️ Доза > 2.0 мкг/кг/хв — висока вазопресорна доза' },
+        epinephrine: { limit: 1.0, unit: 'мкг/кг/хв', msg: '⚠️ Доза > 1.0 мкг/кг/хв — висока доза адреналіну' },
+        phenylephrine: { limit: 5.0, unit: 'мкг/кг/хв', msg: '⚠️ Доза > 5.0 мкг/кг/хв — ризик рефлекторної брадикардії' },
+        dobutamine: { limit: 20, unit: 'мкг/кг/хв', msg: '⚠️ Доза > 20 мкг/кг/хв — ризик аритмій' },
+        dopamine: { limit: 10, unit: 'мкг/кг/хв', msg: '⚠️ Доза > 10 мкг/кг/хв — вазопресорний ефект' },
+        vasopressin: { limit: 0.04, unit: 'ОД/хв', msg: '⚠️ Доза > 0.04 ОД/хв — ризик ішемії органів' },
+        propofol: { limit: 4.0, unit: 'мг/кг/год', msg: '⚠️ Доза > 4 мг/кг/год — ризик PRIS-синдрому' },
+        dexmedetomidine: { limit: 1.4, unit: 'мкг/кг/год', msg: '⚠️ Доза > 1.4 мкг/кг/год — вище рекомендованого діапазону' },
+        midazolam: { limit: 0.2, unit: 'мг/кг/год', msg: '⚠️ Доза > 0.2 мг/кг/год — ризик кумуляції' },
+        fentanyl: { limit: 5.0, unit: 'мкг/кг/год', msg: '⚠️ Доза > 5 мкг/кг/год — ризик ригідності грудної клітки' },
+        morphine: { limit: 0.1, unit: 'мг/кг/год', msg: '⚠️ Доза > 0.1 мг/кг/год — ризик депресії дихання' },
+        ketamine: { limit: 0.4, unit: 'мг/кг/год', msg: '⚠️ Доза > 0.4 мг/кг/год — вище аналгетичного діапазону' }
+    };
 
-        // ДОПОМІЖНІ ФУНКЦІЇ
-        function safeFloat(id, nullIfEmpty = true) {
-            const el = document.getElementById(id);
-            if (!el) return null;
-            const raw = el.value.trim();
-            if (raw === '') {
-                el.classList.remove('danger-input');
-                return nullIfEmpty ? null : 0;
-            }
-            const num = parseFloat(raw);
-            if (isNaN(num)) {
-                el.classList.add('danger-input');
-                return null;
-            }
-            el.classList.remove('danger-input');
-            return num;
-        }
+    const FACTORY_CONC = {
+        propofol: 10,
+        dexmedetomidine: 100,
+        midazolam: 1,
+        fentanyl: 50,
+        morphine: 10,
+        ketamine: 50
+    };
 
-        function getWeight() {
-            const w = safeFloat('global-weight');
-            return (w === null || w <= 0) ? 70 : w; // fallback only if invalid
-        }
-        function getHeight() { return safeFloat('global-height') || 170; }
-        function getGender() { return document.getElementById('global-gender').value; }
+    let _updatingFields = false;
 
-        function calculateIBW(weight, heightCm, gender) {
-            const heightInches = heightCm / 2.54;
-            let ibw = gender === 'male' ? 50 + 2.3 * (heightInches - 60) : 45.5 + 2.3 * (heightInches - 60);
-            return Math.max(ibw, 30);
-        }
-        function calculateAdjBW(weight, ibw) {
-            const h = getHeight() / 100;
-            const bmi = weight / (h * h);
-            return bmi > 30 ? ibw + 0.4 * (weight - ibw) : weight;
-        }
-        function getSelectedWeight() {
-            const w = getWeight();
-            const h = getHeight();
-            const ibw = calculateIBW(w, h, getGender());
-            const type = document.getElementById('last-weight-type')?.value || 'actual';
-            if (type === 'ideal') return ibw;
-            if (type === 'adjusted') return calculateAdjBW(w, ibw);
-            return w;
-        }
+    // ==================== ДОПОМІЖНІ ====================
+    function safeFloat(id, nullIfEmpty = true) {
+        const el = document.getElementById(id);
+        if (!el) return null;
+        const raw = el.value.trim();
+        if (raw === '') { el.classList.remove('danger-input'); return nullIfEmpty ? null : 0; }
+        const num = parseFloat(raw);
+        if (isNaN(num)) { el.classList.add('danger-input'); return null; }
+        el.classList.remove('danger-input');
+        return num;
+    }
 
-        function formatDuration(hours) {
-            if (!isFinite(hours) || hours <= 0) return '—';
-            const h = Math.floor(hours);
-            const m = Math.round((hours - h) * 60);
-            return h === 0 ? `${m} хв` : m === 0 ? `${h} год` : `${h} год ${m} хв`;
-        }
+    function getWeight() {
+        const w = safeFloat('global-weight');
+        return (w === null || w <= 0) ? 70 : w;
+    }
+    function getHeight() { return safeFloat('global-height') || 170; }
+    function getGender() { return document.getElementById('global-gender').value; }
 
-        // ПРОГРЕС-БАР
-        function renderDoseBar(percent) {
-            let cls = 'safe';
-            if (percent > 80) cls = 'danger';
-            else if (percent > 50) cls = 'warning';
-            return `<div class="dose-bar"><div class="dose-fill ${cls}" style="width:${Math.min(percent,100)}%"></div></div>`;
-        }
+    function formatDuration(hours) {
+        if (!isFinite(hours) || hours <= 0) return '—';
+        const h = Math.floor(hours);
+        const m = Math.round((hours - h) * 60);
+        return h === 0 ? `${m} хв` : m === 0 ? `${h} год` : `${h} год ${m} хв`;
+    }
 
-        // ==================== ВАЗОАКТИВНІ ====================
-        function computeVasoactiveConc() {
-            const drug = document.getElementById('vasoactive-drug').value;
-            const amount = safeFloat('vasoactive-amount');
-            const volume = safeFloat('vasoactive-volume');
-            let conc = null, unit = '', amountUnit = 'мг', doseUnit = 'мкг/кг/хв';
+    function renderDoseBar(percent) {
+        let cls = percent > 80 ? 'danger' : percent > 50 ? 'warning' : 'safe';
+        return `<div class="dose-bar"><div class="dose-fill ${cls}" style="width:${Math.min(percent,100)}%"></div></div>`;
+    }
 
-            if (amount !== null && volume !== null && volume > 0) {
-                if (drug === 'vasopressin') {
-                    conc = amount / volume;
-                    unit = 'ОД/мл';
-                    amountUnit = 'ОД';
-                    doseUnit = 'ОД/хв';
-                } else {
-                    conc = (amount * 1000) / volume;
-                    unit = 'мкг/мл';
-                }
-            }
-            document.getElementById('vasoactive-amount-unit').textContent = amountUnit;
-            document.getElementById('vasoactive-dose-unit').textContent = doseUnit;
-            const concEl = document.getElementById('vasoactive-custom-conc');
-            if (conc !== null) {
-                concEl.textContent = `Концентрація: ${conc.toFixed(2)} ${unit}`;
-            } else {
-                concEl.textContent = 'Концентрація: —';
-            }
-            return { conc, volume, unit, doseUnit };
-        }
+    function calculateIBW(weight, heightCm, gender) {
+        const heightInches = heightCm / 2.54;
+        let ibw = gender === 'male' ? 50 + 2.3 * (heightInches - 60) : 45.5 + 2.3 * (heightInches - 60);
+        return Math.max(ibw, 30);
+    }
+    function calculateAdjBW(weight, ibw) {
+        const h = getHeight() / 100;
+        const bmi = weight / (h * h);
+        return bmi > 30 ? ibw + 0.4 * (weight - ibw) : weight;
+    }
 
-        function calculateVasoactive() {
-            if (_updatingFields) return;
-            const weight = getWeight();
-            const drug = document.getElementById('vasoactive-drug').value;
-            const isPeripheral = document.getElementById('vasoactive-peripheral').checked;
-            const { conc, volume } = computeVasoactiveConc();
-            const dose = safeFloat('vasoactive-dose');
+    // ==================== ВАЗОАКТИВНІ ====================
+    function computeVasoactiveConc() {
+        const drug = document.getElementById('vasoactive-drug').value;
+        const amount = safeFloat('vasoactive-amount');
+        const volume = safeFloat('vasoactive-volume');
+        let conc = null, unit = '', amountUnit = 'мг', doseUnit = 'мкг/кг/хв';
 
-            const resultEl = document.getElementById('vasoactive-result');
-            const warnEl = document.getElementById('vasoactive-warning');
-            if (conc === null || dose === null) {
-                resultEl.innerHTML = `<div class="result-row"><span class="result-label">⚠️ Введіть всі дані для розрахунку</span></div>`;
-                warnEl.textContent = '';
-                warnEl.className = 'warning info';
-                return;
-            }
-
-            let rate;
+        if (amount !== null && volume !== null && volume > 0) {
             if (drug === 'vasopressin') {
-                rate = (dose * 60) / conc;
+                conc = amount / volume; unit = 'ОД/мл'; amountUnit = 'ОД'; doseUnit = 'ОД/хв';
             } else {
-                rate = (dose * weight * 60) / conc;
-            }
-
-            const rateInput = document.getElementById('vasoactive-rate-input');
-            if (!_updatingFields) {
-                _updatingFields = true;
-                rateInput.value = isFinite(rate) ? rate.toFixed(2) : '';
-                _updatingFields = false;
-            }
-
-            const durationStr = formatDuration(rate > 0 ? volume / rate : 0);
-            const dailyDose = drug === 'vasopressin' ? dose * 1440 : (dose * weight * 1440) / 1000;
-            const dailyUnit = drug === 'vasopressin' ? 'ОД' : 'мг';
-
-            let maxDosePercent = 0;
-            const alert = SAFETY_ALERTS[drug];
-            if (alert && alert.limit) maxDosePercent = (dose / alert.limit) * 100;
-
-            resultEl.innerHTML = `
-                <div class="result-row"><span class="result-label">Швидкість інфузії:</span><span class="result-value">${isFinite(rate) ? rate.toFixed(1) : '—'}<span class="result-unit">мл/год</span></span></div>
-                <div class="result-row"><span class="result-label">Крапель (20 кр/мл):</span><span class="result-value">${isFinite(rate) ? (rate/3).toFixed(1) : '—'}<span class="result-unit">кр/хв</span></span></div>
-                <div class="result-row"><span class="result-label">Тривалість шприца:</span><span class="result-value">${durationStr}</span></div>
-                <div class="result-row"><span class="result-label">Добова потреба:</span><span class="result-value">${isFinite(dailyDose) ? dailyDose.toFixed(1) : '—'}<span class="result-unit">${dailyUnit}</span></span></div>
-                ${renderDoseBar(maxDosePercent)}
-            `;
-
-            const warnings = [];
-            if (alert && dose > alert.limit) warnings.push(alert.msg);
-            if (drug === 'norepinephrine' && isPeripheral) {
-                if (conc > 160) warnings.push('🩸 Висока концентрація для периферичного доступу. Рекомендовано центральний доступ або розведення ≤ 160 мкг/мл.');
-                else warnings.push('🩸 Периферичний доступ: обмеження тривалості до 24 год.');
-            }
-            if (isPeripheral && isFinite(rate) && rate > 100) warnings.push('💧 Швидкість > 100 мл/год через периферичний доступ — ризик флебіту!');
-            if (drug === 'dopamine' && dose < 3 && dose > 0) warnings.push('💧 Ниркова доза допаміну (< 3 мкг/кг/хв) — переважно діуретичний ефект.');
-
-            if (warnings.length) {
-                warnEl.innerHTML = warnings.join('<br>');
-                warnEl.className = 'warning danger';
-            } else {
-                warnEl.textContent = '✅ Доза в межах стандартного діапазону.';
-                warnEl.className = 'warning success';
+                conc = (amount * 1000) / volume; unit = 'мкг/мл';
             }
         }
+        document.getElementById('vasoactive-amount-unit').textContent = amountUnit;
+        document.getElementById('vasoactive-dose-unit').textContent = doseUnit;
+        document.getElementById('vasoactive-custom-conc').textContent = conc !== null ? `Концентрація: ${conc.toFixed(2)} ${unit}` : 'Концентрація: —';
+        return { conc, volume, unit, doseUnit };
+    }
 
-        function calculateVasoactiveFromRate() {
-            if (_updatingFields) return;
-            const rateVal = safeFloat('vasoactive-rate-input');
-            if (rateVal === null || rateVal <= 0) return;
-            const weight = getWeight();
-            const drug = document.getElementById('vasoactive-drug').value;
-            const { conc } = computeVasoactiveConc();
-            if (!conc) return;
+    function calculateVasoactive() {
+        if (_updatingFields) return;
+        const weight = getWeight();
+        const drug = document.getElementById('vasoactive-drug').value;
+        const isPeripheral = document.getElementById('vasoactive-peripheral').checked;
+        const { conc, volume } = computeVasoactiveConc();
+        const dose = safeFloat('vasoactive-dose');
+        const resultEl = document.getElementById('vasoactive-result');
+        const warnEl = document.getElementById('vasoactive-warning');
 
-            let dose;
-            if (drug === 'vasopressin') dose = (rateVal * conc) / 60;
-            else dose = (rateVal * conc) / (weight * 60);
-
-            if (!isFinite(dose) || dose <= 0) return;
-            _updatingFields = true;
-            document.getElementById('vasoactive-dose').value = dose.toFixed(4);
-            _updatingFields = false;
-            calculateVasoactive();
+        if (conc === null || dose === null) {
+            resultEl.innerHTML = `<div class="result-row"><span class="result-label">⚠️ Введіть всі дані</span></div>`;
+            warnEl.textContent = ''; warnEl.className = 'warning';
+            return;
         }
 
-        // ==================== СЕДАЦІЯ ====================
-        function updateSedationUnits() {
-            const drug = document.getElementById('sedation-drug').value;
-            const doseUnit = document.getElementById('sedation-dose-unit');
-            const amountUnit = document.getElementById('sedation-amount-unit');
-            const undilutedInfo = document.getElementById('sedation-undiluted-info');
-            if (drug === 'dexmedetomidine') {
-                doseUnit.textContent = 'мкг/кг/год';
-                amountUnit.textContent = 'мкг';
-                undilutedInfo.textContent = '(заводська 100 мкг/мл)';
-            } else {
-                doseUnit.textContent = 'мг/кг/год';
-                amountUnit.textContent = 'мг';
-                undilutedInfo.textContent = drug === 'propofol' ? '(заводська 10 мг/мл)' : '(заводська 1 мг/мл)';
-            }
-            document.getElementById('sedation-bolus').disabled = (drug === 'dexmedetomidine');
-            if (drug === 'dexmedetomidine') document.getElementById('sedation-bolus').checked = false;
+        let rate = (drug === 'vasopressin') ? (dose * 60) / conc : (dose * weight * 60) / conc;
+        _updatingFields = true;
+        document.getElementById('vasoactive-rate-input').value = isFinite(rate) ? rate.toFixed(2) : '';
+        _updatingFields = false;
+
+        const dailyDose = drug === 'vasopressin' ? dose * 1440 : (dose * weight * 1440) / 1000;
+        const dailyUnit = drug === 'vasopressin' ? 'ОД' : 'мг';
+
+        let maxDosePercent = 0;
+        const alert = SAFETY_ALERTS[drug];
+        if (alert && alert.limit) maxDosePercent = (dose / alert.limit) * 100;
+
+        resultEl.innerHTML = `
+            <div class="result-row"><span class="result-label">Швидкість інфузії:</span><span class="result-value">${isFinite(rate) ? rate.toFixed(1) : '—'}<span class="result-unit">мл/год</span></span></div>
+            <div class="result-row"><span class="result-label">Крапель (20 кр/мл):</span><span class="result-value">${isFinite(rate) ? (rate/3).toFixed(1) : '—'}<span class="result-unit">кр/хв</span></span></div>
+            <div class="result-row"><span class="result-label">Тривалість шприца:</span><span class="result-value">${formatDuration(rate > 0 ? volume / rate : 0)}</span></div>
+            <div class="result-row"><span class="result-label">Добова потреба:</span><span class="result-value">${isFinite(dailyDose) ? dailyDose.toFixed(1) : '—'}<span class="result-unit">${dailyUnit}</span></span></div>
+            ${renderDoseBar(maxDosePercent)}
+        `;
+
+        const warnings = [];
+        if (alert && dose > alert.limit) warnings.push(alert.msg);
+        if (drug === 'norepinephrine' && isPeripheral) {
+            warnings.push(conc > 160 ? '🩸 Висока концентрація для периферичного доступу.' : '🩸 Периферичний доступ до 24 год.');
+        }
+        if (isPeripheral && isFinite(rate) && rate > 100) warnings.push('💧 Швидкість > 100 мл/год — ризик флебіту!');
+
+        warnEl.innerHTML = warnings.length ? warnings.join('<br>') : '✅ Доза в межах норми.';
+        warnEl.className = warnings.length ? 'warning danger' : 'warning success';
+    }
+
+    function calculateVasoactiveFromRate() {
+        if (_updatingFields) return;
+        const rateVal = safeFloat('vasoactive-rate-input');
+        if (rateVal === null || rateVal <= 0) return;
+        const { conc } = computeVasoactiveConc();
+        if (!conc) return;
+        const weight = getWeight();
+        const drug = document.getElementById('vasoactive-drug').value;
+
+        let dose = (drug === 'vasopressin') ? (rateVal * conc) / 60 : (rateVal * conc) / (weight * 60);
+        if (!isFinite(dose) || dose <= 0) return;
+        _updatingFields = true;
+        document.getElementById('vasoactive-dose').value = dose.toFixed(4);
+        _updatingFields = false;
+        calculateVasoactive();
+    }
+
+    // ==================== СЕДАЦІЯ ====================
+    function updateSedationUnits() {
+        const drug = document.getElementById('sedation-drug').value;
+        const d = document.getElementById('sedation-dose-unit');
+        const a = document.getElementById('sedation-amount-unit');
+        const u = document.getElementById('sedation-undiluted-info');
+        const b = document.getElementById('sedation-bolus');
+        if (drug === 'dexmedetomidine') {
+            d.textContent = 'мкг/кг/год'; a.textContent = 'мкг';
+            u.textContent = '(заводська 100 мкг/мл)';
+            b.disabled = true; b.checked = false;
+        } else {
+            d.textContent = 'мг/кг/год'; a.textContent = 'мг';
+            u.textContent = drug === 'propofol' ? '(заводська 10 мг/мл)' : '(заводська 1 мг/мл)';
+            b.disabled = false;
+        }
+    }
+
+    function computeSedationConc() {
+        if (document.getElementById('sedation-undiluted').checked) return FACTORY_CONC[document.getElementById('sedation-drug').value] || null;
+        const a = safeFloat('sedation-amount'), v = safeFloat('sedation-total-volume');
+        return (a !== null && v !== null && v > 0) ? a / v : null;
+    }
+
+    function calculateSedation() {
+        const w = getWeight(), drug = document.getElementById('sedation-drug').value;
+        const conc = computeSedationConc(), dose = safeFloat('sedation-dose');
+        const re = document.getElementById('sedation-result'), we = document.getElementById('sedation-warning');
+        if (conc === null || dose === null) {
+            re.innerHTML = `<div class="result-row"><span class="result-label">⚠️ Введіть всі дані</span></div>`;
+            we.textContent = ''; we.className = 'warning'; return;
+        }
+        const rate = (dose * w) / conc;
+        const bolus = document.getElementById('sedation-bolus').checked;
+        const warns = [];
+        let bolusHTML = '';
+
+        if (drug === 'propofol') {
+            if (bolus) bolusHTML = `<div class="result-row"><span class="result-label">Болюс:</span><span class="result-value">${(w*0.5).toFixed(0)}<span class="result-unit">мг</span></span></div>`;
+            if (dose > 4) warns.push(SAFETY_ALERTS.propofol.msg);
+        } else if (drug === 'midazolam') {
+            if (bolus) bolusHTML = `<div class="result-row"><span class="result-label">Болюс:</span><span class="result-value">${(w*0.03).toFixed(1)}<span class="result-unit">мг</span></span></div>`;
+            if (dose > 0.2) warns.push(SAFETY_ALERTS.midazolam.msg);
+        } else if (drug === 'dexmedetomidine' && dose > 1.4) warns.push(SAFETY_ALERTS.dexmedetomidine.msg);
+
+        const maxPct = SAFETY_ALERTS[drug] ? (dose / SAFETY_ALERTS[drug].limit) * 100 : 0;
+        re.innerHTML = `${bolusHTML}
+            <div class="result-row"><span class="result-label">Швидкість:</span><span class="result-value">${rate.toFixed(1)}<span class="result-unit">мл/год</span></span></div>
+            ${renderDoseBar(maxPct)}`;
+        we.innerHTML = warns.length ? warns.join('<br>') : '✅ Доза в межах норми.';
+        we.className = warns.length ? 'warning danger' : 'warning success';
+    }
+
+    // ==================== АНАЛГЕЗІЯ ====================
+    function updateAnalgesiaUnits() {
+        const drug = document.getElementById('analgesia-drug').value;
+        const d = document.getElementById('analgesia-dose-unit');
+        const a = document.getElementById('analgesia-amount-unit');
+        const u = document.getElementById('analgesia-undiluted-info');
+        if (drug === 'fentanyl') {
+            d.textContent = 'мкг/кг/год'; a.textContent = 'мкг'; u.textContent = '(заводська 50 мкг/мл)';
+        } else {
+            d.textContent = 'мг/кг/год'; a.textContent = 'мг';
+            u.textContent = drug === 'morphine' ? '(заводська 10 мг/мл)' : '(заводська 50 мг/мл)';
+        }
+    }
+
+    function computeAnalgesiaConc() {
+        if (document.getElementById('analgesia-undiluted').checked) return FACTORY_CONC[document.getElementById('analgesia-drug').value] || null;
+        const a = safeFloat('analgesia-amount'), v = safeFloat('analgesia-total-volume');
+        return (a !== null && v !== null && v > 0) ? a / v : null;
+    }
+
+    function calculateAnalgesia() {
+        const w = getWeight(), drug = document.getElementById('analgesia-drug').value;
+        const conc = computeAnalgesiaConc(), dose = safeFloat('analgesia-dose');
+        const re = document.getElementById('analgesia-result'), we = document.getElementById('analgesia-warning');
+        if (conc === null || dose === null) {
+            re.innerHTML = `<div class="result-row"><span class="result-label">⚠️ Введіть всі дані</span></div>`;
+            we.textContent = ''; we.className = 'warning'; return;
+        }
+        const rate = (dose * w) / conc;
+        const bolus = document.getElementById('analgesia-bolus').checked;
+        const warns = [];
+        let bolusHTML = '';
+
+        if (drug === 'fentanyl') {
+            if (bolus) bolusHTML = `<div class="result-row"><span class="result-label">Болюс:</span><span class="result-value">${(w*1).toFixed(0)}<span class="result-unit">мкг</span></span></div>`;
+            if (dose > 5) warns.push(SAFETY_ALERTS.fentanyl.msg);
+        } else if (drug === 'morphine') {
+            if (bolus) bolusHTML = `<div class="result-row"><span class="result-label">Болюс:</span><span class="result-value">${(w*0.05).toFixed(1)}<span class="result-unit">мг</span></span></div>`;
+            if (dose > 0.1) warns.push(SAFETY_ALERTS.morphine.msg);
+        } else if (drug === 'ketamine') {
+            if (bolus) bolusHTML = `<div class="result-row"><span class="result-label">Болюс:</span><span class="result-value">${(w*0.2).toFixed(0)}<span class="result-unit">мг</span></span></div>`;
+            if (dose > 0.4) warns.push(SAFETY_ALERTS.ketamine.msg);
+            warns.push('🐴 Комбінувати з мідазоламом для профілактики дисфорії.');
         }
 
-        function computeSedationConc() {
-            const undiluted = document.getElementById('sedation-undiluted').checked;
-            const drug = document.getElementById('sedation-drug').value;
-            if (undiluted) {
-                return FACTORY_CONC[drug] || null;
-            }
-            const amount = safeFloat('sedation-amount');
-            const totalVol = safeFloat('sedation-total-volume');
-            if (amount !== null && totalVol !== null && totalVol > 0) {
-                return amount / totalVol;
-            }
-            return null;
-        }
+        const maxPct = SAFETY_ALERTS[drug] ? (dose / SAFETY_ALERTS[drug].limit) * 100 : 0;
+        re.innerHTML = `${bolusHTML}
+            <div class="result-row"><span class="result-label">Швидкість:</span><span class="result-value">${rate.toFixed(1)}<span class="result-unit">мл/год</span></span></div>
+            ${renderDoseBar(maxPct)}`;
+        we.innerHTML = warns.length ? warns.join('<br>') : '✅ Доза в межах норми.';
+        we.className = warns.length ? 'warning danger' : 'warning success';
+    }
 
-        function calculateSedation() {
-            const weight = getWeight();
-            const drug = document.getElementById('sedation-drug').value;
-            const conc = computeSedationConc();
-            const dose = safeFloat('sedation-dose');
-            const resultEl = document.getElementById('sedation-result');
-            const warnEl = document.getElementById('sedation-warning');
-            if (conc === null || dose === null) {
-                resultEl.innerHTML = `<div class="result-row"><span class="result-label">⚠️ Введіть всі дані</span></div>`;
-                warnEl.textContent = '';
-                warnEl.className = 'warning info';
-                return;
-            }
+    // ==================== ВАГА ====================
+    function calculateWeights() {
+        const w = getWeight(), hCm = getHeight(), gen = getGender();
+        const hM = hCm / 100;
+        const bmi = w / (hM * hM);
+        const ibw = calculateIBW(w, hCm, gen);
+        const adj = calculateAdjBW(w, ibw);
 
-            let rate = (dose * weight) / conc;
-            let bolusDose = 0, bolusUnit = 'мг';
-            const bolusCheck = document.getElementById('sedation-bolus').checked;
-            const warnings = [];
-            if (drug === 'dexmedetomidine' && bolusCheck) {
-                warnings.push('⚠️ Болюс для дексмедетомідину не рекомендований!');
-            }
+        let txt = '', cls = 'warning success';
+        if (bmi > 40) { txt = '⚠️ ІМТ > 40 — використовуйте AdjBW!'; cls = 'warning danger'; }
+        else if (bmi > 30) { txt = `⚠️ ІМТ > 30. AdjBW = ${adj.toFixed(1)} кг`; cls = 'warning danger'; }
+        else if (bmi > 25) { txt = `📊 ІМТ > 25. IBW = ${ibw.toFixed(1)} кг`; cls = 'warning info'; }
+        else if (bmi < 18.5) { txt = '⚠️ ІМТ < 18.5 (дефіцит)!'; cls = 'warning info'; }
+        else { txt = `✅ ІМТ в нормі. IBW = ${ibw.toFixed(1)} кг`; }
 
-            if (drug === 'propofol') {
-                bolusDose = bolusCheck ? weight * 0.5 : 0;
-                bolusUnit = 'мг';
-                if (dose > 4.0) warnings.push(SAFETY_ALERTS.propofol.msg);
-            } else if (drug === 'dexmedetomidine') {
-                bolusUnit = 'мкг';
-                if (dose > 1.4) warnings.push(SAFETY_ALERTS.dexmedetomidine.msg);
-            } else if (drug === 'midazolam') {
-                bolusDose = bolusCheck ? weight * 0.03 : 0;
-                if (dose > 0.2) warnings.push(SAFETY_ALERTS.midazolam.msg);
-            }
+        document.getElementById('weights-result').innerHTML = `
+            <div class="result-row"><span class="result-label">Фактична:</span><span class="result-value">${w.toFixed(1)}<span class="result-unit">кг</span></span></div>
+            <div class="result-row"><span class="result-label">ІМТ (BMI):</span><span class="result-value">${bmi.toFixed(1)}<span class="result-unit">кг/м²</span></span></div>
+            <div class="result-row"><span class="result-label">Ідеальна (IBW):</span><span class="result-value">${ibw.toFixed(1)}<span class="result-unit">кг</span></span></div>
+            <div class="result-row"><span class="result-label">Скоригована (AdjBW):</span><span class="result-value">${adj.toFixed(1)}<span class="result-unit">кг</span></span></div>
+        `;
+        const we = document.getElementById('weights-warning');
+        we.textContent = txt; we.className = cls;
+    }
 
-            let maxDosePercent = 0;
-            const alert = SAFETY_ALERTS[drug];
-            if (alert) maxDosePercent = (dose / alert.limit) * 100;
-
-            let bolusHTML = '';
-            if (bolusDose > 0 && bolusCheck) {
-                bolusHTML = `<div class="result-row"><span class="result-label">Болюс:</span><span class="result-value">${bolusDose.toFixed(1)}<span class="result-unit">${bolusUnit}</span></span></div>`;
-            }
-            const dailyDose = dose * weight * 24;
-            const dailyUnit = drug === 'dexmedetomidine' ? 'мкг' : 'мг';
-            resultEl.innerHTML = `
-                ${bolusHTML}
-                <div class="result-row"><span class="result-label">Швидкість інфузії:</span><span class="result-value">${rate.toFixed(1)}<span class="result-unit">мл/год</span></span></div>
-                <div class="result-row"><span class="result-label">Добова потреба:</span><span class="result-value">${dailyDose.toFixed(0)}<span class="result-unit">${dailyUnit}</span></span></div>
-                ${renderDoseBar(maxDosePercent)}
-            `;
-            if (warnings.length) {
-                warnEl.innerHTML = warnings.join('<br>');
-                warnEl.className = 'warning danger';
-            } else {
-                warnEl.textContent = '✅ Доза в межах норми.';
-                warnEl.className = 'warning success';
-            }
-        }
-
-        // ==================== АНАЛГЕЗІЯ ====================
-        function updateAnalgesiaUnits() {
-            const drug = document.getElementById('analgesia-drug').value;
-            const doseUnit = document.getElementById('analgesia-dose-unit');
-            const amountUnit = document.getElementById('analgesia-amount-unit');
-            const undilutedInfo = document.getElementById('analgesia-undiluted-info');
-            if (drug === 'fentanyl') {
-                doseUnit.textContent = 'мкг/кг/год';
-                amountUnit.textContent = 'мкг';
-                undilutedInfo.textContent = '(заводська 50 мкг/мл)';
-            } else {
-                doseUnit.textContent = 'мг/кг/год';
-                amountUnit.textContent = 'мг';
-                undilutedInfo.textContent = drug === 'morphine' ? '(заводська 10 мг/мл)' : '(заводська 50 мг/мл)';
-            }
-        }
-
-        function computeAnalgesiaConc() {
-            const undiluted = document.getElementById('analgesia-undiluted').checked;
-            const drug = document.getElementById('analgesia-drug').value;
-            if (undiluted) return FACTORY_CONC[drug] || null;
-            const amount = safeFloat('analgesia-amount');
-            const totalVol = safeFloat('analgesia-total-volume');
-            if (amount !== null && totalVol !== null && totalVol > 0) return amount / totalVol;
-            return null;
-        }
-
-        function calculateAnalgesia() {
-            const weight = getWeight();
-            const drug = document.getElementById('analgesia-drug').value;
-            const conc = computeAnalgesiaConc();
-            const dose = safeFloat('analgesia-dose');
-            const resultEl = document.getElementById('analgesia-result');
-            const warnEl = document.getElementById('analgesia-warning');
-            if (conc === null || dose === null) {
-                resultEl.innerHTML = `<div class="result-row"><span class="result-label">⚠️ Введіть всі дані</span></div>`;
-                warnEl.textContent = '';
-                warnEl.className = 'warning info';
-                return;
-            }
-            const rate = (dose * weight) / conc;
-            let bolusDose = 0, bolusUnit = '', warnings = [];
-            const bolusCheck = document.getElementById('analgesia-bolus').checked;
-            if (drug === 'fentanyl') {
-                bolusDose = bolusCheck ? weight * 1.0 : 0;
-                bolusUnit = 'мкг';
-                if (dose > 5.0) warnings.push(SAFETY_ALERTS.fentanyl.msg);
-            } else if (drug === 'morphine') {
-                bolusDose = bolusCheck ? weight * 0.05 : 0;
-                bolusUnit = 'мг';
-                if (dose > 0.1) warnings.push(SAFETY_ALERTS.morphine.msg);
-            } else if (drug === 'ketamine') {
-                bolusDose = bolusCheck ? weight * 0.2 : 0;
-                bolusUnit = 'мг';
-                if (dose > 0.4) warnings.push(SAFETY_ALERTS.ketamine.msg);
-                warnings.push('🐴 Рекомендується комбінувати з мідазоламом для профілактики дисфорії.');
-            }
-            let maxDosePercent = 0;
-            const alert = SAFETY_ALERTS[drug];
-            if (alert) maxDosePercent = (dose / alert.limit) * 100;
-
-            let bolusHTML = bolusDose > 0 && bolusCheck ? 
-                `<div class="result-row"><span class="result-label">Болюс:</span><span class="result-value">${bolusDose.toFixed(1)}<span class="result-unit">${bolusUnit}</span></span></div>` : '';
-            resultEl.innerHTML = `
-                ${bolusHTML}
-                <div class="result-row"><span class="result-label">Швидкість інфузії:</span><span class="result-value">${rate.toFixed(1)}<span class="result-unit">мл/год</span></span></div>
-                ${renderDoseBar(maxDosePercent)}
-            `;
-            if (warnings.length) {
-                warnEl.innerHTML = warnings.join('<br>');
-                warnEl.className = 'warning danger';
-            } else {
-                warnEl.textContent = '✅ Доза в межах норми.';
-                warnEl.className = 'warning success';
-            }
-        }
-
-        // ==================== LAST (кошик) ====================
-        function createLASTEntry(id, drug = 'bupivacaine', percent = '', volume = '', mode = 'bolus', rate = '', adrenaline = false) {
-            return { id, drug, percent, volume, mode, rate, adrenaline };
-        }
-
-        function renderLASTEntries() {
-            const container = document.getElementById('last-entries');
-            container.innerHTML = '';
-            lastEntries.forEach((entry, index) => {
-                const div = document.createElement('div');
-                div.className = 'last-entry';
-                div.innerHTML = `
-                    <button class="remove-entry" data-index="${index}" aria-label="Видалити препарат">×</button>
-                    <div class="row-2">
-                        <div class="input-group">
-                            <label>Препарат</label>
-                            <select class="last-drug" data-index="${index}">
-                                <option value="bupivacaine" ${entry.drug === 'bupivacaine' ? 'selected' : ''}>Бупівакаїн</option>
-                                <option value="ropivacaine" ${entry.drug === 'ropivacaine' ? 'selected' : ''}>Ропівакаїн</option>
-                                <option value="lidocaine" ${entry.drug === 'lidocaine' ? 'selected' : ''}>Лідокаїн</option>
-                            </select>
-                        </div>
-                        <div class="input-group">
-                            <label>Конц. (%)</label>
-                            <input type="number" class="last-percent" value="${entry.percent}" placeholder="0.25" step="0.01" min="0">
-                        </div>
-                    </div>
-                    <div class="row-2">
-                        <div class="input-group">
-                            <label>Об'єм (мл)</label>
-                            <input type="number" class="last-volume" value="${entry.volume}" placeholder="20" min="1" step="1">
-                        </div>
-                        <div class="input-group">
-                            <label>Режим</label>
-                            <select class="last-mode">
-                                <option value="bolus" ${entry.mode === 'bolus' ? 'selected' : ''}>Болюс</option>
-                                <option value="infusion" ${entry.mode === 'infusion' ? 'selected' : ''}>Інфузія</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="input-group last-rate-group" style="display: ${entry.mode === 'infusion' ? 'block' : 'none'}">
-                        <label>Швидкість (мл/год)</label>
-                        <input type="number" class="last-rate" value="${entry.rate}" placeholder="6" min="0.5" step="0.5">
-                    </div>
-                    <div class="checkbox-group last-adrenaline-group" style="display: ${entry.drug === 'lidocaine' ? 'flex' : 'none'}">
-                        <input type="checkbox" class="last-adrenaline" ${entry.adrenaline ? 'checked' : ''}>
-                        <label>+ Адреналін</label>
-                    </div>
-                `;
-                container.appendChild(div);
-            });
-            attachLASTListeners();
-        }
-
-        function attachLASTListeners() {
-            document.querySelectorAll('.remove-entry').forEach(btn => {
-                btn.addEventListener('click', function(e) {
-                    const index = parseInt(this.dataset.index);
-                    lastEntries.splice(index, 1);
-                    renderLASTEntries();
-                    calculateLASTTotal();
-                });
-            });
-            document.querySelectorAll('.last-drug').forEach(sel => {
-                sel.addEventListener('change', function() {
-                    const index = parseInt(this.dataset.index);
-                    lastEntries[index].drug = this.value;
-                    renderLASTEntries();
-                    calculateLASTTotal();
-                });
-            });
-            document.querySelectorAll('.last-percent, .last-volume, .last-rate').forEach(inp => {
-                inp.addEventListener('input', function() {
-                    const index = parseInt(this.closest('.last-entry').querySelector('.remove-entry').dataset.index);
-                    const field = this.classList.contains('last-percent') ? 'percent' : this.classList.contains('last-volume') ? 'volume' : 'rate';
-                    lastEntries[index][field] = this.value;
-                    calculateLASTTotal();
-                });
-            });
-            document.querySelectorAll('.last-mode').forEach(sel => {
-                sel.addEventListener('change', function() {
-                    const index = parseInt(this.closest('.last-entry').querySelector('.remove-entry').dataset.index);
-                    lastEntries[index].mode = this.value;
-                    renderLASTEntries();
-                    calculateLASTTotal();
-                });
-            });
-            document.querySelectorAll('.last-adrenaline').forEach(cb => {
-                cb.addEventListener('change', function() {
-                    const index = parseInt(this.closest('.last-entry').querySelector('.remove-entry').dataset.index);
-                    lastEntries[index].adrenaline = this.checked;
-                    calculateLASTTotal();
-                });
-            });
-        }
-
-        function calculateLASTTotal() {
-            const weight = getSelectedWeight();
-            const resultEl = document.getElementById('last-result');
-            const warnEl = document.getElementById('last-warning');
-            if (lastEntries.length === 0) {
-                resultEl.innerHTML = `<div class="result-row"><span class="result-label">Додайте хоча б один препарат</span></div>`;
-                warnEl.textContent = '';
-                warnEl.className = 'warning info';
-                return;
-            }
-            let totalPercentSingle = 0;
-            let totalPercentDaily = 0;
-            let detailsHTML = '';
-            let globalWarnings = [];
-
-            lastEntries.forEach((entry, idx) => {
-                const percent = parseFloat(entry.percent);
-                const volume = parseFloat(entry.volume);
-                if (isNaN(percent) || isNaN(volume) || volume <= 0) return;
-                const concMgMl = percent * 10;
-                const totalMg = concMgMl * volume;
-                const doseMgKg = totalMg / weight;
-                const maxDose = MAX_DOSES[entry.drug];
-                let maxSingle, maxDaily;
-                if (entry.drug === 'lidocaine' && entry.adrenaline) {
-                    maxSingle = maxDose.withEpiSingle;
-                    maxDaily = maxDose.withEpiDaily;
-                } else {
-                    maxSingle = maxDose.single;
-                    maxDaily = maxDose.daily;
-                }
-                const percentSingle = (doseMgKg / maxSingle) * 100;
-                totalPercentSingle += percentSingle;
-
-                let dailyDose = 0, dailyDoseMgKg = 0, percentDaily = 0;
-                if (entry.mode === 'infusion') {
-                    const rate = parseFloat(entry.rate);
-                    if (!isNaN(rate) && rate > 0) {
-                        dailyDose = concMgMl * rate * 24;
-                        dailyDoseMgKg = dailyDose / weight;
-                        percentDaily = (dailyDoseMgKg / (maxDaily / weight)) * 100;
-                        totalPercentDaily += percentDaily;
-                    }
-                } else {
-                    totalPercentDaily += percentSingle; // приблизно
-                }
-
-                detailsHTML += `<div class="result-row"><span class="result-label">${entry.drug} #${idx+1}:</span><span class="result-value">${percentSingle.toFixed(0)}% разової</span></div>`;
-                if (entry.mode === 'infusion') {
-                    detailsHTML += `<div class="result-row"><span class="result-label">Добова:</span><span class="result-value">${percentDaily.toFixed(0)}%</span></div>`;
-                }
-                if (percentSingle > 80) globalWarnings.push(`${entry.drug} перевищує 80% разової дози!`);
-            });
-
-            const totalLoad = Math.max(totalPercentSingle, totalPercentDaily);
-            let loadClass = 'safe';
-            if (totalLoad > 80) loadClass = 'danger';
-            else if (totalLoad > 50) loadClass = 'warning';
-
-            resultEl.innerHTML = `
-                ${detailsHTML}
-                <div class="result-row"><span class="result-label">Загальне навантаження (LAST Load):</span><span class="result-value" style="color:${loadClass==='danger'?'#ef4444':loadClass==='warning'?'#f59e0b':'#22c55e'}">${totalLoad.toFixed(0)}%</span></div>
-                ${renderDoseBar(totalLoad)}
-            `;
-            if (globalWarnings.length) {
-                warnEl.innerHTML = globalWarnings.join('<br>');
-                warnEl.className = 'warning danger';
-            } else {
-                warnEl.textContent = '✅ Сумарне навантаження в безпечних межах.';
-                warnEl.className = 'warning success';
-            }
-        }
-
-        // ==================== ВАГА ====================
-        function calculateWeights() {
-            const weight = getWeight();
-            const heightCm = getHeight();
-            const gender = getGender();
-            const heightM = heightCm / 100;
-            const bmi = weight / (heightM * heightM);
-            const ibw = calculateIBW(weight, heightCm, gender);
-            const adjBW = calculateAdjBW(weight, ibw);
-
-            let warning = '', warningClass = 'warning success';
-            if (bmi > 40) { warning = '⚠️ ІМТ > 40 (ожиріння III ст). Використовуйте AdjBW!'; warningClass = 'warning danger'; }
-            else if (bmi > 30) { warning = `⚠️ ІМТ > 30. Рекомендована вага: ${adjBW.toFixed(1)} кг`; warningClass = 'warning danger'; }
-            else if (bmi > 25) { warning = `📊 ІМТ > 25. IBW = ${ibw.toFixed(1)} кг`; warningClass = 'warning info'; }
-            else if (bmi < 18.5) { warning = '⚠️ ІМТ < 18.5 (дефіцит ваги)!'; warningClass = 'warning info'; }
-            else { warning = `✅ ІМТ в нормі. IBW = ${ibw.toFixed(1)} кг`; }
-
-            document.getElementById('weights-result').innerHTML = `
-                <div class="result-row"><span class="result-label">Фактична вага:</span><span class="result-value">${weight.toFixed(1)}<span class="result-unit">кг</span></span></div>
-                <div class="result-row"><span class="result-label">ІМТ (BMI):</span><span class="result-value">${bmi.toFixed(1)}<span class="result-unit">кг/м²</span></span></div>
-                <div class="result-row"><span class="result-label">Ідеальна вага (IBW):</span><span class="result-value">${ibw.toFixed(1)}<span class="result-unit">кг</span></span></div>
-                <div class="result-row"><span class="result-label">Скоригована (AdjBW):</span><span class="result-value">${adjBW.toFixed(1)}<span class="result-unit">кг</span></span></div>
-            `;
-            const warnEl = document.getElementById('weights-warning');
-            warnEl.textContent = warning;
-            warnEl.className = warningClass;
-        }
-
-        // ==================== НАВІГАЦІЯ ====================
-        function switchTab(tabId) {
-            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
-            document.getElementById(`tab-${tabId}`).classList.remove('hidden');
-            document.querySelectorAll('.tab').forEach(btn => {
-                btn.classList.remove('active');
-                btn.setAttribute('aria-selected', 'false');
-                if (btn.dataset.tab === tabId) {
-                    btn.classList.add('active');
-                    btn.setAttribute('aria-selected', 'true');
-                }
-            });
-            calculateCurrent();
-        }
-
-        function calculateCurrent() {
-            const activeTab = document.querySelector('.tab.active')?.dataset.tab;
-            if (activeTab === 'vasoactive') calculateVasoactive();
-            else if (activeTab === 'sedation') calculateSedation();
-            else if (activeTab === 'analgesia') calculateAnalgesia();
-            else if (activeTab === 'last') calculateLASTTotal();
-            else if (activeTab === 'weights') calculateWeights();
-        }
-
-        // ==================== ІНІЦІАЛІЗАЦІЯ ====================
-        document.addEventListener('DOMContentLoaded', function() {
-            // Вкладки
-            document.querySelectorAll('.tab').forEach(tab => {
-                tab.addEventListener('click', () => switchTab(tab.dataset.tab));
-            });
-
-            // Глобальні поля
-            ['global-weight', 'global-height', 'global-gender'].forEach(id => {
-                document.getElementById(id).addEventListener('input', calculateCurrent);
-                document.getElementById(id).addEventListener('change', calculateCurrent);
-            });
-
-            // Вазоактивні
-            const vasoInputs = ['vasoactive-drug', 'vasoactive-amount', 'vasoactive-volume', 'vasoactive-dose', 'vasoactive-peripheral'];
-            vasoInputs.forEach(id => {
-                document.getElementById(id).addEventListener('input', () => {
-                    computeVasoactiveConc();
-                    if (id !== 'vasoactive-rate-input') calculateVasoactive();
-                });
-                document.getElementById(id).addEventListener('change', () => {
-                    computeVasoactiveConc();
-                    calculateVasoactive();
-                });
-            });
-            document.getElementById('vasoactive-rate-input').addEventListener('input', calculateVasoactiveFromRate);
-
-            // Седація
-            document.getElementById('sedation-drug').addEventListener('change', () => {
-                updateSedationUnits();
-                calculateSedation();
-            });
-            document.getElementById('sedation-undiluted').addEventListener('change', function() {
-                document.getElementById('sedation-dilution-block').style.display = this.checked ? 'none' : 'block';
-                calculateSedation();
-            });
-            ['sedation-amount', 'sedation-total-volume', 'sedation-dose', 'sedation-bolus'].forEach(id => {
-                document.getElementById(id).addEventListener('input', calculateSedation);
-                document.getElementById(id).addEventListener('change', calculateSedation);
-            });
-
-            // Аналгезія
-            document.getElementById('analgesia-drug').addEventListener('change', () => {
-                updateAnalgesiaUnits();
-                calculateAnalgesia();
-            });
-            document.getElementById('analgesia-undiluted').addEventListener('change', function() {
-                document.getElementById('analgesia-dilution-block').style.display = this.checked ? 'none' : 'block';
-                calculateAnalgesia();
-            });
-            ['analgesia-amount', 'analgesia-total-volume', 'analgesia-dose', 'analgesia-bolus'].forEach(id => {
-                document.getElementById(id).addEventListener('input', calculateAnalgesia);
-                document.getElementById(id).addEventListener('change', calculateAnalgesia);
-            });
-
-            // LAST
-            document.getElementById('add-last-entry').addEventListener('click', () => {
-                if (lastEntries.length >= 5) return;
-                lastEntries.push(createLASTEntry(Date.now()));
-                renderLASTEntries();
-                calculateLASTTotal();
-            });
-            document.getElementById('last-weight-type').addEventListener('change', calculateLASTTotal);
-
-            // Початковий стан
-            updateSedationUnits();
-            updateAnalgesiaUnits();
-            document.getElementById('sedation-dilution-block').style.display = 'block';
-            document.getElementById('analgesia-dilution-block').style.display = 'block';
-            // додаємо один порожній LAST для прикладу
-            lastEntries.push(createLASTEntry(1));
-            renderLASTEntries();
-            calculateVasoactive();
-            calculateWeights();
+    // ==================== НАВІГАЦІЯ ====================
+    function switchTab(tabId) {
+        document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+        document.getElementById(`tab-${tabId}`).classList.remove('hidden');
+        document.querySelectorAll('.tab').forEach(btn => {
+            btn.classList.remove('active');
+            btn.setAttribute('aria-selected', 'false');
+            if (btn.dataset.tab === tabId) { btn.classList.add('active'); btn.setAttribute('aria-selected', 'true'); }
         });
-    })();
+        calculateCurrent();
+    }
+
+    function calculateCurrent() {
+        const t = document.querySelector('.tab.active')?.dataset.tab;
+        if (t === 'vasoactive') calculateVasoactive();
+        else if (t === 'sedation') calculateSedation();
+        else if (t === 'analgesia') calculateAnalgesia();
+        else if (t === 'weights') calculateWeights();
+    }
+
+    // ==================== ІНІТ ====================
+    document.addEventListener('DOMContentLoaded', () => {
+        document.querySelectorAll('.tab').forEach(t => t.addEventListener('click', () => switchTab(t.dataset.tab)));
+        ['global-weight','global-height','global-gender'].forEach(id => {
+            document.getElementById(id).addEventListener('input', calculateCurrent);
+            document.getElementById(id).addEventListener('change', calculateCurrent);
+        });
+        ['vasoactive-drug','vasoactive-amount','vasoactive-volume','vasoactive-dose','vasoactive-peripheral'].forEach(id => {
+            document.getElementById(id).addEventListener('input', () => { computeVasoactiveConc(); if(id!=='vasoactive-rate-input') calculateVasoactive(); });
+            document.getElementById(id).addEventListener('change', () => { computeVasoactiveConc(); calculateVasoactive(); });
+        });
+        document.getElementById('vasoactive-rate-input').addEventListener('input', calculateVasoactiveFromRate);
+        document.getElementById('sedation-drug').addEventListener('change', () => { updateSedationUnits(); calculateSedation(); });
+        document.getElementById('sedation-undiluted').addEventListener('change', function() {
+            document.getElementById('sedation-dilution-block').style.display = this.checked ? 'none' : 'block';
+            calculateSedation();
+        });
+        ['sedation-amount','sedation-total-volume','sedation-dose','sedation-bolus'].forEach(id => {
+            document.getElementById(id).addEventListener('input', calculateSedation);
+            document.getElementById(id).addEventListener('change', calculateSedation);
+        });
+        document.getElementById('analgesia-drug').addEventListener('change', () => { updateAnalgesiaUnits(); calculateAnalgesia(); });
+        document.getElementById('analgesia-undiluted').addEventListener('change', function() {
+            document.getElementById('analgesia-dilution-block').style.display = this.checked ? 'none' : 'block';
+            calculateAnalgesia();
+        });
+        ['analgesia-amount','analgesia-total-volume','analgesia-dose','analgesia-bolus'].forEach(id => {
+            document.getElementById(id).addEventListener('input', calculateAnalgesia);
+            document.getElementById(id).addEventListener('change', calculateAnalgesia);
+        });
+
+        updateSedationUnits(); updateAnalgesiaUnits();
+        calculateVasoactive();
+    });
+})();
 </script>
 </body>
 </html>
