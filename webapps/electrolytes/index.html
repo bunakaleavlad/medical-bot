@@ -211,59 +211,51 @@
         <div class="warning" id="na-warning"></div>
     </div>
 
-   <!-- ==================== КАЛІЙ ==================== -->
-<div id="tab-k" class="tab-content hidden">
-    <div class="card">
-        <div class="card-title">👤 Дані пацієнта</div>
-        <div class="input-group">
-            <label>Вага (кг)</label>
-            <input type="number" id="k-weight" value="70" min="20" max="300" step="0.1">
-        </div>
-    </div>
-
-    <div class="card">
-        <div class="card-title">🔬 Лабораторні дані</div>
-        <div class="row-2">
-            <div class="input-group">
-                <label>K⁺ зараз (ммоль/л)</label>
-                <input type="number" id="k-current" value="2.8" min="1.5" max="8.0" step="0.1">
-            </div>
-            <div class="input-group">
-                <label>K⁺ цільовий (ммоль/л)</label>
-                <input type="number" id="k-target" value="4.0" min="3.5" max="5.0" step="0.1">
-            </div>
-        </div>
-        <div class="input-group">
-            <label>Концентрація KCl</label>
-            <select id="k-solution">
-                <option value="4" selected>KCl 4% — 0.536 ммоль/мл</option>
-                <option value="7.5">KCl 7.5% — 1.0 ммоль/мл</option>
-            </select>
-        </div>
-        <div class="input-group">
-            <label>Функція нирок (ШКФ)</label>
-            <select id="k-renal">
-                <option value="normal">Нормальна (&gt;60 мл/хв)</option>
-                <option value="impaired">Порушена (30–60 мл/хв)</option>
-                <option value="severe">Тяжка (&lt;30 мл/хв)</option>
-            </select>
-        </div>
-    </div>
-
-    <div class="result" id="k-result"></div>
-    <div class="warning" id="k-warning"></div>
-</div>
-
-    <!-- ==================== КАЛЬЦІЙ ==================== -->
-    <div id="tab-ca" class="tab-content hidden">
+    <!-- ==================== КАЛІЙ ==================== -->
+    <div id="tab-k" class="tab-content hidden">
         <div class="card">
             <div class="card-title">👤 Дані пацієнта</div>
             <div class="input-group">
                 <label>Вага (кг)</label>
-                <input type="number" id="ca-weight" value="70" min="20" max="300" step="0.1">
+                <input type="number" id="k-weight" value="70" min="20" max="300" step="0.1">
             </div>
         </div>
 
+        <div class="card">
+            <div class="card-title">🔬 Лабораторні дані</div>
+            <div class="row-2">
+                <div class="input-group">
+                    <label>K⁺ зараз (ммоль/л)</label>
+                    <input type="number" id="k-current" value="2.8" min="1.5" max="8.0" step="0.1">
+                </div>
+                <div class="input-group">
+                    <label>K⁺ цільовий (ммоль/л)</label>
+                    <input type="number" id="k-target" value="4.0" min="3.5" max="5.0" step="0.1">
+                </div>
+            </div>
+            <div class="input-group">
+                <label>Концентрація KCl</label>
+                <select id="k-solution">
+                    <option value="4" selected>KCl 4% — 0.536 ммоль/мл</option>
+                    <option value="7.5">KCl 7.5% — 1.0 ммоль/мл</option>
+                </select>
+            </div>
+            <div class="input-group">
+                <label>Функція нирок (ШКФ)</label>
+                <select id="k-renal">
+                    <option value="normal">Нормальна (&gt;60 мл/хв)</option>
+                    <option value="impaired">Порушена (30–60 мл/хв)</option>
+                    <option value="severe">Тяжка (&lt;30 мл/хв)</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="result" id="k-result"></div>
+        <div class="warning" id="k-warning"></div>
+    </div>
+
+    <!-- ==================== КАЛЬЦІЙ ==================== -->
+    <div id="tab-ca" class="tab-content hidden">
         <div class="card">
             <div class="card-title">🔬 Лабораторні дані</div>
             <div class="input-group">
@@ -293,14 +285,6 @@
 
     <!-- ==================== МАГНІЙ ==================== -->
     <div id="tab-mg" class="tab-content hidden">
-        <div class="card">
-            <div class="card-title">👤 Дані пацієнта</div>
-            <div class="input-group">
-                <label>Вага (кг)</label>
-                <input type="number" id="mg-weight" value="70" min="20" max="300" step="0.1">
-            </div>
-        </div>
-
         <div class="card">
             <div class="card-title">🔬 Лабораторні дані</div>
             <div class="input-group">
@@ -338,7 +322,7 @@
             return gender === 'male' ? weight * 0.6 : weight * 0.5;
         }
 
-        // ==================== НАТРІЙ (ПЕРЕВІРЕНО) ====================
+        // ==================== НАТРІЙ ====================
         function calculateNa() {
             const w = parseFloat(document.getElementById('na-weight').value) || 70;
             const age = parseInt(document.getElementById('na-age').value) || 45;
@@ -353,52 +337,52 @@
             let status = '', deficit = 0, volume = 0, rate = 0, hours = 0, solutionName = '';
             let warningText = '';
 
+            const changePerLiter = (solNa - cur) / (tbw + 1);
+
             if (cur < 135) {
                 status = '🔵 ГІПОНАТРІЄМІЯ';
-                deficit = tbw * (target - cur);  // ммоль
-                volume = (deficit / solNa) * 1000;  // мл
                 
                 if (solNa === 154) solutionName = 'NaCl 0.9%';
                 else if (solNa === 513) solutionName = 'NaCl 3%';
                 else solutionName = 'NaCl 5.85%';
                 
-                const maxRatePerHour = isChronic ? 0.5 : 2.0;
-                const maxDailyChange = isChronic ? 8 : 12;
-                
                 const desiredChange = target - cur;
-                const hoursByRate = desiredChange / maxRatePerHour;
-                const hoursByDaily = (desiredChange / maxDailyChange) * 24;
-                hours = Math.max(hoursByRate, hoursByDaily);
-                rate = volume / hours;
+                const litersNeeded = desiredChange / changePerLiter;
+                volume = litersNeeded * 1000;
+                
+                const maxDailyChange = isChronic ? 8 : 10;
                 
                 if (cur < 120) {
-                    warningText = '🔴 КРИТИЧНА ГІПОНАТРІЄМІЯ! Симптоми? → 3% NaCl 100 мл болюс за 10 хв! Контроль Na⁺ через 2 год!';
+                    volume = 150; 
+                    if (solNa === 154) volume = 500; 
+                    hours = 0.33; 
+                    rate = volume / hours;
+                    const expectedChange = changePerLiter * (volume / 1000);
+                    warningText = `🔴 ТЯЖКА/СИМПТОМНА ГІПОНАТРІЄМІЯ! Рекомендовано 100-150 мл 3% NaCl болюсно за 20 хв. Очікувана зміна: +${expectedChange.toFixed(1)} ммоль/л. Можна повторити x2-3. Ризик осмотичного демієлінізуючого синдрому при корекції >${maxDailyChange} ммоль/добу!`;
                 } else {
-                    warningText = `✅ Корекція за ${hours.toFixed(1)} год. Контроль Na⁺ через ${Math.round(hours/3)} год. Макс. ${maxDailyChange} ммоль/добу.`;
+                    const maxRatePerHour = isChronic ? (8/24) : (10/24);
+                    const hoursNeeded = desiredChange / maxRatePerHour;
+                    hours = Math.max(hoursNeeded, 1);
+                    rate = volume / hours;
+                    warningText = `✅ Корекція. Ціль: +${desiredChange.toFixed(1)} ммоль/л. Макс швидкість зміни: ${maxDailyChange} ммоль/добу (запобігання демієлінізації). Контроль Na⁺ кожні 4-6 год.`;
                 }
-            } 
-            else if (cur > 145) {
+                
+            } else if (cur > 145) {
                 status = '🔴 ГІПЕРНАТРІЄМІЯ';
-                const waterDeficit = tbw * ((cur / target) - 1);  // літри
-                volume = waterDeficit * 1000;  // мл
+                const waterDeficit = tbw * ((cur / target) - 1); 
+                volume = waterDeficit * 1000;
                 deficit = waterDeficit * 1000;
                 solutionName = '5% глюкоза або 0.45% NaCl';
                 
                 const desiredDrop = cur - target;
-                const maxDailyDrop = cur >= 170 ? 8 : 10;
+                const maxDailyDrop = 10;
                 
-                const hoursByRate = desiredDrop / 0.5;
                 const hoursByDaily = (desiredDrop / maxDailyDrop) * 24;
-                hours = Math.max(hoursByRate, hoursByDaily);
+                hours = Math.max(hoursByDaily, 1);
                 rate = volume / hours;
                 
-                if (cur > 160) {
-                    warningText = `🔴 ТЯЖКА ГІПЕРНАТРІЄМІЯ! Швидкість ≤ 0.5 ммоль/год. Макс. ${maxDailyDrop} ммоль/добу. Контроль Na⁺ кожні 2 год!`;
-                } else {
-                    warningText = `✅ Зниження Na⁺ за ${hours.toFixed(1)} год. Контроль кожні 4 год.`;
-                }
-            } 
-            else {
+                warningText = `✅ Зниження Na⁺. Швидкість ≤ 10 ммоль/добу для уникнення набряку мозку. Контроль Na⁺ кожні 4 год.`;
+            } else {
                 status = '🟢 НОРМОНАТРІЄМІЯ';
                 solutionName = '—';
                 warningText = '✅ Рівень натрію в межах норми.';
@@ -407,7 +391,8 @@
             document.getElementById('na-result').innerHTML = `
                 <div class="result-row"><span class="result-label">Стан:</span><span class="result-value">${status}</span></div>
                 <div class="result-row"><span class="result-label">Загальна вода (TBW):</span><span class="result-value">${tbw.toFixed(1)} <span class="result-unit">л</span></span></div>
-                <div class="result-row"><span class="result-label">${cur > 145 ? 'Дефіцит води' : 'Дефіцит Na⁺'}:</span><span class="result-value">${Math.abs(deficit).toFixed(0)} <span class="result-unit">${cur > 145 ? 'мл' : 'ммоль'}</span></span></div>
+                ${cur < 135 ? `<div class="result-row"><span class="result-label">Прогноз (з 1л розчину):</span><span class="result-value">+${changePerLiter.toFixed(1)} <span class="result-unit">ммоль/л</span></span></div>` : ''}
+                ${cur > 145 ? `<div class="result-row"><span class="result-label">Дефіцит води:</span><span class="result-value">${deficit.toFixed(0)} <span class="result-unit">мл</span></span></div>` : ''}
                 <div class="result-row"><span class="result-label">Розчин:</span><span class="result-value">${solutionName}</span></div>
                 ${volume > 0 ? `
                 <div class="result-row"><span class="result-label">Об'єм:</span><span class="result-value">${volume.toFixed(0)} <span class="result-unit">мл</span></span></div>
@@ -421,233 +406,262 @@
             warnEl.className = (cur < 120 || cur > 160) ? 'warning danger' : 'warning';
         }
 
-// ==================== КАЛІЙ (тільки в/в, вибір 4% або 7.5%) ====================
-function calculateK() {
-    const w = parseFloat(document.getElementById('k-weight').value) || 70;
-    const cur = parseFloat(document.getElementById('k-current').value) || 4.0;
-    const target = parseFloat(document.getElementById('k-target').value) || 4.0;
-    const solution = document.getElementById('k-solution').value;
-    const renal = document.getElementById('k-renal').value;
+        // ==================== КАЛІЙ ====================
+        function calculateK() {
+            const w = parseFloat(document.getElementById('k-weight').value) || 70;
+            const cur = parseFloat(document.getElementById('k-current').value) || 4.0;
+            const solution = document.getElementById('k-solution').value;
+            const renal = document.getElementById('k-renal').value;
 
-    // Концентрації KCl
-    const mmolPerMl = solution === '7.5' ? 1.0 : 0.536;
-    const solutionName = solution === '7.5' ? 'KCl 7.5%' : 'KCl 4%';
+            const mmolPerMl = solution === '7.5' ? 1.0 : 0.536;
+            const solutionName = solution === '7.5' ? 'KCl 7.5%' : 'KCl 4%';
 
-    let status = '', deficit = 0, rate = 0, vol = 0, duration = 0, warningText = '';
+            let status = '', estDeficitStr = '', singleDose = 0, rate = 0, vol = 0, duration = 0, warningText = '';
+            let formulaDeficit = 0;
 
-    if (cur < 3.5) {
-        status = '🔵 ГІПОКАЛІЄМІЯ';
+            if (cur < 3.5) {
+                status = '🔵 ГІПОКАЛІЄМІЯ';
+                formulaDeficit = w * 0.4 * (4.5 - cur);
 
-        // Розрахунок дефіциту (KDIGO 2024)
-        if (cur >= 3.0) {
-            deficit = (target - cur) * w * 2.5;
-        } else if (cur >= 2.5) {
-            deficit = (target - cur) * w * 3.5;
-        } else {
-            deficit = (target - cur) * w * 5.0;
+                if (cur >= 3.0) {
+                    estDeficitStr = '≈100–200 ммоль';
+                    singleDose = 30; 
+                } else if (cur >= 2.5) {
+                    estDeficitStr = '≈200–300 ммоль';
+                    singleDose = 40;
+                } else {
+                    estDeficitStr = '≈300–400+ ммоль';
+                    singleDose = 50; 
+                }
+
+                if (renal === 'severe') {
+                    singleDose = singleDose / 2; 
+                }
+
+                rate = 10; 
+                if (renal === 'severe') rate = 5; 
+
+                vol = singleDose / mmolPerMl;
+                duration = singleDose / rate;
+
+                warningText = `Значення «Орієнтовний дефіцит калію» розраховане за емпіричною формулою:
+Дефіцит (ммоль) = маса тіла (кг) × 0,4 × (4,5 − K⁺).
+Значення в дужках — це орієнтовний загальний дефіцит калію в організмі, характерний для відповідного ступеня гіпокаліємії.
+Жодне із наведених значень не є рекомендованою дозою для одноразового введення калію.`;
+
+            }
+            else if (cur > 5.0) {
+                status = '🔴 ГІПЕРКАЛІЄМІЯ';
+                if (cur > 6.5) {
+                    warningText = '🔴 ТЯЖКА ГІПЕРКАЛІЄМІЯ! Ca-глюконат 10% 10 мл в/в болюс (захист міокарда)! Інсулін + глюкоза, діаліз.';
+                } else {
+                    warningText = '⚠️ Гіперкаліємія. Відміна K-зберігаючих препаратів, петльові діуретики, контроль ЕКГ.';
+                }
+            }
+            else {
+                status = '🟢 НОРМОКАЛІЄМІЯ';
+                warningText = '✅ Рівень калію в межах норми.';
+            }
+
+            let resultHTML = `
+                <div class="result-row"><span class="result-label">Стан:</span><span class="result-value">${status}</span></div>`;
+            
+            if (cur < 3.5) {
+                resultHTML += `
+                <div style="margin-top:16px; margin-bottom:12px; font-size:15px; font-weight:600; color:#93c5fd; text-align: center;">Результати розрахунку</div>
+                
+                <div class="result-row" style="flex-direction: column; align-items: flex-start; padding-bottom: 12px;">
+                    <span class="result-label" style="margin-bottom: 4px; color: #cbd5e1;">Орієнтовний дефіцит калію:</span>
+                    <span class="result-value" style="font-size: 16px;">${formulaDeficit.toFixed(1).replace('.', ',')} ммоль</span>
+                    <span style="font-size:11px; color:#fbbf24; margin-top: 2px;">(орієнтовний загальний дефіцит калію в організмі: ${estDeficitStr})</span>
+                </div>
+                
+                <div class="result-row" style="flex-direction: column; align-items: flex-start; padding-bottom: 12px;">
+                    <span class="result-label" style="margin-bottom: 4px; color: #cbd5e1;">Рекомендована початкова корекція:</span>
+                    <span class="result-value" style="font-size: 16px;">${singleDose} ммоль KCl</span>
+                    <span style="font-size:11px; color:#94a3b8; margin-top: 2px;">(${vol.toFixed(1).replace('.', ',')} мл обраного розчину KCl)</span>
+                </div>
+                
+                <div class="result-row" style="flex-direction: column; align-items: flex-start; padding-bottom: 12px;">
+                    <span class="result-label" style="margin-bottom: 4px; color: #cbd5e1;">Час введення:</span>
+                    <span class="result-value" style="font-size: 16px;">${duration.toFixed(1).replace('.', ',')} год</span>
+                </div>
+                
+                <div class="result-row" style="flex-direction: column; align-items: flex-start; padding-bottom: 12px;">
+                    <span class="result-label" style="margin-bottom: 4px; color: #cbd5e1;">Швидкість введення:</span>
+                    <span class="result-value" style="font-size: 16px;">${rate} ммоль/год</span>
+                    <span style="font-size:11px; color:#94a3b8; margin-top: 2px;">(${(rate / mmolPerMl).toFixed(1).replace('.', ',')} мл/год)</span>
+                </div>
+                
+                <div style="margin-top:12px; font-size:12px; color:#94a3b8; line-height:1.5;">
+                    <strong style="color:#e2e8f0;">Максимальна швидкість введення:</strong><br>
+                    До 20 ммоль/год лише через центральний венозний катетер за умови безперервного ЕКГ-моніторингу.
+                </div>
+                
+                <div style="margin-top:12px; font-size:12px; color:#94a3b8; line-height:1.5;">
+                    <strong style="color:#e2e8f0;">Контроль після корекції:</strong><br>
+                    Повторне визначення рівня K⁺ через 2–4 години після завершення інфузії. Подальшу корекцію проводити відповідно до повторного рівня K⁺, клінічного стану пацієнта та функції нирок.
+                </div>
+                `;
+            }
+
+            document.getElementById('k-result').innerHTML = resultHTML;
+
+            const warnEl = document.getElementById('k-warning');
+            warnEl.textContent = warningText;
+            if (cur < 3.5) {
+                warnEl.className = 'warning';
+                warnEl.style.whiteSpace = 'pre-wrap';
+            } else {
+                warnEl.className = (cur < 2.5 || cur > 6.5) ? 'warning danger' : 'warning';
+                warnEl.style.whiteSpace = 'normal';
+            }
         }
 
-        // Максимальна швидкість інфузії
-        if (renal === 'normal') {
-            rate = 20; // ммоль/год
-        } else if (renal === 'impaired') {
-            rate = 10;
-        } else {
-            rate = 5; // тяжка ниркова недостатність
+        // ==================== КАЛЬЦІЙ ====================
+        function calculateCa() {
+            const cur = parseFloat(document.getElementById('ca-current').value) || 1.2;
+            const alb = parseFloat(document.getElementById('ca-albumin').value) || 40;
+            const albUnit = document.getElementById('ca-albumin-unit').value;
+            const drug = document.getElementById('ca-drug').value;
+
+            let isTotalCa = cur > 1.5; 
+            
+            let corr = cur;
+            if (isTotalCa) {
+                if (albUnit === 'gl') {
+                    corr = cur + 0.02 * (40 - alb);
+                } else {
+                    corr = cur + 0.8 * (4.0 - alb);
+                }
+            }
+            
+            let status = '', doseGrams = 0, vol = 0, warningText = '';
+            
+            let lowerBound = isTotalCa ? 2.2 : 1.1;
+            let upperBound = isTotalCa ? 2.6 : 1.3;
+            let severeLowerBound = isTotalCa ? 1.9 : 0.9;
+            let severeUpperBound = isTotalCa ? 3.0 : 1.5;
+
+            if (corr < lowerBound) {
+                status = '🔵 ГІПОКАЛЬЦІЄМІЯ';
+                
+                if (corr < severeLowerBound) {
+                    doseGrams = 2; 
+                    warningText = '🔴 ТЯЖКА АБО СИМПТОМНА ГІПОКАЛЬЦІЄМІЯ! Рекомендовано 1-2 г Ca-глюконату за 10-20 хв. Можна повторити. ЕКГ контроль!';
+                } else {
+                    doseGrams = 1;
+                    warningText = '⚠️ Помірна/Легка гіпокальціємія. 1 г Ca-глюконату за 10-20 хв.';
+                }
+                
+                if (drug === 'chloride') {
+                    vol = 10; 
+                    warningText += ' 🔴 УВАГА: CaCl₂ вводити ТІЛЬКИ в центральну вену! Високий ризик некрозу тканин при екстравазації!';
+                } else {
+                    vol = doseGrams * 10; 
+                }
+            } 
+            else if (corr > upperBound) {
+                status = '🔴 ГІПЕРКАЛЬЦІЄМІЯ';
+                if (corr > severeUpperBound) {
+                    warningText = '🔴 ТЯЖКА ГІПЕРКАЛЬЦІЄМІЯ! Гідратація NaCl 0.9%, кальцитонін, бісфосфонати!';
+                } else {
+                    warningText = '⚠️ Гіперкальціємія. Забезпечити гідратацію.';
+                }
+            } 
+            else {
+                status = '🟢 НОРМОКАЛЬЦІЄМІЯ';
+                warningText = '✅ Рівень кальцію в нормі.';
+            }
+
+            document.getElementById('ca-result').innerHTML = `
+                <div class="result-row">
+                    <span class="result-label">Тип Ca²⁺:</span>
+                    <span class="result-value">${isTotalCa ? 'Загальний (скоригований)' : 'Іонізований'}</span>
+                </div>
+                <div class="result-row">
+                    <span class="result-label">Рівень Ca²⁺:</span>
+                    <span class="result-value">${corr.toFixed(2)} <span class="result-unit">ммоль/л</span></span>
+                </div>
+                <div class="result-row">
+                    <span class="result-label">Стан:</span>
+                    <span class="result-value">${status}</span>
+                </div>
+                ${doseGrams > 0 ? `
+                <div class="result-row">
+                    <span class="result-label">Рекомендована доза:</span>
+                    <span class="result-value">${drug === 'chloride' ? '1 г' : doseGrams + ' г'}</span>
+                </div>
+                <div class="result-row">
+                    <span class="result-label">Препарат:</span>
+                    <span class="result-value">${drug === 'chloride' ? 'CaCl₂ 10%' : 'Ca-глюконат 10%'}</span>
+                </div>
+                <div class="result-row">
+                    <span class="result-label">Об'єм препарату:</span>
+                    <span class="result-value">${vol.toFixed(1)} <span class="result-unit">мл</span></span>
+                </div>
+                <div class="result-row">
+                    <span class="result-label">Час введення:</span>
+                    <span class="result-value">10-20 <span class="result-unit">хв</span></span>
+                </div>
+                ` : ''}
+            `;
+
+            const warnEl = document.getElementById('ca-warning');
+            warnEl.textContent = warningText;
+            warnEl.className = (corr < severeLowerBound || corr > severeUpperBound) ? 'warning danger' : 'warning';
         }
 
-        // Додаткове обмеження для 7.5%
-        if (solution === '7.5' && rate > 10) {
-            rate = 10;
+        // ==================== МАГНІЙ ====================
+        function calculateMg() {
+            const cur = parseFloat(document.getElementById('mg-current').value) || 0.8;
+            const ind = document.getElementById('mg-indication').value;
+
+            let status = '', doseGrams = 0, warningText = '';
+
+            if (ind === 'torsades') {
+                status = '🔴 КРИТИЧНИЙ СТАН';
+                doseGrams = 2; 
+                warningText = '⚡ TORSADES / ЕКЛАМПСІЯ! Болюс 2 г MgSO₄ (8 мл 25%) за 10-15 хв! При еклампсії 4-6 г навантаження, далі інфузія.';
+            } else if (cur < 0.7) {
+                status = '🔵 ГІПОМАГНІЄМІЯ';
+                
+                if (ind === 'severe' || cur < 0.5) {
+                    doseGrams = 6; 
+                    warningText = '🔴 ТЯЖКА ГІПОМАГНІЄМІЯ! 4-8 г MgSO₄ (16-32 мл 25%) за 12-24 год.';
+                } else if (cur < 0.6) {
+                    doseGrams = 4; 
+                    warningText = '⚠️ Помірна гіпомагніємія. 2-4 г MgSO₄ (8-16 мл 25%) за 4-12 год.';
+                } else {
+                    doseGrams = 2; 
+                    warningText = '✅ Легка гіпомагніємія. 2 г MgSO₄ (8 мл 25%) за 2-4 год.';
+                }
+            } 
+            else if (cur > 1.2) {
+                status = '🔴 ГІПЕРМАГНІЄМІЯ';
+                warningText = '🔴 ГІПЕРМАГНІЄМІЯ! При симптомах — Кальцію глюконат 10% 10-20 мл в/в!';
+            } 
+            else {
+                status = '🟢 НОРМОМАГНІЄМІЯ';
+                warningText = '✅ Рівень магнію в нормі.';
+            }
+            
+            let doseMmol = doseGrams * 4;
+            let volMl = doseGrams * 4;
+
+            document.getElementById('mg-result').innerHTML = `
+                <div class="result-row"><span class="result-label">Стан:</span><span class="result-value">${status}</span></div>
+                ${doseGrams > 0 ? `
+                <div class="result-row"><span class="result-label">Доза MgSO₄:</span><span class="result-value">${doseGrams} <span class="result-unit">г</span></span></div>
+                <div class="result-row"><span class="result-label">Об'єм MgSO₄ 25%:</span><span class="result-value">${volMl} <span class="result-unit">мл</span></span></div>
+                <div class="result-row"><span class="result-label">Елементарний Mg²⁺:</span><span class="result-value">${doseMmol} <span class="result-unit">ммоль</span></span></div>
+                ` : ''}
+            `;
+
+            const warnEl = document.getElementById('mg-warning');
+            warnEl.textContent = warningText;
+            warnEl.className = (cur < 0.5 || cur > 1.5 || ind === 'torsades') ? 'warning danger' : 'warning';
         }
-
-        if (cur < 2.5) {
-            rate = Math.min(rate, 10);
-        }
-
-        // Розрахунок об'єму та тривалості
-        vol = deficit / mmolPerMl;
-        duration = deficit / rate;
-
-        // Попередження
-        if (cur < 2.5) {
-            warningText = '🔴 КРИТИЧНА ГІПОКАЛІЄМІЯ! В/в корекція через центральний катетер! ЕКГ-контроль!';
-        } else if (cur < 3.0) {
-            warningText = '⚠️ Помірна гіпокаліємія. В/в корекція, контроль K⁺ через 6 год.';
-        } else {
-            warningText = '✅ Легка гіпокаліємія. В/в корекція, контроль K⁺ через 12 год.';
-        }
-
-        if (solution === '7.5') {
-            warningText += ' KCl 7.5% — ТІЛЬКИ в центральну вену!';
-        }
-    }
-    else if (cur > 5.0) {
-        status = '🔴 ГІПЕРКАЛІЄМІЯ';
-        if (cur > 6.5) {
-            warningText = '🔴 ТЯЖКА ГІПЕРКАЛІЄМІЯ! Ca-глюконат 10% 10 мл в/в болюс! Інсулін + глюкоза!';
-        } else {
-            warningText = '⚠️ Гіперкаліємія. Петльові діуретики, контроль ЕКГ.';
-        }
-    }
-    else {
-        status = '🟢 НОРМОКАЛІЄМІЯ';
-        warningText = '✅ Рівень калію в межах норми.';
-    }
-
-    document.getElementById('k-result').innerHTML = `
-        <div class="result-row"><span class="result-label">Стан:</span><span class="result-value">${status}</span></div>
-        ${deficit > 0 ? `
-        <div class="result-row"><span class="result-label">Дефіцит K⁺:</span><span class="result-value">${deficit.toFixed(0)} <span class="result-unit">ммоль</span></span></div>
-        <div class="result-row"><span class="result-label">Розчин:</span><span class="result-value">${solutionName}</span></div>
-        <div class="result-row"><span class="result-label">Об'єм:</span><span class="result-value">${vol.toFixed(0)} <span class="result-unit">мл</span></span></div>
-        <div class="result-row"><span class="result-label">Макс. швидкість:</span><span class="result-value">${rate} <span class="result-unit">ммоль/год</span></span></div>
-        <div class="result-row"><span class="result-label">Швидкість інфузії:</span><span class="result-value">${(rate / mmolPerMl).toFixed(1)} <span class="result-unit">мл/год</span></span></div>
-        <div class="result-row"><span class="result-label">Тривалість:</span><span class="result-value">${duration.toFixed(1)} <span class="result-unit">год</span></span></div>
-        ` : ''}
-    `;
-
-    const warnEl = document.getElementById('k-warning');
-    warnEl.textContent = warningText;
-    warnEl.className = (cur < 2.5 || cur > 6.5) ? 'warning danger' : 'warning';
-}
-
-      // ==================== КАЛЬЦІЙ (ВИПРАВЛЕНО) ====================
-function calculateCa() {
-    const w = parseFloat(document.getElementById('ca-weight').value) || 70;
-    const cur = parseFloat(document.getElementById('ca-current').value) || 1.2;
-    const alb = parseFloat(document.getElementById('ca-albumin').value) || 40;
-    const albUnit = document.getElementById('ca-albumin-unit').value;
-    const drug = document.getElementById('ca-drug').value;
-
-    // Корекція на альбумін
-    let corr;
-    if (albUnit === 'gl') {
-        corr = cur + 0.02 * (40 - alb);  // г/л, норма 40, коефіцієнт 0.02
-    } else {
-        corr = cur + 0.8 * (4.0 - alb);  // г/дл, норма 4.0, коефіцієнт 0.8 ✅ ВИПРАВЛЕНО
-    }
-    
-    let status = '', dose = 0, vol = 0, warningText = '';
-
-    if (corr < 1.0) {
-        status = '🔵 ГІПОКАЛЬЦІЄМІЯ';
-        
-        // Дозування за симптомами та рівнем
-        if (corr < 0.8) {
-            dose = 4.5;  // ~2 г Ca-глюконату (тяжка/симптоматична)
-            warningText = '🔴 ТЯЖКА ГІПОКАЛЬЦІЄМІЯ! В/в болюс 1-2 г Ca-глюконату за 10-20 хв! ЕКГ (QT)! Можна повторити.';
-        } else {
-            dose = 2.25;  // ~1 г Ca-глюконату (помірна)
-            warningText = '⚠️ Помірна гіпокальціємія. В/в 1 г Ca-глюконату за 10-20 хв. При симптомах — збільшити дозу.';
-        }
-        
-        vol = dose / (drug === 'chloride' ? 0.68 : 0.22);
-        
-        // Уточнення для CaCl (в 3 рази більше елементарного Ca²⁺)
-        if (drug === 'chloride') {
-            warningText += ' CaCl₂ — тільки центральна вена!';
-        }
-    } 
-    else if (corr > 1.35) {
-        status = '🔴 ГІПЕРКАЛЬЦІЄМІЯ';
-        if (corr > 1.5) {
-            warningText = '🔴 ТЯЖКА ГІПЕРКАЛЬЦІЄМІЯ! NaCl 0.9% 300 мл/год + кальцитонін 4-8 МО/кг!';
-        } else {
-            warningText = '⚠️ Помірна гіперкальціємія. NaCl 0.9% 200 мл/год.';
-        }
-    } 
-    else {
-        status = '🟢 НОРМОКАЛЬЦІЄМІЯ';
-        warningText = '✅ Рівень кальцію в нормі.';
-    }
-
-    document.getElementById('ca-result').innerHTML = `
-        <div class="result-row">
-            <span class="result-label">Стан:</span>
-            <span class="result-value">${status}</span>
-        </div>
-        <div class="result-row">
-            <span class="result-label">Ca²⁺ корегований:</span>
-            <span class="result-value">${corr.toFixed(2)} <span class="result-unit">ммоль/л</span></span>
-        </div>
-        ${dose > 0 ? `
-        <div class="result-row">
-            <span class="result-label">Доза Ca²⁺:</span>
-            <span class="result-value">${dose.toFixed(1)} <span class="result-unit">ммоль</span></span>
-        </div>
-        <div class="result-row">
-            <span class="result-label">Препарат:</span>
-            <span class="result-value">${drug === 'chloride' ? 'CaCl₂ 10%' : 'Ca-глюконат 10%'}</span>
-        </div>
-        <div class="result-row">
-            <span class="result-label">Об'єм:</span>
-            <span class="result-value">${vol.toFixed(1)} <span class="result-unit">мл</span></span>
-        </div>
-        <div class="result-row">
-            <span class="result-label">Введення:</span>
-            <span class="result-value">10-20 <span class="result-unit">хв</span></span>
-        </div>
-        <div class="result-row">
-            <span class="result-label">Маса солі:</span>
-            <span class="result-value">${drug === 'chloride' ? (dose * 147 / 1000).toFixed(1) : (dose * 448 / 1000).toFixed(1)} <span class="result-unit">г</span></span>
-        </div>
-        ` : ''}
-    `;
-
-    const warnEl = document.getElementById('ca-warning');
-    warnEl.textContent = warningText;
-    warnEl.className = (corr < 0.8 || corr > 1.5) ? 'warning danger' : 'warning';
-}
-// ==================== МАГНІЙ (ВИПРАВЛЕНО) ====================
-function calculateMg() {
-    const w = parseFloat(document.getElementById('mg-weight').value) || 70;
-    const cur = parseFloat(document.getElementById('mg-current').value) || 0.8;
-    const ind = document.getElementById('mg-indication').value;
-
-    let status = '', dose = 0, vol = 0, warningText = '';
-
-    if (cur < 0.7) {
-        status = '🔵 ГІПОМАГНІЄМІЯ';
-        
-        if (ind === 'torsades') {
-            dose = 8;  // 2 г MgSO₄ = 8 ммоль Mg²⁺
-            vol = dose / 1.0;  // MgSO₄ 25% = 1 ммоль/мл ✅
-            warningText = '⚡ TORSADES / ЕКЛАМПСІЯ! Болюс 2 г MgSO₄ (8 мл 25%) за 15-20 хв!';
-        } 
-        else if (ind === 'severe' || cur < 0.5) {
-            dose = w * 0.1;  // 0.1 ммоль/кг
-            vol = dose / 1.0;  // ✅
-            warningText = `🔴 ТЯЖКА ГІПОМАГНІЄМІЯ! ${dose.toFixed(0)} ммоль = ${vol.toFixed(0)} мл 25% MgSO₄ за 4-6 год.`;
-        } 
-        else {
-            dose = w * 0.05;  // 0.05 ммоль/кг
-            vol = dose / 1.0;  // ✅
-            warningText = `✅ Планова корекція. ${vol.toFixed(0)} мл 25% MgSO₄ за 6-12 год.`;
-        }
-    } 
-    else if (cur > 1.2) {
-        status = '🔴 ГІПЕРМАГНІЄМІЯ';
-        warningText = '🔴 ГІПЕРМАГНІЄМІЯ! Кальцію глюконат 10% 10-20 мл в/в!';
-    } 
-    else {
-        status = '🟢 НОРМОМАГНІЄМІЯ';
-        warningText = '✅ Рівень магнію в нормі.';
-    }
-
-    document.getElementById('mg-result').innerHTML = `
-        <div class="result-row"><span class="result-label">Стан:</span><span class="result-value">${status}</span></div>
-        ${dose > 0 ? `
-        <div class="result-row"><span class="result-label">Доза Mg²⁺:</span><span class="result-value">${dose.toFixed(0)} <span class="result-unit">ммоль</span></span></div>
-        <div class="result-row"><span class="result-label">MgSO₄ 25%:</span><span class="result-value">${vol.toFixed(1)} <span class="result-unit">мл</span></span></div>
-        <div class="result-row"><span class="result-label">Маса MgSO₄:</span><span class="result-value">${(dose/4).toFixed(1)} <span class="result-unit">г</span></span></div>
-        ` : ''}
-    `;
-
-    const warnEl = document.getElementById('mg-warning');
-    warnEl.textContent = warningText;
-    warnEl.className = (cur < 0.5 || cur > 1.5 || ind === 'torsades') ? 'warning danger' : 'warning';
-}
 
         // ==================== НАВІГАЦІЯ ====================
         function switchTab(tabId) {
@@ -658,6 +672,7 @@ function calculateMg() {
                 btn.classList.remove('active');
                 if (btn.dataset.tab === tabId) btn.classList.add('active');
             });
+            calculateCurrent();
         }
 
         function calculateCurrent() {
