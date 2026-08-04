@@ -3,705 +3,1622 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
-    <title>Regional Anesthesia Calculator</title>
+    <title>Regional Anesthesia Calculator v2</title>
     <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; }
+        :root {
+            --bg: #0a0f1a;
+            --card: #111827;
+            --border: #2d3748;
+            --blue: #3b82f6;
+            --blue-light: #93c5fd;
+            --gold: #fbbf24;
+            --red: #ef4444;
+            --green: #22c55e;
+            --amber: #f59e0b;
+            --text: #e2e8f0;
+            --muted: #9ca3af;
+            --input-bg: #0f1521;
+            --radius: 14px;
+            --radius-sm: 10px;
+        }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: #0a0f1a;
-            color: #e2e8f0;
+            background: var(--bg);
+            color: var(--text);
             padding: 10px;
             min-height: 100vh;
+            line-height: 1.4;
+            max-width: 600px;
+            margin: 0 auto;
         }
         .header {
             background: linear-gradient(135deg, #1e3a5f 0%, #0a0f1a 100%);
             border-radius: 18px;
             padding: 14px;
-            margin-bottom: 12px;
+            margin-bottom: 10px;
             border: 1px solid #2d4a6e;
             text-align: center;
         }
-        h1 { font-size: 19px; color: #fff; }
+        .header h1 {
+            font-size: 19px;
+            color: #fff;
+            letter-spacing: 0.3px;
+        }
+        .header .ver {
+            font-size: 10px;
+            color: #6b90c0;
+            margin-top: 2px;
+        }
         .disclaimer {
             background: #7f1d1d;
             color: #fecaca;
             padding: 8px 12px;
             border-radius: 12px;
             font-size: 10px;
-            margin-bottom: 12px;
+            margin-bottom: 10px;
             text-align: center;
+            border: 1px solid #991b1b;
         }
         .tabs {
             display: flex;
-            gap: 4px;
-            margin-bottom: 12px;
+            gap: 3px;
+            margin-bottom: 10px;
             background: #1e293b;
-            padding: 4px;
+            padding: 3px;
             border-radius: 14px;
         }
         .tab {
             flex: 1;
-            padding: 10px 4px;
+            padding: 10px 3px;
             background: transparent;
             border: none;
             color: #94a3b8;
             font-size: 11px;
             font-weight: 600;
-            border-radius: 11px;
+            border-radius: 12px;
             cursor: pointer;
             transition: all 0.2s;
             text-align: center;
+            white-space: nowrap;
         }
-        .tab.active { background: #3b82f6; color: white; }
+        .tab.active {
+            background: var(--blue);
+            color: #fff;
+            box-shadow: 0 2px 8px rgba(59, 130, 246, 0.35);
+        }
         .card {
-            background: #111827;
-            border-radius: 16px;
-            padding: 14px;
+            background: var(--card);
+            border-radius: var(--radius);
+            padding: 13px;
             margin-bottom: 10px;
-            border: 1px solid #2d3748;
+            border: 1px solid var(--border);
         }
         .card-title {
-            font-size: 14px;
-            color: #93c5fd;
+            font-size: 13px;
+            color: var(--blue-light);
             margin-bottom: 10px;
             font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 6px;
         }
-        .input-group { margin-bottom: 10px; }
-        label {
-            display: block;
+        .card-subtitle {
             font-size: 11px;
-            color: #9ca3af;
-            margin-bottom: 4px;
+            color: var(--muted);
+            margin-bottom: 8px;
+            font-weight: 400;
+        }
+        .input-group {
+            margin-bottom: 9px;
+        }
+        .input-group label {
+            display: block;
+            font-size: 10px;
+            color: var(--muted);
+            margin-bottom: 3px;
             font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
         }
-        input, select {
+        input,
+        select {
             width: 100%;
-            padding: 10px 12px;
-            background: #0a0f1a;
+            padding: 9px 11px;
+            background: var(--input-bg);
             border: 1.5px solid #334155;
-            border-radius: 12px;
-            color: white;
-            font-size: 14px;
+            border-radius: var(--radius-sm);
+            color: #fff;
+            font-size: 13px;
+            font-family: inherit;
+            transition: border 0.2s;
         }
-        input:focus, select:focus { outline: none; border-color: #3b82f6; }
-        .row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-        .row-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px; }
+        input:focus,
+        select:focus {
+            outline: none;
+            border-color: var(--blue);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.12);
+        }
+        .row-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+        .row-3 {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 6px;
+        }
+        .row-4 {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr 1fr;
+            gap: 5px;
+        }
         .result {
-            background: linear-gradient(145deg, #111827 0%, #0a0f1a 100%);
-            border-radius: 14px;
+            background: linear-gradient(160deg, #111827 0%, #0a0f1a 100%);
+            border-radius: var(--radius);
             padding: 12px;
             border: 1px solid #2d4a6e;
-            margin-bottom: 10px;
+            margin-bottom: 8px;
         }
         .result-row {
             display: flex;
             justify-content: space-between;
             align-items: baseline;
-            padding: 7px 0;
+            padding: 6px 0;
             border-bottom: 1px solid #1e293b;
+            flex-wrap: wrap;
+            gap: 4px;
         }
-        .result-row:last-child { border-bottom: none; }
-        .result-label { color: #9ca3af; font-size: 11px; }
-        .result-value { font-size: 15px; font-weight: 700; color: #fbbf24; }
-        .result-unit { font-size: 10px; color: #6b7280; font-weight: 400; margin-left: 2px; }
+        .result-row:last-child {
+            border-bottom: none;
+        }
+        .result-label {
+            color: var(--muted);
+            font-size: 10px;
+            flex-shrink: 0;
+        }
+        .result-value {
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--gold);
+            text-align: right;
+        }
+        .result-value.danger {
+            color: var(--red);
+        }
+        .result-value.warn {
+            color: var(--amber);
+        }
+        .result-value.ok {
+            color: var(--green);
+        }
+        .result-unit {
+            font-size: 10px;
+            color: #6b7280;
+            font-weight: 400;
+            margin-left: 2px;
+        }
         .warning {
-            padding: 8px 12px;
-            border-radius: 10px;
-            font-size: 11px;
-            line-height: 1.4;
+            padding: 8px 11px;
+            border-radius: var(--radius-sm);
+            font-size: 10px;
+            line-height: 1.5;
             margin-top: 8px;
-            border-left: 3px solid #f59e0b;
+            border-left: 3px solid var(--amber);
         }
-        .warning.success { background: #14532d; color: #bbf7d0; border-left-color: #22c55e; }
-        .warning.danger { background: #450a0a; color: #fecaca; border-left-color: #ef4444; }
-        .warning.info { background: #1e3a5f; color: #bfdbfe; border-left-color: #3b82f6; }
-        .hidden { display: none !important; }
+        .warning.success {
+            background: #14532d;
+            color: #bbf7d0;
+            border-left-color: var(--green);
+        }
+        .warning.danger {
+            background: #450a0a;
+            color: #fecaca;
+            border-left-color: var(--red);
+        }
+        .warning.info {
+            background: #1e3a5f;
+            color: #bfdbfe;
+            border-left-color: var(--blue);
+        }
+        .warning.yellow {
+            background: #422006;
+            color: #fde68a;
+            border-left-color: var(--amber);
+        }
+        .hidden {
+            display: none !important;
+        }
         .dermatome-info {
             background: #0a0f1a;
-            border-radius: 10px;
-            padding: 10px;
-            margin: 8px 0;
-            font-size: 11px;
+            border-radius: var(--radius-sm);
+            padding: 9px;
+            margin: 7px 0;
+            font-size: 10px;
             color: #94a3b8;
             line-height: 1.5;
             border: 1px solid #2d3748;
         }
-        .dermatome-key { color: #fbbf24; font-weight: 600; }
+        .dermatome-key {
+            color: var(--gold);
+            font-weight: 600;
+        }
         .checkbox-group {
             display: flex;
             align-items: center;
-            gap: 8px;
-            padding: 6px 0;
+            gap: 7px;
+            padding: 4px 0;
+            cursor: pointer;
         }
-        .checkbox-group input { width: 18px; height: 18px; accent-color: #3b82f6; }
+        .checkbox-group input[type="checkbox"] {
+            width: 17px;
+            height: 17px;
+            accent-color: var(--blue);
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+        .checkbox-group label {
+            cursor: pointer;
+            font-size: 11px;
+            color: #cbd5e1;
+            text-transform: none;
+            letter-spacing: 0;
+            margin: 0;
+        }
         .btn-sm {
-            padding: 8px 14px;
-            border-radius: 10px;
-            border: 1.5px solid #3b82f6;
+            padding: 9px 14px;
+            border-radius: var(--radius-sm);
+            border: 1.5px solid var(--blue);
             background: transparent;
-            color: #93c5fd;
-            font-size: 12px;
+            color: var(--blue-light);
+            font-size: 11px;
             cursor: pointer;
             width: 100%;
-            margin-top: 6px;
+            margin-top: 5px;
+            font-weight: 600;
+            transition: all 0.2s;
+            text-align: center;
+        }
+        .btn-sm:hover {
+            background: rgba(59, 130, 246, 0.1);
+        }
+        .btn-sm.danger {
+            border-color: var(--red);
+            color: #fca5a5;
         }
         .last-drug-entry {
             background: #1a2333;
             padding: 10px;
-            border-radius: 10px;
-            margin-bottom: 8px;
+            border-radius: var(--radius-sm);
+            margin-bottom: 7px;
             position: relative;
             border: 1px solid #2d3748;
         }
         .remove-drug {
             position: absolute;
-            top: 6px;
-            right: 6px;
-            background: #ef4444;
-            color: white;
+            top: 5px;
+            right: 5px;
+            background: var(--red);
+            color: #fff;
             border: none;
             border-radius: 50%;
             width: 22px;
             height: 22px;
-            font-weight: bold;
+            font-weight: 700;
             cursor: pointer;
             font-size: 12px;
             line-height: 22px;
             text-align: center;
+            z-index: 2;
         }
         .range-display {
-            color: #fbbf24;
+            color: var(--gold);
             font-weight: 600;
             font-size: 13px;
+        }
+        .badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 20px;
+            font-size: 9px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+        .badge-red {
+            background: #450a0a;
+            color: #fca5a5;
+        }
+        .badge-yellow {
+            background: #422006;
+            color: #fde68a;
+        }
+        .badge-green {
+            background: #14532d;
+            color: #bbf7d0;
+        }
+        .badge-blue {
+            background: #1e3a5f;
+            color: #bfdbfe;
+        }
+        .bmi-display {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+            margin-top: 4px;
+        }
+        .bmi-chip {
+            background: #1e293b;
+            padding: 3px 9px;
+            border-radius: 20px;
+            font-size: 10px;
+            color: #cbd5e1;
+            border: 1px solid #334155;
+        }
+        .collapsible-header {
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 8px 0;
+            color: var(--blue-light);
+            font-size: 12px;
+            font-weight: 600;
+            border-bottom: 1px solid #2d3748;
+            margin-bottom: 6px;
+            user-select: none;
+        }
+        .collapsible-header::after {
+            content: '▸';
+            font-size: 10px;
+            transition: transform 0.2s;
+            color: var(--muted);
+        }
+        .collapsible-header.open::after {
+            transform: rotate(90deg);
+        }
+        .collapsible-body {
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+        }
+        hr {
+            border: none;
+            border-top: 1px solid #2d3748;
+            margin: 10px 0;
+        }
+        .info-table {
+            width: 100%;
+            font-size: 10px;
+            border-collapse: collapse;
+            margin: 6px 0;
+        }
+        .info-table td,
+        .info-table th {
+            padding: 5px 7px;
+            border-bottom: 1px solid #1e293b;
+            text-align: left;
+        }
+        .info-table th {
+            color: var(--blue-light);
+            font-weight: 600;
+            font-size: 9px;
+            text-transform: uppercase;
+        }
+        @media (max-width: 380px) {
+            .row-3 {
+                grid-template-columns: 1fr 1fr;
+            }
+            .row-4 {
+                grid-template-columns: 1fr 1fr;
+            }
+            .tab {
+                font-size: 10px;
+                padding: 8px 2px;
+            }
         }
     </style>
 </head>
 <body>
 
-<div class="header">
-    <h1>🧬 Regional Anesthesia</h1>
-</div>
-<div class="disclaimer">⚕️ Для медичних працівників. Перевіряйте розрахунки.</div>
-
-<!-- ==================== ЗАГАЛЬНІ ПОЛЯ ==================== -->
-<div class="card">
-    <div class="card-title">⚖️ Пацієнт</div>
-    <div class="row-3">
-        <div class="input-group">
-            <label>Вага (кг)</label>
-            <input type="number" id="global-weight" placeholder="70" min="1" max="300" step="0.1">
-        </div>
-        <div class="input-group">
-            <label>Зріст (см)</label>
-            <input type="number" id="global-height" placeholder="170" min="50" max="250">
-        </div>
-        <div class="input-group">
-            <label>Вік</label>
-            <input type="number" id="global-age" placeholder="45" min="18" max="110">
-        </div>
+    <div class="header">
+        <h1>🧬 Regional Anesthesia Calculator</h1>
+        <div class="ver">v2.0 · ESAIC / ASRA / NYSORA</div>
     </div>
-    <div class="input-group">
-        <label>Стать</label>
-        <select id="global-gender">
-            <option value="male">Чоловік</option>
-            <option value="female">Жінка</option>
-        </select>
+    <div class="disclaimer">
+        ⚕️ Інструмент підтримки рішень для медичних працівників. Не замінює клінічне мислення.
+        Завжди перевіряйте розрахунки та враховуйте індивідуальні особливості пацієнта.
     </div>
-</div>
 
-<!-- ==================== ВКЛАДКИ ==================== -->
-<div class="tabs">
-    <button class="tab active" data-tab="spinal">💧 СМА</button>
-    <button class="tab" data-tab="epidural">💉 Епідуральна</button>
-    <button class="tab" data-tab="last">🧪 LAST</button>
-</div>
-
-<!-- ==================== СМА ==================== -->
-<div id="tab-spinal" class="tab-content">
-    <div class="card">
-        <div class="card-title">📐 Параметри СМА</div>
-        <div class="row-2">
+    <!-- ==================== ПАЦІЄНТ ==================== -->
+    <div class="card" id="patient-card">
+        <div class="card-title">⚖️ Пацієнт</div>
+        <div class="row-3">
             <div class="input-group">
-                <label>Рівень пункції</label>
-                <select id="spinal-puncture">
-                    <option value="L5S1">L5–S1</option>
-                    <option value="L4L5">L4–L5</option>
-                    <option value="L3L4" selected>L3–L4</option>
-                    <option value="L2L3">L2–L3</option>
-                </select>
+                <label>Вага (кг)</label>
+                <input type="number" id="global-weight" placeholder="70" min="20" max="350" step="0.1" value="70">
             </div>
             <div class="input-group">
-                <label>Цільовий дерматом</label>
-                <select id="spinal-target">
-                    <option value="T12">T12 — пахвинна</option>
-                    <option value="T10">T10 — пупок</option>
-                    <option value="T8">T8 — епігастрій</option>
-                    <option value="T6">T6 — мечоподібний</option>
-                    <option value="T4" selected>T4 — соски</option>
-                </select>
-            </div>
-        </div>
-        <div class="input-group">
-            <label>Препарат</label>
-            <select id="spinal-drug">
-                <option value="bupiv-heavy" selected>Бупівакаїн гіпербаричний 0.5%</option>
-                <option value="bupiv-iso">Бупівакаїн ізобаричний 0.5%</option>
-                <option value="ropiv">Ропівакаїн 0.5%</option>
-                <option value="lido-heavy">Лідокаїн гіпербаричний 5%</option>
-            </select>
-        </div>
-        <div class="input-group">
-            <label>Фактори</label>
-            <select id="spinal-factors">
-                <option value="none">Без особливостей</option>
-                <option value="pregnant">Вагітність (-30%)</option>
-                <option value="elderly">Вік > 70 (-20%)</option>
-                <option value="obese">Ожиріння (-15%)</option>
-            </select>
-        </div>
-    </div>
-    <div class="dermatome-info" id="spinal-derm-info"></div>
-    <div class="result" id="spinal-result"></div>
-    <div class="warning" id="spinal-warning"></div>
-</div>
-
-<!-- ==================== ЕПІДУРАЛЬНА ==================== -->
-<div id="tab-epidural" class="tab-content hidden">
-    <div class="card">
-        <div class="card-title">📐 Параметри епідуральної</div>
-        <div class="row-2">
-            <div class="input-group">
-                <label>Рівень пункції</label>
-                <select id="epi-puncture">
-                    <option value="T11T12">T11–T12 (для T4)</option>
-                    <option value="T12L1">T12–L1 (для T6)</option>
-                    <option value="L1L2" selected>L1–L2 (для T8–T10)</option>
-                    <option value="L2L3">L2–L3 (для T12)</option>
-                    <option value="L3L4">L3–L4 (для L1)</option>
-                </select>
+                <label>Зріст (см)</label>
+                <input type="number" id="global-height" placeholder="170" min="80" max="250" value="170">
             </div>
             <div class="input-group">
-                <label>Цільовий дерматом</label>
-                <select id="epi-target">
-                    <option value="T12">T12 — пахвинна</option>
-                    <option value="T10">T10 — пупок</option>
-                    <option value="T8">T8 — епігастрій</option>
-                    <option value="T6">T6 — мечоподібний</option>
-                    <option value="T4" selected>T4 — соски</option>
-                </select>
+                <label>Вік (років)</label>
+                <input type="number" id="global-age" placeholder="45" min="16" max="115" value="45">
             </div>
         </div>
         <div class="row-2">
             <div class="input-group">
-                <label>Препарат</label>
-                <select id="epi-drug">
-                    <option value="ropiv075" selected>Ропівакаїн 0.75%</option>
-                    <option value="lido2">Лідокаїн 2%</option>
-                    <option value="bupiv05">Бупівакаїн 0.5%</option>
+                <label>Стать</label>
+                <select id="global-gender">
+                    <option value="male">Чоловік</option>
+                    <option value="female">Жінка</option>
                 </select>
             </div>
             <div class="input-group">
-                <label>Фактори</label>
-                <select id="epi-factors">
-                    <option value="none">Без особливостей</option>
-                    <option value="pregnant">Вагітність (-30%)</option>
-                    <option value="elderly">Вік > 70 (-25%)</option>
-                    <option value="obese">Ожиріння (-20%)</option>
+                <label>Вагітність</label>
+                <select id="global-pregnant">
+                    <option value="no">Ні</option>
+                    <option value="yes">Так (3-й триместр)</option>
+                    <option value="early">Так (1-2 триместр)</option>
                 </select>
             </div>
         </div>
-    </div>
-    <div class="dermatome-info" id="epi-derm-info"></div>
-    <div class="result" id="epi-result"></div>
-    <div class="warning" id="epi-warning"></div>
-</div>
-
-<!-- ==================== LAST ==================== -->
-<div id="tab-last" class="tab-content hidden">
-    <div class="card">
-        <div class="card-title">💊 Кошик препаратів</div>
-        <div id="last-drugs-container"></div>
-        <button class="btn-sm" id="add-last-drug">+ Додати препарат</button>
-        <div class="input-group" style="margin-top: 10px;">
-            <label>Вага для розрахунку</label>
-            <select id="last-weight-type">
-                <option value="actual">Фактична</option>
-                <option value="ibw">Ідеальна (IBW)</option>
-                <option value="adj">Скоригована (AdjBW)</option>
+        <div class="bmi-display" id="bmi-display"></div>
+        <div class="input-group" style="margin-top:8px;">
+            <label>Антикоагулянти / антитромбоцитарні</label>
+            <select id="anticoagulant-select">
+                <option value="none">Немає</option>
+                <option value="lmwh_proph">LMWH профілактична доза</option>
+                <option value="lmwh_therap">LMWH терапевтична доза</option>
+                <option value="warfarin">Варфарин</option>
+                <option value="dabigatran">Дабігатран</option>
+                <option value="rivaroxaban">Ривароксабан / Апіксабан / Едоксабан</option>
+                <option value="clopidogrel">Клопідогрель</option>
+                <option value="asa">Аспірин (монотерапія)</option>
+                <option value="ticagrelor">Тикагрелор</option>
             </select>
         </div>
+        <div id="anticoag-warning" class="warning hidden"></div>
     </div>
-    <div class="result" id="last-result"></div>
-    <div class="warning" id="last-warning"></div>
-</div>
 
-<script>
-(function() {
-    // ==================== ДОПОМІЖНІ ====================
-    function gVal(id) {
-        const el = document.getElementById(id);
-        if (!el || el.value.trim() === '') return null;
-        const v = parseFloat(el.value);
-        return isNaN(v) ? null : v;
-    }
-    function getW() { return gVal('global-weight') || 70; }
-    function getH() { return gVal('global-height') || 170; }
-    function getAge() { return gVal('global-age') || 45; }
-    function getGen() { return document.getElementById('global-gender')?.value || 'male'; }
+    <!-- ==================== ВКЛАДКИ ==================== -->
+    <div class="tabs">
+        <button class="tab active" data-tab="spinal">💧 СМА</button>
+        <button class="tab" data-tab="epidural">💉 Епідуральна</button>
+        <button class="tab" data-tab="last">🧪 LAST</button>
+    </div>
 
-    function calcIBW(w, h, gen) {
-        const inches = h / 2.54;
-        const ibw = gen === 'male' ? 50 + 2.3*(inches-60) : 45.5 + 2.3*(inches-60);
-        return Math.max(ibw, 30);
-    }
-    function calcAdjBW(w, ibw, h) {
-        const bmi = w / ((h/100)**2);
-        return bmi > 30 ? ibw + 0.4*(w - ibw) : w;
-    }
-
-    // ==================== ДЕРМАТОМИ ====================
-    const DERM_MAP = {
-        'S1':0,'S2':1,'L5':2,'L4':3,'L3':4,'L2':5,'L1':6,
-        'T12':7,'T11':8,'T10':9,'T9':10,'T8':11,'T7':12,'T6':13,
-        'T5':14,'T4':15,'T3':16,'T2':17,'T1':18
-    };
-    const PUNCTURE_MAP = {
-        'L5S1':'S1','L4L5':'L4','L3L4':'L3','L2L3':'L2','L1L2':'L1',
-        'T11T12':'T11','T12L1':'T12'
-    };
-    const DERM_NAMES = {
-        'T12':'пахвинна складка','T10':'пупок','T8':'епігастрій',
-        'T6':'мечоподібний відросток','T4':'соски','T2':'ключиці'
-    };
-    function countSegs(puncture, target) {
-        const from = PUNCTURE_MAP[puncture] || 'L3';
-        return Math.abs((DERM_MAP[target]||15) - (DERM_MAP[from]||4));
-    }
-
-    // ==================== СМА ====================
-    function calcSpinal() {
-        const puncture = document.getElementById('spinal-puncture').value;
-        const target = document.getElementById('spinal-target').value;
-        const drug = document.getElementById('spinal-drug').value;
-        const factors = document.getElementById('spinal-factors').value;
-        const age = getAge();
-        const gender = getGen();
-        const segs = countSegs(puncture, target);
-
-        let volMin = 0.25, volMax = 0.35;
-        let concMg = 5;
-        let onset = '3–5 хв', duration = '3–5 год', drugName = '';
-
-        if (drug === 'bupiv-heavy') {
-            volMin = 0.25; volMax = 0.35; concMg = 5;
-            drugName = 'Бупівакаїн гіперб. 0.5%';
-        } else if (drug === 'bupiv-iso') {
-            volMin = 0.3; volMax = 0.4; concMg = 5;
-            drugName = 'Бупівакаїн ізобар. 0.5%';
-            onset = '5–8 хв';
-        } else if (drug === 'ropiv') {
-            volMin = 0.25; volMax = 0.35; concMg = 5;
-            drugName = 'Ропівакаїн 0.5%';
-            onset = '5–8 хв'; duration = '2–4 год';
-        } else if (drug === 'lido-heavy') {
-            volMin = 0.2; volMax = 0.25; concMg = 50;
-            drugName = 'Лідокаїн гіперб. 5%';
-            onset = '2–3 хв'; duration = '1–2 год';
-        }
-
-        let volMinTotal = segs * volMin;
-        let volMaxTotal = segs * volMax;
-        let doseMin = volMinTotal * concMg;
-        let doseMax = volMaxTotal * concMg;
-        let note = '';
-
-        if (factors === 'pregnant' && gender === 'female') {
-            volMinTotal *= 0.7; volMaxTotal *= 0.7;
-            doseMin *= 0.7; doseMax *= 0.7;
-            note = '🤰 Вагітність: -30%';
-        } else if (factors === 'pregnant' && gender === 'male') {
-            note = '⚠️ "Вагітність" для чоловіка — корекцію не застосовано';
-        }
-        if (factors === 'elderly' || age > 70) {
-            volMinTotal *= 0.8; volMaxTotal *= 0.8;
-            doseMin *= 0.8; doseMax *= 0.8;
-            note += (note ? ' | ' : '') + '👴 Вік: -20%';
-        }
-        if (factors === 'obese') {
-            volMinTotal *= 0.85; volMaxTotal *= 0.85;
-            doseMin *= 0.85; doseMax *= 0.85;
-            note += (note ? ' | ' : '') + '⚖️ Ожиріння: -15%';
-        }
-
-        document.getElementById('spinal-derm-info').innerHTML = `
-            📍 <span class="dermatome-key">${puncture}</span> → 🎯 <span class="dermatome-key">${target}</span> (${DERM_NAMES[target]}) | 
-            📏 Сегментів: <span class="dermatome-key">${segs}</span> | 
-            💊 ${drugName}
-        `;
-
-        document.getElementById('spinal-result').innerHTML = `
-            <div class="result-row">
-                <span class="result-label">Рекомендований об'єм:</span>
-                <span class="range-display">${volMinTotal.toFixed(1)}–${volMaxTotal.toFixed(1)} мл</span>
+    <!-- ==================== СМА ==================== -->
+    <div id="tab-spinal" class="tab-content">
+        <div class="card">
+            <div class="card-title">📐 Параметри спінальної анестезії</div>
+            <div class="input-group">
+                <label>Тип операції / бажаний рівень блоку</label>
+                <select id="spinal-surgery-type">
+                    <option value="csection">Кесарів розтин (T4–T6)</option>
+                    <option value="hernia">Герніопластика пахвинна (T10)</option>
+                    <option value="turp">TURP / урологія (T10)</option>
+                    <option value="ortho-hip">Ортопедія — стегно (T10)</option>
+                    <option value="ortho-knee">Ортопедія — коліно / гомілка (T12)</option>
+                    <option value="perineal">Промежина / анальна хірургія (S2–S5, сідлоподібний)</option>
+                    <option value="custom">Інше (вказати дерматом)</option>
+                </select>
             </div>
-            <div class="result-row">
-                <span class="result-label">Доза:</span>
-                <span class="range-display">${doseMin.toFixed(1)}–${doseMax.toFixed(1)} мг</span>
+            <div class="row-2" id="spinal-dermatome-row">
+                <div class="input-group">
+                    <label>Цільовий верхній дерматом</label>
+                    <select id="spinal-target">
+                        <option value="T12">T12 — пахвинна складка</option>
+                        <option value="T10">T10 — пупок</option>
+                        <option value="T8">T8 — епігастрій</option>
+                        <option value="T6">T6 — мечоподібний</option>
+                        <option value="T4">T4 — соски</option>
+                        <option value="S2">S2–S5 — сідлоподібний</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label>Рівень пункції (інформаційно)</label>
+                    <select id="spinal-puncture">
+                        <option value="L5S1">L5–S1</option>
+                        <option value="L4L5">L4–L5</option>
+                        <option value="L3L4" selected>L3–L4</option>
+                        <option value="L2L3">L2–L3</option>
+                    </select>
+                </div>
             </div>
-            <div class="result-row"><span class="result-label">Початок:</span><span class="result-value">${onset}</span></div>
-            <div class="result-row"><span class="result-label">Тривалість:</span><span class="result-value">${duration}</span></div>
-        `;
+            <div class="row-2">
+                <div class="input-group">
+                    <label>Препарат</label>
+                    <select id="spinal-drug">
+                        <option value="bupiv-heavy" selected>Бупівакаїн гіпербаричний 0.5%</option>
+                        <option value="bupiv-iso">Бупівакаїн ізобаричний 0.5%</option>
+                        <option value="ropiv">Ропівакаїн 0.5%</option>
+                        <option value="lido-heavy">Лідокаїн гіпербаричний 5%</option>
+                        <option value="prilo-heavy">Прилокаїн гіпербаричний 2%</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label>Положення після ін'єкції</label>
+                    <select id="spinal-position">
+                        <option value="supine" selected>Лежачи на спині</option>
+                        <option value="sitting">Сидячи (3–5 хв)</option>
+                        <option value="lateral">На боці</option>
+                        <option value="trendelenburg">Trendelenburg</option>
+                        <option value="rev-trendelenburg">Reverse Trendelenburg</option>
+                    </select>
+                </div>
+            </div>
+            <div class="checkbox-group">
+                <input type="checkbox" id="spinal-opioid">
+                <label>➕ Додати опіоїд інтратекально (фентаніл 10–25 мкг або морфін 100–250 мкг)</label>
+            </div>
+        </div>
+        <div class="dermatome-info" id="spinal-derm-info"></div>
+        <div class="result" id="spinal-result"></div>
+        <div id="spinal-warnings-container"></div>
+        <div class="warning info" id="spinal-position-note"></div>
+    </div>
 
-        const wEl = document.getElementById('spinal-warning');
-        wEl.textContent = note || '✅ Стандартний розрахунок';
-        wEl.className = note.includes('⚠️') ? 'warning danger' : note ? 'warning info' : 'warning success';
-    }
+    <!-- ==================== ЕПІДУРАЛЬНА ==================== -->
+    <div id="tab-epidural" class="tab-content hidden">
+        <div class="card">
+            <div class="card-title">📐 Параметри епідуральної анестезії</div>
+            <div class="input-group">
+                <label>Рівень кінчика епідурального катетера</label>
+                <select id="epi-catheter-tip">
+                    <option value="T6T7">T6–T7 (грудний — високий)</option>
+                    <option value="T8T9">T8–T9 (грудний — середній)</option>
+                    <option value="T10T11">T10–T11 (грудний — низький)</option>
+                    <option value="T12L1" selected>T12–L1 (грудо-поперековий)</option>
+                    <option value="L1L2">L1–L2 (поперековий — високий)</option>
+                    <option value="L2L3">L2–L3 (поперековий)</option>
+                    <option value="L3L4">L3–L4 (поперековий — низький)</option>
+                </select>
+            </div>
+            <div class="row-2">
+                <div class="input-group">
+                    <label>Верхній дерматом блоку</label>
+                    <select id="epi-target-upper">
+                        <option value="T2">T2 — ключиці</option>
+                        <option value="T4" selected>T4 — соски</option>
+                        <option value="T6">T6 — мечоподібний</option>
+                        <option value="T8">T8 — епігастрій</option>
+                        <option value="T10">T10 — пупок</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label>Нижній дерматом блоку</label>
+                    <select id="epi-target-lower">
+                        <option value="L1">L1 — пахвинна</option>
+                        <option value="L3">L3 — коліно</option>
+                        <option value="L5">L5 — стопа</option>
+                        <option value="S2">S2 — промежина</option>
+                        <option value="S5" selected>S5 — крижовий</option>
+                    </select>
+                </div>
+            </div>
+            <div class="row-2">
+                <div class="input-group">
+                    <label>Режим</label>
+                    <select id="epi-mode">
+                        <option value="analgesia">Аналгезія (низька концентрація)</option>
+                        <option value="surgical" selected>Хірургічна анестезія</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label>Препарат</label>
+                    <select id="epi-drug">
+                        <option value="ropiv075" selected>Ропівакаїн 0.75% (хірург.)</option>
+                        <option value="ropiv02">Ропівакаїн 0.2% (аналгезія)</option>
+                        <option value="bupiv05">Бупівакаїн 0.5% (хірург.)</option>
+                        <option value="bupiv0125">Бупівакаїн 0.125% (аналгезія)</option>
+                        <option value="lido2">Лідокаїн 2% (хірург.)</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div class="dermatome-info" id="epi-derm-info"></div>
+        <div class="result" id="epi-result"></div>
+        <div id="epi-warnings-container"></div>
+        <div class="warning info" id="epi-block-reminder">
+            🧊 <strong>Перевірка блоку:</strong> холодова проба (спрей), pin-prick, моторний блок (Bromage). Оцінюйте через 15–20 хв після болюсу.
+        </div>
 
-    // ==================== ЕПІДУРАЛЬНА ====================
-    function calcEpi() {
-        const puncture = document.getElementById('epi-puncture').value;
-        const target = document.getElementById('epi-target').value;
-        const drug = document.getElementById('epi-drug').value;
-        const factors = document.getElementById('epi-factors').value;
-        const age = getAge();
-        const gender = getGen();
-        const weight = getW();
-        const segs = countSegs(puncture, target);
-
-        let volPerSeg = 1.5;
-        let concMg = 7.5, maxMg = 200, drugName = 'Ропівакаїн 0.75%';
-        if (drug === 'lido2') { volPerSeg = 1.2; concMg = 20; maxMg = 400; drugName = 'Лідокаїн 2%'; }
-        else if (drug === 'bupiv05') { volPerSeg = 1.3; concMg = 5; maxMg = 150; drugName = 'Бупівакаїн 0.5%'; }
-
-        let vol = segs * volPerSeg;
-        let dose = vol * concMg;
-        let note = '';
-
-        if (factors === 'pregnant' && gender === 'female') {
-            vol *= 0.7; dose *= 0.7;
-            note = '🤰 Вагітність: -30%';
-        } else if (factors === 'pregnant' && gender === 'male') {
-            note = '⚠️ "Вагітність" для чоловіка — корекцію не застосовано';
-        }
-        if (factors === 'elderly' || age > 70) {
-            vol *= 0.75; dose *= 0.75;
-            note += (note ? ' | ' : '') + '👴 Вік: -25%';
-        }
-        if (factors === 'obese') {
-            vol *= 0.8;
-            note += (note ? ' | ' : '') + '⚖️ Ожиріння: об\'єм -20%';
-        }
-
-        const pct = (dose / maxMg) * 100;
-
-        document.getElementById('epi-derm-info').innerHTML = `
-            📍 <span class="dermatome-key">${puncture}</span> → 🎯 <span class="dermatome-key">${target}</span> (${DERM_NAMES[target]}) | 
-            📏 Сегментів: <span class="dermatome-key">${segs}</span> | 
-            💊 ${drugName}
-        `;
-
-        document.getElementById('epi-result').innerHTML = `
-            <div class="result-row"><span class="result-label">Об'єм болюсу:</span><span class="result-value">${vol.toFixed(1)}<span class="result-unit">мл</span></span></div>
-            <div class="result-row"><span class="result-label">Доза:</span><span class="result-value">${dose.toFixed(0)}<span class="result-unit">мг (${(dose/weight).toFixed(1)} мг/кг)</span></span></div>
-            <div class="result-row"><span class="result-label">% від макс. разової:</span><span class="result-value" style="color:${pct>80?'#ef4444':pct>50?'#f59e0b':'#22c55e'}">${pct.toFixed(0)}%</span></div>
-        `;
-
-        const wEl = document.getElementById('epi-warning');
-        const warns = [note, pct > 80 ? `🔴 ${pct.toFixed(0)}% — перевищення безпечної дози!` : ''].filter(Boolean);
-        wEl.innerHTML = warns.join('<br>') || '✅ Доза в безпечних межах';
-        wEl.className = warns.length || note.includes('⚠️') ? 'warning danger' : 'warning success';
-    }
-
-    // ==================== LAST ====================
-    const MAX_DOSES_LAST = {
-        bupivacaine: { single: 2.5, daily: 400 },
-        ropivacaine: { single: 3.0, daily: 800 },
-        lidocaine: { single: 4.5, withEpiSingle: 7.0, daily: 300, withEpiDaily: 500 }
-    };
-    let lastDrugs = [];
-
-    function getLastWeight() {
-        const w = getW();
-        const h = getH();
-        const gen = getGen();
-        const type = document.getElementById('last-weight-type').value;
-        const ibw = calcIBW(w, h, gen);
-        if (type === 'ibw') return ibw;
-        if (type === 'adj') return calcAdjBW(w, ibw, h);
-        return w;
-    }
-
-    function addLastDrug() {
-        if (lastDrugs.length >= 5) return;
-        lastDrugs.push({ id: Date.now(), drug: 'bupivacaine', conc: '', vol: '', epi: false });
-        renderLastDrugs();
-        calcLast();
-    }
-    function removeLastDrug(id) {
-        lastDrugs = lastDrugs.filter(d => d.id !== id);
-        renderLastDrugs();
-        calcLast();
-    }
-
-    function renderLastDrugs() {
-        const container = document.getElementById('last-drugs-container');
-        container.innerHTML = '';
-        lastDrugs.forEach(d => {
-            const div = document.createElement('div');
-            div.className = 'last-drug-entry';
-            div.innerHTML = `
-                <button class="remove-drug" data-id="${d.id}">&times;</button>
+        <!-- Conversion module -->
+        <div class="card" style="margin-top:8px;">
+            <div class="collapsible-header" id="epi-conversion-toggle">
+                🔄 Конверсія епідуральної аналгезії → хірургічний блок
+            </div>
+            <div class="collapsible-body hidden" id="epi-conversion-body">
+                <div class="card-subtitle">Поточні параметри інфузії</div>
                 <div class="row-2">
                     <div class="input-group">
-                        <label>Препарат</label>
-                        <select class="last-drug-sel" data-id="${d.id}">
-                            <option value="bupivacaine" ${d.drug==='bupivacaine'?'selected':''}>Бупівакаїн</option>
-                            <option value="ropivacaine" ${d.drug==='ropivacaine'?'selected':''}>Ропівакаїн</option>
-                            <option value="lidocaine" ${d.drug==='lidocaine'?'selected':''}>Лідокаїн</option>
+                        <label>Препарат в інфузії</label>
+                        <select id="epi-conv-drug">
+                            <option value="ropiv02">Ропівакаїн 0.2%</option>
+                            <option value="bupiv0125">Бупівакаїн 0.125%</option>
+                            <option value="bupiv00625">Бупівакаїн 0.0625%</option>
                         </select>
                     </div>
                     <div class="input-group">
-                        <label>Конц. (%)</label>
-                        <input type="number" class="last-conc-inp" value="${d.conc}" placeholder="0.5" step="0.01" min="0" data-id="${d.id}">
+                        <label>Швидкість (мл/год)</label>
+                        <input type="number" id="epi-conv-rate" placeholder="8" min="0" max="30" step="0.5" value="8">
                     </div>
                 </div>
-                <div class="input-group">
-                    <label>Об'єм (мл)</label>
-                    <input type="number" class="last-vol-inp" value="${d.vol}" placeholder="20" min="1" step="1" data-id="${d.id}">
+                <div class="row-2">
+                    <div class="input-group">
+                        <label>Останній болюс (мл)</label>
+                        <input type="number" id="epi-conv-bolus" placeholder="5" min="0" max="30" step="0.5" value="0">
+                    </div>
+                    <div class="input-group">
+                        <label>Хв. тому</label>
+                        <input type="number" id="epi-conv-time-ago" placeholder="30" min="0" max="240" step="5" value="30">
+                    </div>
                 </div>
-                ${d.drug === 'lidocaine' ? `
-                <div class="checkbox-group">
-                    <input type="checkbox" class="last-epi-cb" ${d.epi?'checked':''} data-id="${d.id}">
-                    <label>+ Адреналін (5 мкг/мл)</label>
-                </div>` : ''}
-            `;
-            container.appendChild(div);
-        });
+                <button class="btn-sm" id="epi-conv-calc-btn">🔍 Розрахувати конверсію</button>
+                <div id="epi-conv-result" class="result" style="margin-top:8px;display:none;"></div>
+            </div>
+        </div>
+    </div>
 
-        document.querySelectorAll('.remove-drug').forEach(b => {
-            b.addEventListener('click', () => removeLastDrug(parseInt(b.dataset.id)));
-        });
-        document.querySelectorAll('.last-drug-sel').forEach(s => {
-            s.addEventListener('change', function() {
-                const id = parseInt(this.dataset.id);
-                const entry = lastDrugs.find(d => d.id === id);
-                if (entry) { entry.drug = this.value; entry.epi = false; renderLastDrugs(); calcLast(); }
-            });
-        });
-        document.querySelectorAll('.last-conc-inp, .last-vol-inp').forEach(i => {
-            i.addEventListener('input', function() {
-                const id = parseInt(this.dataset.id);
-                const entry = lastDrugs.find(d => d.id === id);
-                if (entry) {
-                    if (this.classList.contains('last-conc-inp')) entry.conc = this.value;
-                    else entry.vol = this.value;
-                    calcLast();
+    <!-- ==================== LAST ==================== -->
+    <div id="tab-last" class="tab-content hidden">
+        <div class="card">
+            <div class="card-title">💊 Кошик місцевих анестетиків</div>
+            <div id="last-drugs-container"></div>
+            <button class="btn-sm" id="add-last-drug">+ Додати препарат</button>
+            <div class="input-group" style="margin-top:9px;">
+                <label>Вага для розрахунку доз</label>
+                <select id="last-weight-type">
+                    <option value="actual">Фактична вага</option>
+                    <option value="ibw">Ідеальна (IBW)</option>
+                    <option value="adj">Скоригована (AdjBW)</option>
+                </select>
+            </div>
+        </div>
+        <div class="result" id="last-result"></div>
+        <div id="last-warnings-container"></div>
+
+        <!-- Intralipid -->
+        <div class="card">
+            <div class="card-title">🛟 Intralipid 20% — терапія LAST</div>
+            <div class="row-2">
+                <div class="input-group">
+                    <label>Вага пацієнта (кг)</label>
+                    <input type="number" id="intralipid-weight" placeholder="70" min="20" max="350" step="0.1" value="70">
+                </div>
+                <div class="input-group">
+                    <label>Синхронізувати</label>
+                    <button class="btn-sm" id="sync-intralipid-weight" style="margin-top:0;padding:7px;">↻ З вагою пацієнта</button>
+                </div>
+            </div>
+            <div class="result" id="intralipid-result" style="margin-top:6px;"></div>
+            <button class="btn-sm danger" id="show-last-algorithm">📋 Алгоритм лікування LAST</button>
+            <div id="last-algorithm-body" class="warning danger hidden" style="margin-top:6px;font-size:10px;line-height:1.6;">
+                <strong>🚨 Алгоритм LAST (ASRA 2020):</strong><br>
+                1️⃣ Припинити введення місцевого анестетика<br>
+                2️⃣ Викликати допомогу, забезпечити прохідність дихальних шляхів<br>
+                3️⃣ Intralipid 20% болюс <strong>1.5 мл/кг</strong> за 1 хв<br>
+                4️⃣ Інфузія <strong>0.25 мл/кг/хв</strong><br>
+                5️⃣ При нестабільності: повторний болюс до 3 мл/кг<br>
+                6️⃣ Максимально <strong>12 мл/кг</strong> сумарно<br>
+                7️⃣ Уникнення вазопресину, кальцієвих блокаторів, β-блокаторів<br>
+                8️⃣ При зупинці серця — СЛР ≥60 хв
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================== ДОВІДКА ==================== -->
+    <div class="card" style="margin-top:6px;">
+        <div class="collapsible-header" id="ref-toggle">📖 Довідка: властивості препаратів</div>
+        <div class="collapsible-body hidden" id="ref-body">
+            <table class="info-table">
+                <thead>
+                    <tr><th>Препарат</th><th>Початок (хв)</th><th>Сенсорний блок (год)</th><th>Моторний блок (год)</th><th>Макс. разова</th><th>Макс. добова</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td>Бупівакаїн</td><td>5–10</td><td>3–6</td><td>4–8</td><td>2.5 мг/кг</td><td>400 мг</td></tr>
+                    <tr><td>Ропівакаїн</td><td>5–15</td><td>2–5</td><td>3–6</td><td>3.0 мг/кг</td><td>800 мг</td></tr>
+                    <tr><td>Лідокаїн</td><td>2–5</td><td>1–2</td><td>1.5–3</td><td>4.5 мг/кг*</td><td>300 мг*</td></tr>
+                    <tr><td>Прилокаїн</td><td>5–8</td><td>1.5–3</td><td>2–4</td><td>6.0 мг/кг</td><td>600 мг</td></tr>
+                </tbody>
+            </table>
+            <div style="font-size:9px;color:var(--muted);margin-top:4px;">* З адреналіном: разова 7 мг/кг, добова 500 мг</div>
+        </div>
+    </div>
+
+    <script>
+        (function() {
+            // ==================== ДОПОМІЖНІ ФУНКЦІЇ ====================
+            function gVal(id) {
+                const el = document.getElementById(id);
+                if (!el || el.value === '' || el.value === null) return null;
+                const v = parseFloat(el.value);
+                return isNaN(v) ? null : v;
+            }
+
+            function getW() { return gVal('global-weight') || 70; }
+
+            function getH() { return gVal('global-height') || 170; }
+
+            function getAge() { return gVal('global-age') || 45; }
+
+            function getGen() { return document.getElementById('global-gender')?.value || 'male'; }
+
+            function isPregnant() {
+                return document.getElementById('global-pregnant')?.value === 'yes';
+            }
+
+            function calcIBW(w, h, gen) {
+                const inches = h / 2.54;
+                let ibw = gen === 'male' ? 50 + 2.3 * (inches - 60) : 45.5 + 2.3 * (inches - 60);
+                return Math.max(ibw, 25);
+            }
+
+            function calcAdjBW(w, ibw, h) {
+                const bmi = w / ((h / 100) ** 2);
+                return bmi > 30 ? ibw + 0.4 * (w - ibw) : w;
+            }
+
+            function calcBMI(w, h) {
+                const hm = h / 100;
+                return w / (hm * hm);
+            }
+
+            function getUsedWeight() {
+                const w = getW();
+                const h = getH();
+                const gen = getGen();
+                const type = document.getElementById('last-weight-type')?.value || 'actual';
+                const ibw = calcIBW(w, h, gen);
+                if (type === 'ibw') return ibw;
+                if (type === 'adj') return calcAdjBW(w, ibw, h);
+                return w;
+            }
+
+            // ==================== ДЕРМАТОМИ ====================
+            const DERM_MAP = {
+                'S5': 0,
+                'S4': 1,
+                'S3': 2,
+                'S2': 3,
+                'S1': 4,
+                'L5': 5,
+                'L4': 6,
+                'L3': 7,
+                'L2': 8,
+                'L1': 9,
+                'T12': 10,
+                'T11': 11,
+                'T10': 12,
+                'T9': 13,
+                'T8': 14,
+                'T7': 15,
+                'T6': 16,
+                'T5': 17,
+                'T4': 18,
+                'T3': 19,
+                'T2': 20,
+                'T1': 21
+            };
+            const DERM_NAMES = {
+                'T12': 'пахвинна складка',
+                'T10': 'пупок',
+                'T8': 'епігастрій',
+                'T6': 'мечоподібний відросток',
+                'T4': 'соски',
+                'T2': 'ключиці',
+                'S2': 'промежина',
+                'S5': 'крижовий'
+            };
+
+            function getDermIndex(derm) { return DERM_MAP[derm] ?? 12; }
+
+            function countSegsBetween(lower, upper) {
+                return Math.abs(getDermIndex(upper) - getDermIndex(lower));
+            }
+
+            // ==================== BMI / IBW / AdjBW ВІДОБРАЖЕННЯ ====================
+            function updateBMIDisplay() {
+                const w = getW();
+                const h = getH();
+                const gen = getGen();
+                const bmi = calcBMI(w, h);
+                const ibw = calcIBW(w, h, gen);
+                const adjbw = calcAdjBW(w, ibw, h);
+                let bmiClass = '';
+                if (bmi < 18.5) bmiClass = 'Недостатня вага';
+                else if (bmi < 25) bmiClass = 'Норма';
+                else if (bmi < 30) bmiClass = 'Надмірна вага';
+                else if (bmi < 35) bmiClass = 'Ожиріння I ст.';
+                else if (bmi < 40) bmiClass = 'Ожиріння II ст.';
+                else bmiClass = 'Морбідне ожиріння III ст.';
+
+                document.getElementById('bmi-display').innerHTML = `
+                    <span class="bmi-chip">BMI: <strong>${bmi.toFixed(1)}</strong> (${bmiClass})</span>
+                    <span class="bmi-chip">IBW: <strong>${ibw.toFixed(0)}</strong> кг</span>
+                    <span class="bmi-chip">AdjBW: <strong>${adjbw.toFixed(0)}</strong> кг</span>
+                `;
+            }
+
+            // ==================== АНТИКОАГУЛЯНТИ ====================
+            function updateAnticoagWarning() {
+                const sel = document.getElementById('anticoagulant-select').value;
+                const warnEl = document.getElementById('anticoag-warning');
+                const msgs = {
+                    'none': { text: '', cls: 'hidden' },
+                    'lmwh_proph': {
+                        text: '🕐 LMWH профілактична: нейроаксіальна блокада через ≥12 год після останньої дози. Видалення катетера ≥12 год.',
+                        cls: 'warning info'
+                    },
+                    'lmwh_therap': {
+                        text: '⚠️ LMWH терапевтична: нейроаксіальна блокада через ≥24 год. Високий ризик! Консультація гематолога.',
+                        cls: 'warning yellow'
+                    },
+                    'warfarin': {
+                        text: '🕐 Варфарин: МНВ ≤1.4. Припинити за 4–5 днів. Контроль МНВ перед процедурою.',
+                        cls: 'warning info'
+                    },
+                    'dabigatran': {
+                        text: '🕐 Дабігатран: CrCl ≥80 → 48 год; CrCl 50–79 → 72 год; CrCl 30–49 → 96 год.',
+                        cls: 'warning info'
+                    },
+                    'rivaroxaban': {
+                        text: '🕐 Ривароксабан/Апіксабан/Едоксабан: ≥72 год (ризик-орієнтовано, ASRA).',
+                        cls: 'warning info'
+                    },
+                    'clopidogrel': {
+                        text: '⚠️ Клопідогрель: припинити за 5–7 днів. Нейроаксіальна блокада протипоказана без відмивання.',
+                        cls: 'warning yellow'
+                    },
+                    'asa': {
+                        text: '✅ Аспірин монотерапія: нейроаксіальна блокада дозволена (ASRA).',
+                        cls: 'warning success'
+                    },
+                    'ticagrelor': {
+                        text: '⚠️ Тикагрелор: припинити за 5 днів. Категорично не рекомендується без відмивання.',
+                        cls: 'warning danger'
+                    }
+                };
+                const m = msgs[sel] || msgs['none'];
+                warnEl.textContent = m.text;
+                warnEl.className = 'warning ' + m.cls;
+                if (sel === 'none') warnEl.classList.add('hidden');
+                else warnEl.classList.remove('hidden');
+            }
+
+            // ==================== СПІНАЛЬНА АНЕСТЕЗІЯ ====================
+            function getSpinalDoseRange(surgeryType, drug) {
+                const ranges = {
+                    'csection': {
+                        'bupiv-heavy': { mgMin: 10, mgMax: 12.5, target: 'T4' },
+                        'bupiv-iso': { mgMin: 10, mgMax: 15, target: 'T4' },
+                        'ropiv': { mgMin: 12, mgMax: 18, target: 'T4' },
+                        'lido-heavy': { mgMin: 50, mgMax: 75, target: 'T4' },
+                        'prilo-heavy': { mgMin: 40, mgMax: 60, target: 'T4' }
+                    },
+                    'hernia': {
+                        'bupiv-heavy': { mgMin: 7.5, mgMax: 10, target: 'T10' },
+                        'bupiv-iso': { mgMin: 8, mgMax: 12, target: 'T10' },
+                        'ropiv': { mgMin: 10, mgMax: 15, target: 'T10' },
+                        'lido-heavy': { mgMin: 40, mgMax: 60, target: 'T10' },
+                        'prilo-heavy': { mgMin: 30, mgMax: 50, target: 'T10' }
+                    },
+                    'turp': {
+                        'bupiv-heavy': { mgMin: 7.5, mgMax: 10, target: 'T10' },
+                        'bupiv-iso': { mgMin: 8, mgMax: 12, target: 'T10' },
+                        'ropiv': { mgMin: 10, mgMax: 15, target: 'T10' },
+                        'lido-heavy': { mgMin: 40, mgMax: 60, target: 'T10' },
+                        'prilo-heavy': { mgMin: 30, mgMax: 50, target: 'T10' }
+                    },
+                    'ortho-hip': {
+                        'bupiv-heavy': { mgMin: 10, mgMax: 12.5, target: 'T10' },
+                        'bupiv-iso': { mgMin: 10, mgMax: 15, target: 'T10' },
+                        'ropiv': { mgMin: 12, mgMax: 18, target: 'T10' },
+                        'lido-heavy': { mgMin: 50, mgMax: 75, target: 'T10' },
+                        'prilo-heavy': { mgMin: 40, mgMax: 60, target: 'T10' }
+                    },
+                    'ortho-knee': {
+                        'bupiv-heavy': { mgMin: 7.5, mgMax: 10, target: 'T12' },
+                        'bupiv-iso': { mgMin: 8, mgMax: 12, target: 'T12' },
+                        'ropiv': { mgMin: 10, mgMax: 15, target: 'T12' },
+                        'lido-heavy': { mgMin: 40, mgMax: 60, target: 'T12' },
+                        'prilo-heavy': { mgMin: 30, mgMax: 50, target: 'T12' }
+                    },
+                    'perineal': {
+                        'bupiv-heavy': { mgMin: 4, mgMax: 6, target: 'S2' },
+                        'bupiv-iso': { mgMin: 5, mgMax: 7.5, target: 'S2' },
+                        'ropiv': { mgMin: 6, mgMax: 10, target: 'S2' },
+                        'lido-heavy': { mgMin: 25, mgMax: 40, target: 'S2' },
+                        'prilo-heavy': { mgMin: 20, mgMax: 30, target: 'S2' }
+                    },
+                    'custom': {
+                        'bupiv-heavy': { mgMin: 7.5, mgMax: 12.5, target: 'T10' },
+                        'bupiv-iso': { mgMin: 8, mgMax: 15, target: 'T10' },
+                        'ropiv': { mgMin: 10, mgMax: 18, target: 'T10' },
+                        'lido-heavy': { mgMin: 40, mgMax: 75, target: 'T10' },
+                        'prilo-heavy': { mgMin: 30, mgMax: 60, target: 'T10' }
+                    }
+                };
+                const surgRanges = ranges[surgeryType] || ranges['custom'];
+                return surgRanges[drug] || surgRanges['bupiv-heavy'];
+            }
+
+            function getSpinalDrugInfo(drug) {
+                const info = {
+                    'bupiv-heavy': { name: 'Бупівакаїн гіпербар. 0.5%', concMgMl: 5, onset: '3–5 хв',
+                        durSens: '3–5 год', durMotor: '4–6 год', maxSingle: 2.5, maxDaily: 400 },
+                    'bupiv-iso': { name: 'Бупівакаїн ізобар. 0.5%', concMgMl: 5, onset: '5–8 хв',
+                        durSens: '3–6 год', durMotor: '4–7 год', maxSingle: 2.5, maxDaily: 400 },
+                    'ropiv': { name: 'Ропівакаїн 0.5%', concMgMl: 5, onset: '5–8 хв', durSens: '2–4 год',
+                        durMotor: '3–5 год', maxSingle: 3.0, maxDaily: 800 },
+                    'lido-heavy': { name: 'Лідокаїн гіпербар. 5%', concMgMl: 50, onset: '2–3 хв',
+                    durSens: '1–2 год', durMotor: '1.5–3 год', maxSingle: 4.5, maxDaily: 300 },
+                    'prilo-heavy': { name: 'Прилокаїн гіпербар. 2%', concMgMl: 20, onset: '4–6 хв',
+                        durSens: '1.5–3 год', durMotor: '2–4 год', maxSingle: 6.0, maxDaily: 600 }
+                };
+                return info[drug] || info['bupiv-heavy'];
+            }
+
+            function calcSpinal() {
+                const surgeryType = document.getElementById('spinal-surgery-type').value;
+                const drug = document.getElementById('spinal-drug').value;
+                const position = document.getElementById('spinal-position').value;
+                const targetSelect = document.getElementById('spinal-target');
+                const age = getAge();
+                const h = getH();
+                const w = getW();
+                const pregnant = isPregnant();
+                const bmi = calcBMI(w, h);
+
+                // Get base dose range from surgery type
+                const baseRange = getSpinalDoseRange(surgeryType, drug);
+                const drugInfo = getSpinalDrugInfo(drug);
+
+                // Auto-set target dermatome for non-custom
+                if (surgeryType !== 'custom') {
+                    targetSelect.value = baseRange.target;
                 }
+                const targetDerm = targetSelect.value;
+
+                let mgMin = baseRange.mgMin;
+                let mgMax = baseRange.mgMax;
+                const corrections = [];
+                const warnings = [];
+
+                // Age correction
+                if (age >= 18 && age < 65) {
+                    // no change
+                } else if (age >= 65 && age < 80) {
+                    mgMin *= 0.90;
+                    mgMax *= 0.90;
+                    corrections.push('👴 Вік 65–80: -10%');
+                } else if (age >= 80) {
+                    mgMin *= 0.80;
+                    mgMax *= 0.80;
+                    corrections.push('👴 Вік >80: -20%');
+                }
+
+                // Height correction (extremes only)
+                if (h < 150) {
+                    mgMin *= 0.925;
+                    mgMax *= 0.925;
+                    corrections.push('📏 Зріст <150 см: -7.5%');
+                    warnings.push('⚠️ Низький зріст (<150 см): можливе непередбачувано високе поширення блоку. Розгляньте зменшення дози.');
+                } else if (h > 190) {
+                    mgMin *= 1.05;
+                    mgMax *= 1.05;
+                    corrections.push('📏 Зріст >190 см: +5%');
+                    warnings.push('⚠️ Високий зріст (>190 см): можливий недостатній рівень блоку.');
+                }
+
+                // Pregnancy correction
+                if (pregnant) {
+                    const pregFactor = 0.75;
+                    mgMin *= pregFactor;
+                    mgMax *= pregFactor;
+                    corrections.push('🤰 Вагітність: -25%');
+                }
+
+                // Morbid obesity warning
+                if (bmi > 40) {
+                    warnings.push(
+                        '⚠️ Морбідне ожиріння (BMI >40): поширення спінального блоку менш передбачуване. Розгляньте зменшення дози на 10–15% та ретельний моніторинг.'
+                        );
+                    if (pregnant) {
+                        mgMin *= 0.90;
+                        mgMax *= 0.90;
+                        corrections.push('⚖️ Морбідне ожиріння + вагітність: додатково -10%');
+                    }
+                }
+
+                // Position note
+                const posNotes = {
+                    'supine': '✅ Стандартне положення. Гіпербаричний розчин поширюється за гравітацією.',
+                    'sitting': '🪑 Сидячи 3–5 хв → сідлоподібний блок (низький). Для промежинної хірургії.',
+                    'lateral': '↔️ На боці: залежно від баричності розчину та сторони.',
+                    'trendelenburg': '⚠️ Trendelenburg: ризик високого блоку з гіпербаричним розчином! Обережно.',
+                    'rev-trendelenburg': '⚠️ Reverse Trendelenburg: гіпербаричний розчин → нижчий блок.'
+                };
+
+                // Volume calculation
+                const volMin = mgMin / drugInfo.concMgMl;
+                const volMax = mgMax / drugInfo.concMgMl;
+
+                // Max dose check
+                const maxMgSingle = drugInfo.maxSingle * w;
+                const pctMax = (mgMax / maxMgSingle) * 100;
+
+                // Display
+                const punctureLevel = document.getElementById('spinal-puncture').value;
+                document.getElementById('spinal-derm-info').innerHTML = `
+                    🎯 <span class="dermatome-key">${targetDerm}</span> (${DERM_NAMES[targetDerm] || ''}) | 
+                    💊 ${drugInfo.name} | 
+                    📍 Пункція: <span class="dermatome-key">${punctureLevel}</span> (інформаційно)
+                `;
+
+                document.getElementById('spinal-result').innerHTML = `
+                    <div class="result-row">
+                        <span class="result-label">Рекомендована доза:</span>
+                        <span class="range-display">${mgMin.toFixed(1)}–${mgMax.toFixed(1)} мг</span>
+                    </div>
+                    <div class="result-row">
+                        <span class="result-label">Об'єм:</span>
+                        <span class="range-display">${volMin.toFixed(2)}–${volMax.toFixed(2)} мл</span>
+                    </div>
+                    <div class="result-row">
+                        <span class="result-label">Початок дії:</span>
+                        <span class="result-value">${drugInfo.onset}</span>
+                    </div>
+                    <div class="result-row">
+                        <span class="result-label">Тривалість (сенсорний):</span>
+                        <span class="result-value">${drugInfo.durSens}</span>
+                    </div>
+                    <div class="result-row">
+                        <span class="result-label">Тривалість (моторний):</span>
+                        <span class="result-value">${drugInfo.durMotor}</span>
+                    </div>
+                    <div class="result-row">
+                        <span class="result-label">% від макс. разової (${drugInfo.maxSingle} мг/кг):</span>
+                        <span class="result-value ${pctMax>80?'danger':pctMax>50?'warn':'ok'}">${pctMax.toFixed(0)}%</span>
+                    </div>
+                `;
+
+                // Warnings
+                const wContainer = document.getElementById('spinal-warnings-container');
+                let wHTML = '';
+                if (corrections.length > 0) {
+                    wHTML +=
+                        `<div class="warning info">🔧 Корекції: ${corrections.join(' | ')}</div>`;
+                }
+                warnings.forEach(w => {
+                    wHTML +=
+                        `<div class="warning ${w.includes('⚠️')?'yellow':'info'}">${w}</div>`;
+                });
+                if (pctMax > 100) {
+                    wHTML +=
+                        `<div class="warning danger">🔴 ПЕРЕВИЩЕННЯ максимальної разової дози! Зменшіть дозу.</div>`;
+                } else if (pctMax > 80) {
+                    wHTML +=
+                        `<div class="warning yellow">🟡 Доза перевищує 80% від максимальної разової. Будьте обережні.</div>`;
+                }
+                if (age > 70) {
+                    wHTML +=
+                        `<div class="warning info">👴 Пацієнт похилого віку: очікується вище поширення блоку, повільніший метаболізм.</div>`;
+                }
+                wContainer.innerHTML = wHTML;
+
+                document.getElementById('spinal-position-note').textContent = posNotes[position] || '';
+            }
+
+            // ==================== ЕПІДУРАЛЬНА АНЕСТЕЗІЯ ====================
+            function getEpiCatheterDerm(catheterTip) {
+                const map = {
+                    'T6T7': 'T6',
+                    'T8T9': 'T8',
+                    'T10T11': 'T10',
+                    'T12L1': 'T12',
+                    'L1L2': 'L1',
+                    'L2L3': 'L2',
+                    'L3L4': 'L3'
+                };
+                return map[catheterTip] || 'T12';
+            }
+
+            function isThoracicEpi(catheterTip) {
+                return ['T6T7', 'T8T9', 'T10T11'].includes(catheterTip);
+            }
+
+            function calcEpi() {
+                const catheterTip = document.getElementById('epi-catheter-tip').value;
+                const targetUpper = document.getElementById('epi-target-upper').value;
+                const targetLower = document.getElementById('epi-target-lower').value;
+                const drug = document.getElementById('epi-drug').value;
+                const mode = document.getElementById('epi-mode').value;
+                const age = getAge();
+                const w = getW();
+                const h = getH();
+                const pregnant = isPregnant();
+                const bmi = calcBMI(w, h);
+
+                const catheterDerm = getEpiCatheterDerm(catheterTip);
+                const thoracic = isThoracicEpi(catheterTip);
+
+                // Segments from catheter to upper target (cephalad spread)
+                const segsUp = countSegsBetween(catheterDerm, targetUpper);
+
+                // Base ml per segment
+                let mlPerSeg = thoracic ? 1.1 : 1.4;
+                const drugInfo = getEpiDrugInfo(drug);
+
+                let volTotal = segsUp * mlPerSeg;
+                const corrections = [];
+                const warnings = [];
+
+                // Age correction
+                if (age >= 65 && age < 80) {
+                    volTotal *= 0.85;
+                    corrections.push('👴 Вік 65–80: об\'єм -15%');
+                } else if (age >= 80) {
+                    volTotal *= 0.75;
+                    corrections.push('👴 Вік >80: об\'єм -25%');
+                }
+
+                // Pregnancy
+                if (pregnant) {
+                    volTotal *= 0.70;
+                    corrections.push('🤰 Вагітність: об\'єм -30%');
+                }
+
+                // Height extremes
+                if (h < 150) {
+                    volTotal *= 0.90;
+                    corrections.push('📏 Зріст <150 см: -10%');
+                } else if (h > 190) {
+                    volTotal *= 1.08;
+                    corrections.push('📏 Зріст >190 см: +8%');
+                }
+
+                // BMI note
+                if (bmi > 35) {
+                    warnings.push('⚠️ BMI >35: розгляньте зменшення об\'єму на 10–15%.');
+                }
+
+                // Thoracic vs lumbar note
+                const regionNote = thoracic ?
+                    'Грудний катетер: менший об\'єм на сегмент (~1.0–1.2 мл/сегм).' :
+                    'Поперековий катетер: більший об\'єм на сегмент (~1.3–1.6 мл/сегм).';
+
+                const mgTotal = volTotal * drugInfo.concMgMl;
+                const mgKg = mgTotal / w;
+                const pctMax = (mgKg / drugInfo.maxSingle) * 100;
+
+                // Fractional bolus
+                const fractionalSize = Math.min(5, Math.round(volTotal / 4));
+                const fractions = Math.ceil(volTotal / fractionalSize);
+
+                document.getElementById('epi-derm-info').innerHTML = `
+                    💉 Кінчик катетера: <span class="dermatome-key">${catheterTip}</span> → 
+                    🎯 Блок: <span class="dermatome-key">${targetUpper}</span>–<span class="dermatome-key">${targetLower}</span> | 
+                    📏 Цефаладних сегментів: <span class="dermatome-key">${segsUp}</span> | 
+                    ${thoracic ? '🫁 Грудний' : '🦴 Поперековий'} |
+                    💊 ${drugInfo.name}
+                `;
+
+                document.getElementById('epi-result').innerHTML = `
+                    <div class="result-row">
+                        <span class="result-label">Розрахований об'єм болюсу:</span>
+                        <span class="result-value">${volTotal.toFixed(1)}<span class="result-unit">мл</span></span>
+                    </div>
+                    <div class="result-row">
+                        <span class="result-label">Доза:</span>
+                        <span class="result-value">${mgTotal.toFixed(0)}<span class="result-unit">мг (${mgKg.toFixed(2)} мг/кг)</span></span>
+                    </div>
+                    <div class="result-row">
+                        <span class="result-label">% від макс. разової:</span>
+                        <span class="result-value ${pctMax>80?'danger':pctMax>50?'warn':'ok'}">${pctMax.toFixed(0)}%</span>
+                    </div>
+                    <div class="result-row">
+                        <span class="result-label">Фракційне введення:</span>
+                        <span class="result-value">по ${fractionalSize} мл × ${fractions} разів</span>
+                    </div>
+                    <div class="result-row">
+                        <span class="result-label">Початок дії:</span>
+                        <span class="result-value">${drugInfo.onset}</span>
+                    </div>
+                    <div class="result-row">
+                        <span class="result-label">Макс. розвиток блоку:</span>
+                        <span class="result-value">${drugInfo.peak}</span>
+                    </div>
+                    <div class="result-row">
+                        <span class="result-label">Очікувана тривалість:</span>
+                        <span class="result-value">${drugInfo.duration}</span>
+                    </div>
+                `;
+
+                const wContainer = document.getElementById('epi-warnings-container');
+                let wHTML = '';
+                if (corrections.length > 0) {
+                    wHTML +=
+                    `<div class="warning info">🔧 Корекції: ${corrections.join(' | ')}</div>`;
+                }
+                wHTML += `<div class="warning info">📐 ${regionNote}</div>`;
+                wHTML +=
+                    `<div class="warning info">💡 Вводьте фракційно по ${fractionalSize} мл, оцінюючи блок після кожної фракції (холодова проба, pin-prick).</div>`;
+                warnings.forEach(w => {
+                    wHTML +=
+                    `<div class="warning ${w.includes('⚠️')?'yellow':'info'}">${w}</div>`;
+                });
+                if (pctMax > 100) {
+                    wHTML +=
+                        `<div class="warning danger">🔴 ПЕРЕВИЩЕННЯ максимальної разової дози (${drugInfo.maxSingle} мг/кг)!</div>`;
+                } else if (pctMax > 80) {
+                    wHTML +=
+                        `<div class="warning yellow">🟡 Доза >80% від максимальної. Розгляньте фракційне введення з інтервалами.</div>`;
+                }
+                if (age > 70) {
+                    wHTML +=
+                        `<div class="warning info">👴 Похилий вік: очікується більше поширення на одиницю об'єму.</div>`;
+                }
+                wContainer.innerHTML = wHTML;
+            }
+
+            function getEpiDrugInfo(drug) {
+                const info = {
+                    'ropiv075': { name: 'Ропівакаїн 0.75%', concMgMl: 7.5, maxSingle: 3.0, maxDaily: 800, onset: '10–15 хв',
+                        peak: '20–30 хв', duration: '3–5 год' },
+                    'ropiv02': { name: 'Ропівакаїн 0.2%', concMgMl: 2.0, maxSingle: 3.0, maxDaily: 800, onset: '10–15 хв',
+                        peak: '20–30 хв', duration: '2–4 год' },
+                    'bupiv05': { name: 'Бупівакаїн 0.5%', concMgMl: 5.0, maxSingle: 2.5, maxDaily: 400, onset: '12–18 хв',
+                        peak: '25–35 хв', duration: '4–7 год' },
+                    'bupiv0125': { name: 'Бупівакаїн 0.125%', concMgMl: 1.25, maxSingle: 2.5, maxDaily: 400, onset: '12–18 хв',
+                        peak: '25–35 хв', duration: '3–5 год' },
+                    'lido2': { name: 'Лідокаїн 2%', concMgMl: 20, maxSingle: 4.5, maxDaily: 300, onset: '5–10 хв',
+                        peak: '15–20 хв', duration: '1.5–3 год' }
+                };
+                return info[drug] || info['ropiv075'];
+            }
+
+            // ==================== ЕПІДУРАЛЬНА КОНВЕРСІЯ ====================
+            function calcEpiConversion() {
+                const drug = document.getElementById('epi-conv-drug').value;
+                const rate = parseFloat(document.getElementById('epi-conv-rate').value) || 8;
+                const bolus = parseFloat(document.getElementById('epi-conv-bolus').value) || 0;
+                const timeAgo = parseFloat(document.getElementById('epi-conv-time-ago').value) || 30;
+                const w = getW();
+
+                const drugInfo = {
+                    'ropiv02': { conc: 2.0, name: 'Ропівакаїн 0.2%', maxSingle: 3.0, surgicalConc: '0.75%',
+                        surgConcVal: 7.5 },
+                    'bupiv0125': { conc: 1.25, name: 'Бупівакаїн 0.125%', maxSingle: 2.5, surgicalConc: '0.5%',
+                        surgConcVal: 5.0 },
+                    'bupiv00625': { conc: 0.625, name: 'Бупівакаїн 0.0625%', maxSingle: 2.5, surgicalConc: '0.5%',
+                        surgConcVal: 5.0 }
+                };
+                const info = drugInfo[drug] || drugInfo['ropiv02'];
+
+                // Estimate drug already in system
+                const mgFromInfusion = info.conc * rate * (timeAgo / 60);
+                const mgFromBolus = info.conc * bolus;
+                const totalGiven = mgFromInfusion + mgFromBolus;
+                const maxTotal = info.maxSingle * w;
+                const remaining = maxTotal - totalGiven;
+
+                const resultDiv = document.getElementById('epi-conv-result');
+                resultDiv.style.display = 'block';
+                resultDiv.innerHTML = `
+                    <div class="result-row">
+                        <span class="result-label">Введено за ~${timeAgo} хв:</span>
+                        <span class="result-value">~${totalGiven.toFixed(0)}<span class="result-unit">мг</span></span>
+                    </div>
+                    <div class="result-row">
+                        <span class="result-label">Залишок до макс. дози:</span>
+                        <span class="result-value ${remaining<0?'danger':'ok'}">${remaining.toFixed(0)}<span class="result-unit">мг</span></span>
+                    </div>
+                    <div class="result-row">
+                        <span class="result-label">Рекомендований болюс (${info.surgicalConc}):</span>
+                        <span class="result-value">${Math.max(0,Math.min(remaining/info.surgConcVal,15)).toFixed(1)}<span class="result-unit">мл</span></span>
+                    </div>
+                    <div class="result-row">
+                        <span class="result-label">Час до хірургічного блоку:</span>
+                        <span class="result-value">15–25 хв</span>
+                    </div>
+                `;
+            }
+
+            // ==================== LAST ====================
+            const MAX_DOSES_LAST = {
+                bupivacaine: { single: 2.5, daily: 400, name: 'Бупівакаїн' },
+                ropivacaine: { single: 3.0, daily: 800, name: 'Ропівакаїн' },
+                lidocaine: { single: 4.5, withEpiSingle: 7.0, daily: 300, withEpiDaily: 500,
+                name: 'Лідокаїн' },
+                prilocaine: { single: 6.0, daily: 600, name: 'Прилокаїн' }
+            };
+            let lastDrugs = [];
+
+            function addLastDrug() {
+                if (lastDrugs.length >= 6) return;
+                lastDrugs.push({ id: Date.now(), drug: 'bupivacaine', conc: '', vol: '', epi: false });
+                renderLastDrugs();
+                calcLast();
+            }
+
+            function removeLastDrug(id) {
+                lastDrugs = lastDrugs.filter(d => d.id !== id);
+                renderLastDrugs();
+                calcLast();
+            }
+
+            function renderLastDrugs() {
+                const container = document.getElementById('last-drugs-container');
+                container.innerHTML = '';
+                lastDrugs.forEach(d => {
+                    const div = document.createElement('div');
+                    div.className = 'last-drug-entry';
+                    div.innerHTML = `
+                        <button class="remove-drug" data-id="${d.id}">&times;</button>
+                        <div class="row-2">
+                            <div class="input-group">
+                                <label>Препарат</label>
+                                <select class="last-drug-sel" data-id="${d.id}">
+                                    <option value="bupivacaine" ${d.drug==='bupivacaine'?'selected':''}>Бупівакаїн</option>
+                                    <option value="ropivacaine" ${d.drug==='ropivacaine'?'selected':''}>Ропівакаїн</option>
+                                    <option value="lidocaine" ${d.drug==='lidocaine'?'selected':''}>Лідокаїн</option>
+                                    <option value="prilocaine" ${d.drug==='prilocaine'?'selected':''}>Прилокаїн</option>
+                                </select>
+                            </div>
+                            <div class="input-group">
+                                <label>Конц. (%)</label>
+                                <input type="number" class="last-conc-inp" value="${d.conc}" placeholder="0.5" step="0.01" min="0" data-id="${d.id}">
+                            </div>
+                        </div>
+                        <div class="input-group">
+                            <label>Об'єм (мл)</label>
+                            <input type="number" class="last-vol-inp" value="${d.vol}" placeholder="20" min="0.5" step="0.5" data-id="${d.id}">
+                        </div>
+                        ${d.drug==='lidocaine' ? `
+                        <div class="checkbox-group">
+                            <input type="checkbox" class="last-epi-cb" ${d.epi?'checked':''} data-id="${d.id}">
+                            <label>+ Адреналін (5 мкг/мл)</label>
+                        </div>` : ''}
+                    `;
+                    container.appendChild(div);
+                });
+
+                // Event listeners
+                container.querySelectorAll('.remove-drug').forEach(b => {
+                    b.addEventListener('click', () => removeLastDrug(parseInt(b.dataset.id)));
+                });
+                container.querySelectorAll('.last-drug-sel').forEach(s => {
+                    s.addEventListener('change', function() {
+                        const id = parseInt(this.dataset.id);
+                        const entry = lastDrugs.find(d => d.id === id);
+                        if (entry) { entry.drug = this.value;
+                            entry.epi = false;
+                            renderLastDrugs();
+                            calcLast(); }
+                    });
+                });
+                container.querySelectorAll('.last-conc-inp, .last-vol-inp').forEach(i => {
+                    i.addEventListener('input', function() {
+                        const id = parseInt(this.dataset.id);
+                        const entry = lastDrugs.find(d => d.id === id);
+                        if (entry) {
+                            if (this.classList.contains('last-conc-inp')) entry.conc = this.value;
+                            else entry.vol = this.value;
+                            calcLast();
+                        }
+                    });
+                });
+                container.querySelectorAll('.last-epi-cb').forEach(cb => {
+                    cb.addEventListener('change', function() {
+                        const id = parseInt(this.dataset.id);
+                        const entry = lastDrugs.find(d => d.id === id);
+                        if (entry) { entry.epi = this.checked;
+                            calcLast(); }
+                    });
+                });
+            }
+
+            function calcLast() {
+                const w = getUsedWeight();
+                const res = document.getElementById('last-result');
+                const wContainer = document.getElementById('last-warnings-container');
+
+                if (lastDrugs.length === 0) {
+                    res.innerHTML =
+                        '<div class="result-row"><span class="result-label">Додайте препарати для розрахунку</span></div>';
+                    wContainer.innerHTML = '';
+                    return;
+                }
+
+                let html = '';
+                let warnings = [];
+                let hasData = false;
+
+                lastDrugs.forEach((d, i) => {
+                    const conc = parseFloat(d.conc);
+                    const vol = parseFloat(d.vol);
+                    if (isNaN(conc) || isNaN(vol) || vol <= 0) return;
+                    hasData = true;
+
+                    const mg = conc * 10 * vol;
+                    const mgKg = mg / w;
+                    const maxDose = MAX_DOSES_LAST[d.drug];
+                    const maxSingle = (d.drug === 'lidocaine' && d.epi) ? maxDose.withEpiSingle :
+                        maxDose.single;
+                    const maxDaily = (d.drug === 'lidocaine' && d.epi) ? maxDose.withEpiDaily : maxDose
+                        .daily;
+                    const pctSingle = (mgKg / maxSingle) * 100;
+                    const pctDaily = (mg / maxDaily) * 100;
+
+                    html += `
+                        <div class="result-row">
+                            <span class="result-label">${maxDose.name} #${i+1}:</span>
+                            <span class="result-value ${pctSingle>80?'danger':pctSingle>50?'warn':'ok'}">
+                                ${mg.toFixed(0)} мг (${mgKg.toFixed(2)} мг/кг)
+                            </span>
+                        </div>
+                        <div class="result-row">
+                            <span class="result-label">  % макс. разової:</span>
+                            <span class="result-value ${pctSingle>80?'danger':pctSingle>50?'warn':'ok'}">${pctSingle.toFixed(0)}%</span>
+                        </div>
+                        <div class="result-row">
+                            <span class="result-label">  % макс. добової:</span>
+                            <span class="result-value ${pctDaily>80?'danger':pctDaily>50?'warn':'ok'}">${pctDaily.toFixed(0)}%</span>
+                        </div>
+                    `;
+
+                    if (pctSingle > 100) warnings.push(
+                        `🔴 ${maxDose.name} #${i+1}: перевищення макс. разової дози!`);
+                    else if (pctSingle > 80) warnings.push(
+                        `🟡 ${maxDose.name} #${i+1}: >80% макс. разової дози.`);
+                    if (pctDaily > 100) warnings.push(
+                    `🔴 ${maxDose.name} #${i+1}: перевищення макс. добової дози!`);
+                });
+
+                res.innerHTML = html ||
+                    '<div class="result-row"><span class="result-label">Введіть коректні дані</span></div>';
+
+                wContainer.innerHTML = '';
+                if (warnings.length > 0) {
+                    wContainer.innerHTML = warnings.map(w =>
+                        `<div class="warning ${w.includes('🔴')?'danger':'yellow'}">${w}</div>`
+                    ).join('');
+                    wContainer.innerHTML +=
+                        '<div class="warning info">⚠️ При комбінуванні місцевих анестетиків оцінюйте сумарний ризик системної токсичності. Токсичність потенційно адитивна.</div>';
+                } else if (hasData) {
+                    wContainer.innerHTML =
+                        '<div class="warning success">✅ Усі дози в безпечних межах.</div>';
+                }
+            }
+
+            function calcIntralipid() {
+                const w = parseFloat(document.getElementById('intralipid-weight').value) || 70;
+                const bolus = 1.5 * w;
+                const infusionPerMin = 0.25 * w;
+                const infusionPerHour = infusionPerMin * 60;
+                const maxTotal = 12 * w;
+
+                document.getElementById('intralipid-result').innerHTML = `
+                    <div class="result-row">
+                        <span class="result-label">Болюс (1.5 мл/кг):</span>
+                        <span class="result-value">${bolus.toFixed(0)}<span class="result-unit">мл за 1 хв</span></span>
+                    </div>
+                    <div class="result-row">
+                        <span class="result-label">Інфузія (0.25 мл/кг/хв):</span>
+                        <span class="result-value">${infusionPerHour.toFixed(0)}<span class="result-unit">мл/год</span></span>
+                    </div>
+                    <div class="result-row">
+                        <span class="result-label">Макс. сумарно (12 мл/кг):</span>
+                        <span class="result-value">${maxTotal.toFixed(0)}<span class="result-unit">мл</span></span>
+                    </div>
+                `;
+            }
+
+            // ==================== НАВІГАЦІЯ ====================
+            function switchTab(tabId) {
+                document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+                document.getElementById(`tab-${tabId}`).classList.remove('hidden');
+                document.querySelectorAll('.tab').forEach(b => b.classList.remove('active'));
+                document.querySelector(`[data-tab="${tabId}"]`).classList.add('active');
+
+                if (tabId === 'spinal') calcSpinal();
+                else if (tabId === 'epidural') calcEpi();
+                else if (tabId === 'last') { calcLast();
+                    calcIntralipid(); }
+            }
+
+            function recalcAll() {
+                updateBMIDisplay();
+                updateAnticoagWarning();
+                const active = document.querySelector('.tab.active')?.dataset.tab;
+                if (active === 'spinal') calcSpinal();
+                else if (active === 'epidural') calcEpi();
+                else if (active === 'last') { calcLast();
+                    calcIntralipid(); }
+            }
+
+            // ==================== ІНІТ ====================
+            document.addEventListener('DOMContentLoaded', () => {
+                // Tabs
+                document.querySelectorAll('.tab').forEach(t => {
+                    t.addEventListener('click', () => switchTab(t.dataset.tab));
+                });
+
+                // Global inputs
+                ['global-weight', 'global-height', 'global-age', 'global-gender', 'global-pregnant']
+                .forEach(id => {
+                    const el = document.getElementById(id);
+                    el.addEventListener('input', recalcAll);
+                    el.addEventListener('change', recalcAll);
+                });
+
+                // Anticoagulant
+                document.getElementById('anticoagulant-select').addEventListener('change',
+                updateAnticoagWarning);
+
+                // Spinal inputs
+                ['spinal-surgery-type', 'spinal-target', 'spinal-drug', 'spinal-puncture',
+                    'spinal-position', 'spinal-opioid'
+                ].forEach(id => {
+                    const el = document.getElementById(id);
+                    el.addEventListener('change', calcSpinal);
+                    if (el.type === 'checkbox') el.addEventListener('change', calcSpinal);
+                });
+
+                // Epidural inputs
+                ['epi-catheter-tip', 'epi-target-upper', 'epi-target-lower', 'epi-drug', 'epi-mode']
+                .forEach(id => {
+                    document.getElementById(id).addEventListener('change', calcEpi);
+                });
+
+                // LAST
+                document.getElementById('add-last-drug').addEventListener('click', addLastDrug);
+                document.getElementById('last-weight-type').addEventListener('change', calcLast);
+
+                // Intralipid
+                document.getElementById('intralipid-weight').addEventListener('input', calcIntralipid);
+                document.getElementById('sync-intralipid-weight').addEventListener('click', () => {
+                    document.getElementById('intralipid-weight').value = getW();
+                    calcIntralipid();
+                });
+
+                // LAST algorithm toggle
+                document.getElementById('show-last-algorithm').addEventListener('click', function() {
+                    const body = document.getElementById('last-algorithm-body');
+                    body.classList.toggle('hidden');
+                    this.textContent = body.classList.contains('hidden') ?
+                        '📋 Алгоритм лікування LAST' : '📋 Сховати алгоритм';
+                });
+
+                // Epidural conversion
+                document.getElementById('epi-conversion-toggle').addEventListener('click', function() {
+                    const body = document.getElementById('epi-conversion-body');
+                    body.classList.toggle('hidden');
+                    this.classList.toggle('open');
+                });
+                document.getElementById('epi-conv-calc-btn').addEventListener('click', calcEpiConversion);
+
+                // Reference toggle
+                document.getElementById('ref-toggle').addEventListener('click', function() {
+                    const body = document.getElementById('ref-body');
+                    body.classList.toggle('hidden');
+                    this.classList.toggle('open');
+                });
+
+                // Initial setup
+                addLastDrug();
+                updateBMIDisplay();
+                updateAnticoagWarning();
+                calcSpinal();
+                calcIntralipid();
             });
-        });
-        document.querySelectorAll('.last-epi-cb').forEach(cb => {
-            cb.addEventListener('change', function() {
-                const id = parseInt(this.dataset.id);
-                const entry = lastDrugs.find(d => d.id === id);
-                if (entry) { entry.epi = this.checked; calcLast(); }
-            });
-        });
-    }
-
-    function calcLast() {
-        const w = getLastWeight();
-        const res = document.getElementById('last-result');
-        const warn = document.getElementById('last-warning');
-
-        if (lastDrugs.length === 0) {
-            res.innerHTML = '<div class="result-row"><span class="result-label">Додайте препарати</span></div>';
-            warn.textContent = ''; return;
-        }
-
-        let html = '';
-        let dangers = [];
-        let hasData = false;
-
-        lastDrugs.forEach((d, i) => {
-            const conc = parseFloat(d.conc);
-            const vol = parseFloat(d.vol);
-            if (isNaN(conc) || isNaN(vol) || vol <= 0) return;
-            hasData = true;
-
-            const mg = conc * 10 * vol;
-            const mgKg = mg / w;
-            const maxDose = MAX_DOSES_LAST[d.drug];
-            const maxSingle = (d.drug === 'lidocaine' && d.epi) ? maxDose.withEpiSingle : maxDose.single;
-            const pct = (mgKg / maxSingle) * 100;
-
-            html += `<div class="result-row">
-                <span class="result-label">${d.drug} #${i+1}:</span>
-                <span class="result-value" style="color:${pct>80?'#ef4444':pct>50?'#f59e0b':'#22c55e'}">
-                    ${pct.toFixed(0)}% <span style="font-size:10px;color:#9ca3af;">(${mg.toFixed(0)} мг / ${mgKg.toFixed(2)} мг/кг)</span>
-                </span>
-            </div>`;
-            if (pct > 80) dangers.push(`🔴 ${d.drug} #${i+1}: ${pct.toFixed(0)}% від макс. разової дози!`);
-        });
-
-        res.innerHTML = html || '<div class="result-row"><span class="result-label">Введіть дані препаратів</span></div>';
-
-        if (dangers.length) {
-            warn.innerHTML = dangers.join('<br>') + '<br><small>⚠️ Токсичність НЕ адитивна! Оцінюйте кожен препарат окремо.</small>';
-            warn.className = 'warning danger';
-        } else if (hasData) {
-            warn.textContent = '✅ Всі дози в безпечних межах';
-            warn.className = 'warning success';
-        } else {
-            warn.textContent = '';
-            warn.className = 'warning';
-        }
-    }
-
-    // ==================== НАВІГАЦІЯ ====================
-    function switchTab(tabId) {
-        document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
-        document.getElementById(`tab-${tabId}`).classList.remove('hidden');
-        document.querySelectorAll('.tab').forEach(b => b.classList.remove('active'));
-        document.querySelector(`[data-tab="${tabId}"]`).classList.add('active');
-
-        if (tabId === 'spinal') calcSpinal();
-        else if (tabId === 'epidural') calcEpi();
-        else if (tabId === 'last') calcLast();
-    }
-
-    function recalcCurrent() {
-        const active = document.querySelector('.tab.active')?.dataset.tab;
-        if (active === 'spinal') calcSpinal();
-        else if (active === 'epidural') calcEpi();
-        else if (active === 'last') calcLast();
-    }
-
-    // ==================== ІНІТ ====================
-    document.addEventListener('DOMContentLoaded', () => {
-        document.querySelectorAll('.tab').forEach(t => {
-            t.addEventListener('click', () => switchTab(t.dataset.tab));
-        });
-
-        ['global-weight','global-height','global-age','global-gender'].forEach(id => {
-            document.getElementById(id).addEventListener('input', recalcCurrent);
-            document.getElementById(id).addEventListener('change', recalcCurrent);
-        });
-
-        ['spinal-puncture','spinal-target','spinal-drug','spinal-factors'].forEach(id => {
-            document.getElementById(id).addEventListener('change', calcSpinal);
-        });
-
-        ['epi-puncture','epi-target','epi-drug','epi-factors'].forEach(id => {
-            document.getElementById(id).addEventListener('change', calcEpi);
-        });
-
-        document.getElementById('add-last-drug').addEventListener('click', addLastDrug);
-        document.getElementById('last-weight-type').addEventListener('change', calcLast);
-
-        addLastDrug();
-        calcSpinal();
-    });
-})();
-</script>
+        })();
+    </script>
 </body>
 </html>
