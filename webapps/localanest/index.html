@@ -1197,8 +1197,8 @@
                 const mgKg = mgTotal / w;
                 const pctMax = (mgKg / drugInfo.maxSingle) * 100;
 
-                // Fractional bolus
-                const fractionalSize = Math.min(5, Math.round(volTotal / 4));
+                // Fractional bolus — виправлено: мінімальний розмір фракції 1 мл
+                const fractionalSize = Math.max(1, Math.min(5, Math.round(volTotal / 4)));
                 const fractions = Math.ceil(volTotal / fractionalSize);
 
                 document.getElementById('epi-derm-info').innerHTML = `
