@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
     <meta name="theme-color" content="#0a0f1a">
-    <title>ICU SCALES</title>
+    <title>Клінічні шкали · повний набір</title>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body {
@@ -38,33 +38,50 @@
             border-left: 4px solid #3b82f6;
             line-height: 1.4;
         }
-        .main-tabs {
-            display: flex;
-            gap: 4px;
-            margin-bottom: 14px;
-            background: #1a2332;
-            padding: 4px;
+        .menu-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            gap: 10px;
+            margin-bottom: 16px;
+        }
+        .menu-item {
+            background: #111827;
+            border: 1px solid #2d3748;
             border-radius: 16px;
-            flex-wrap: wrap;
-        }
-        .main-tab {
-            flex: 1;
-            min-width: 72px;
-            padding: 10px 6px;
-            background: transparent;
-            border: none;
-            color: #94a3b8;
-            font-size: 11px;
-            font-weight: 600;
-            border-radius: 12px;
+            padding: 12px 8px;
+            text-align: center;
             cursor: pointer;
-            transition: all 0.2s;
-            line-height: 1.2;
-            white-space: nowrap;
+            transition: background 0.2s, border-color 0.2s;
+            color: #e2e8f0;
+            font-size: 13px;
+            font-weight: 500;
+            line-height: 1.3;
         }
-        .main-tab.active {
-            background: #3b82f6;
-            color: white;
+        .menu-item:hover, .menu-item:active {
+            background: #1e293b;
+            border-color: #3b82f6;
+        }
+        .menu-item .category {
+            font-size: 10px;
+            color: #6b7280;
+            font-weight: 400;
+            display: block;
+            margin-top: 4px;
+        }
+        .back-btn {
+            background: #1e293b;
+            border: none;
+            color: #93c5fd;
+            padding: 8px 16px;
+            border-radius: 30px;
+            font-size: 13px;
+            cursor: pointer;
+            margin-bottom: 14px;
+            display: inline-block;
+            border: 1px solid #334155;
+        }
+        .back-btn:hover {
+            background: #2d3748;
         }
         .card {
             background: #111827;
@@ -93,8 +110,7 @@
             margin-bottom: 6px;
             font-weight: 500;
         }
-        input,
-        select {
+        input, select {
             width: 100%;
             padding: 12px 14px;
             background: #0a0f1a;
@@ -104,8 +120,7 @@
             font-size: 15px;
             transition: border-color 0.2s;
         }
-        input:focus,
-        select:focus {
+        input:focus, select:focus {
             outline: none;
             border-color: #3b82f6;
             box-shadow: 0 0 0 3px rgba(59,130,246,0.1);
@@ -219,18 +234,6 @@
             margin-top: 6px;
             font-weight: 500;
         }
-        .sirs-criteria {
-            font-size: 11px;
-            color: #94a3b8;
-            line-height: 1.6;
-            margin-top: 8px;
-        }
-        .sirs-positive {
-            color: #ef4444 !important;
-        }
-        .sirs-negative {
-            color: #22c55e !important;
-        }
         .helper-text {
             font-size: 10px;
             color: #64748b;
@@ -252,247 +255,118 @@
         button:active {
             background: #2d4a6e;
         }
+        .calc-btn {
+            width: auto;
+            padding: 8px 20px;
+            margin-top: 0;
+            font-size: 13px;
+            display: inline-block;
+        }
+        .radio-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 4px;
+        }
+        .radio-group label {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 13px;
+            color: #e2e8f0;
+            background: #0a0f1a;
+            padding: 6px 12px;
+            border-radius: 30px;
+            border: 1px solid #334155;
+            cursor: pointer;
+        }
+        .radio-group input[type="radio"] {
+            width: auto;
+            accent-color: #3b82f6;
+        }
+        .menu-container {
+            margin-bottom: 10px;
+        }
+        .scale-container {
+            display: block;
+        }
+        .inline-unit {
+            font-size: 12px;
+            color: #6b7280;
+            margin-left: 6px;
+        }
     </style>
 </head>
 <body>
     <div class="header">
-        <h1>📊 ICU SCALES</h1>
-        <span class="protocol-badge">NEWS2 · ARDS · SHOCK · SOFA · BISAP</span>
+        <h1>Клінічні шкали</h1>
+        <span class="protocol-badge">Повний набір · 12 шкал</span>
     </div>
-
     <div class="disclaimer">
-        ⚕️ Для медичних працівників. Шкали не замінюють клінічне мислення.<br>
-        
+        Для медичних працівників. Шкали не замінюють клінічне мислення.
     </div>
 
-    <!-- ГОЛОВНІ ВКЛАДКИ -->
-    <div class="main-tabs">
-        <button class="main-tab active" data-tab="screening">🚨 SCREEN</button>
-        <button class="main-tab" data-tab="respiratory">💨 RESP</button>
-        <button class="main-tab" data-tab="shock">💔 SHOCK</button>
-        <button class="main-tab" data-tab="sofa">🫀 SOFA</button>
-        <button class="main-tab" data-tab="special">🧬 SPEC</button>
-    </div>
-
-    <!-- ==================== SCREENING ==================== -->
-    <div id="tab-screening" class="tab-content">
-        <div class="card">
-            <div class="card-title">📊 NEWS2</div>
-            <div class="row-2">
-                <div class="input-group"><label>ЧД (за хв)</label><input type="number" id="news2-rr" placeholder="18" min="0" max="60"></div>
-                <div class="input-group"><label>SpO₂ (%)</label><input type="number" id="news2-spo2" placeholder="96" min="0" max="100"></div>
-            </div>
-            <div class="checkbox-group"><input type="checkbox" id="news2-copd"><label>ХОЗЛ (шкала SpO₂ 2)</label></div>
-            <div class="helper-text">При ХОЗЛ використовується альтернативна шкала SpO₂</div>
-            <div class="row-2">
-                <div class="input-group"><label>САТ (мм рт.ст.)</label><input type="number" id="news2-sbp" placeholder="120" min="0" max="300"></div>
-                <div class="input-group"><label>Пульс (за хв)</label><input type="number" id="news2-hr" placeholder="80" min="0" max="300"></div>
-            </div>
-            <div class="row-2">
-                <div class="input-group">
-                    <label>Свідомість (ACVPU)</label>
-                    <select id="news2-acvpu">
-                        <option value="A">A — Alert (ясна)</option>
-                        <option value="C">C — Confused (сплутана)</option>
-                        <option value="V">V — Voice (на голос)</option>
-                        <option value="P">P — Pain (на біль)</option>
-                        <option value="U">U — Unresponsive (немає)</option>
-                    </select>
-                </div>
-                <div class="input-group"><label>Темп. (°C)</label><input type="number" id="news2-temp" placeholder="36.6" step="0.1" min="25" max="45"></div>
-            </div>
-            <div class="checkbox-group"><input type="checkbox" id="news2-oxygen"><label>Киснева терапія</label></div>
-        </div>
-        <div class="result-box" id="news2-result">
-            <div class="interpretation empty">Введіть дані для розрахунку NEWS2</div>
-        </div>
-
-        <div class="card">
-            <div class="card-title">⚡ qSOFA (скринінг сепсису)</div>
-            <div class="checkbox-group"><input type="checkbox" id="qsofa-rr"><label>ЧД ≥ 22/хв</label></div>
-            <div class="checkbox-group"><input type="checkbox" id="qsofa-gcs"><label>GCS < 15</label></div>
-            <div class="checkbox-group"><input type="checkbox" id="qsofa-sbp"><label>САТ ≤ 100 мм рт.ст.</label></div>
-        </div>
-        <div class="result-box" id="qsofa-result">
-            <div class="interpretation empty">Відмітьте критерії qSOFA</div>
-        </div>
-
-        <div class="card">
-            <div class="card-title">🩸 SIRS</div>
-            <div class="temp-group">
-                <label style="margin-bottom:0;">🌡️ Температура (°C)</label>
-                <input type="number" id="sirs-temp" placeholder="36.6" step="0.1" min="25" max="45">
-                <div class="checkbox-row">
-                    <div class="checkbox-group" style="padding:0;">
-                        <input type="checkbox" id="sirs-temp-high">
-                        <label>> 38.0°C</label>
-                    </div>
-                    <div class="checkbox-group" style="padding:0;">
-                        <input type="checkbox" id="sirs-temp-low">
-                        <label>< 36.0°C</label>
-                    </div>
-                </div>
-            </div>
-            <div class="input-group"><label>💓 Пульс (за хв)</label><input type="number" id="sirs-hr" placeholder="80" min="0" max="300"></div>
-            <div class="input-group"><label>🫁 ЧД (за хв)</label><input type="number" id="sirs-rr" placeholder="16" min="0" max="60"></div>
-            <div class="checkbox-group"><input type="checkbox" id="sirs-paco2"><label>PaCO₂ < 32 мм рт.ст. (якщо відомо)</label></div>
-            <div class="input-group"><label>🔬 Лейкоцити (×10⁹/л)</label><input type="number" id="sirs-wbc" placeholder="7.0" step="0.1" min="0" max="100"></div>
-            <div class="checkbox-group"><input type="checkbox" id="sirs-bands"><label>Незрілі форми > 10%</label></div>
-        </div>
-        <div class="result-box" id="sirs-result">
-            <div class="interpretation empty">Введіть дані для оцінки SIRS</div>
+    <div id="menuContainer" class="menu-container">
+        <div class="menu-grid">
+            <!-- Скринінг -->
+            <div class="menu-item" data-scale="news2">NEWS2 <span class="category">скринінг</span></div>
+            <div class="menu-item" data-scale="qsofa">qSOFA <span class="category">скринінг</span></div>
+            <div class="menu-item" data-scale="sirs">SIRS <span class="category">скринінг</span></div>
+            <!-- Дихання -->
+            <div class="menu-item" data-scale="ards">ARDS <span class="category">дихання</span></div>
+            <div class="menu-item" data-scale="sf">S/F ratio <span class="category">дихання</span></div>
+            <!-- Серцево-судинна (без GRACE та Shock) -->
+            <div class="menu-item" data-scale="spesi">sPESI <span class="category">серцево-судинна</span></div>
+            <!-- Органи -->
+            <div class="menu-item" data-scale="sofa">SOFA <span class="category">органи</span></div>
+            <!-- ШКТ -->
+            <div class="menu-item" data-scale="blatchford">Glasgow-Blatchford <span class="category">ШКТ</span></div>
+            <div class="menu-item" data-scale="bisap">BISAP <span class="category">ШКТ</span></div>
+            <!-- Акушерство -->
+            <div class="menu-item" data-scale="puqe">PUQE-24 <span class="category">акушерство</span></div>
+            <!-- Неврологія -->
+            <div class="menu-item" data-scale="westhaven">West-Haven <span class="category">неврологія</span></div>
+            <!-- Післяопераційна -->
+            <div class="menu-item" data-scale="aldrete">Aldrete (модиф.) <span class="category">післяопераційна</span></div>
         </div>
     </div>
 
-    <!-- ==================== RESPIRATORY ==================== -->
-    <div id="tab-respiratory" class="tab-content hidden">
-        <div class="card">
-            <div class="card-title">💨 ARDS (Berlin Definition)</div>
-            <div class="row-2">
-                <div class="input-group"><label>PaO₂ (мм рт.ст.)</label><input type="number" id="ards-pao2" placeholder="80" min="1" max="600"></div>
-                <div class="input-group"><label>FiO₂ (0.21–1.0)</label><input type="number" id="ards-fio2" placeholder="0.5" step="0.05" min="0.21" max="1.0"></div>
-            </div>
-            <div class="input-group"><label>PEEP (см H₂O)</label><input type="number" id="ards-peep" placeholder="5" min="0" max="30"></div>
-            <div class="checkbox-group"><input type="checkbox" id="ards-bilateral" checked><label>Двобічні інфільтрати</label></div>
-            <div class="checkbox-group"><input type="checkbox" id="ards-acute" checked><label>Гострий початок (< 1 тижня)</label></div>
-            <div class="checkbox-group"><input type="checkbox" id="ards-noncardiac" checked><label>Не кардіогенний набряк</label></div>
-        </div>
-        <div class="result-box" id="ards-result">
-            <div class="interpretation empty">Введіть PaO₂ та FiO₂</div>
-        </div>
-
-        <div class="card">
-            <div class="card-title">💨 SpO₂ / FiO₂ (S/F Ratio)</div>
-            <div class="row-2">
-                <div class="input-group"><label>SpO₂ (1–100%)</label><input type="number" id="sf-spo2" placeholder="95" min="1" max="100"></div>
-                <div class="input-group"><label>FiO₂ (0.21–1.0)</label><input type="number" id="sf-fio2" placeholder="0.21" step="0.05" min="0.21" max="1.0"></div>
-            </div>
-            <div class="helper-text">S/F < 235 ≈ P/F < 200 (ARDS)</div>
-        </div>
-        <div class="result-box" id="sf-result">
-            <div class="interpretation empty">Введіть SpO₂ та FiO₂</div>
-        </div>
-    </div>
-
-    <!-- ==================== SHOCK ==================== -->
-    <div id="tab-shock" class="tab-content hidden">
-        <div class="card">
-            <div class="card-title">💔 MAP + Lactate</div>
-            <div class="row-2">
-                <div class="input-group"><label>САТ (мм рт.ст.)</label><input type="number" id="shock-sbp" placeholder="90" min="0" max="300"></div>
-                <div class="input-group"><label>ДАТ (мм рт.ст.)</label><input type="number" id="shock-dbp" placeholder="60" min="0" max="200"></div>
-            </div>
-            <div class="input-group">
-                <label>MAP — готове значення (якщо є)</label>
-                <input type="number" id="shock-map-direct" placeholder="70" min="0" max="200">
-                <div class="helper-text">Якщо вказано — САТ/ДАТ ігноруються</div>
-            </div>
-            <div class="row-2">
-                <div class="input-group"><label>Лактат (ммоль/л)</label><input type="number" id="shock-lactate" placeholder="1.5" step="0.1" min="0" max="30"></div>
-                <div class="input-group"><label>Попередній лактат (ммоль/л)</label><input type="number" id="shock-lactate-prev" placeholder="3.0" step="0.1" min="0" max="30"></div>
-            </div>
-        </div>
-        <div class="result-box" id="shock-map-result">
-            <div class="interpretation empty">Введіть САТ/ДАТ або MAP</div>
-        </div>
-
-        <div class="card">
-            <div class="card-title">💉 Норадреналін (НА)</div>
-            <div class="row-2">
-                <div class="input-group"><label>Доза НА (мкг/кг/хв)</label><input type="number" id="shock-ne-dose" placeholder="0.1" step="0.01" min="0" max="10"></div>
-                <div class="input-group"><label>Вага (кг)</label><input type="number" id="shock-weight" placeholder="70" min="20" max="300"></div>
-            </div>
-        </div>
-        <div class="result-box" id="shock-stage-result">
-            <div class="interpretation empty">Введіть лактат та дозу НА</div>
-        </div>
-    </div>
-
-    <!-- ==================== SOFA ==================== -->
-    <div id="tab-sofa" class="tab-content hidden">
-        <div class="card">
-            <div class="card-title">🫀 SOFA (Sequential Organ Failure Assessment)</div>
-            <div class="input-group"><label>PaO₂/FiO₂</label><input type="number" id="sofa-pf" placeholder="300" min="0" max="600"></div>
-            <div class="input-group"><label>Тромбоцити (×10⁹/л)</label><input type="number" id="sofa-plt" placeholder="200" min="0" max="2000"></div>
-            <div class="input-group"><label>Білірубін (мкмоль/л)</label><input type="number" id="sofa-bili" placeholder="15" min="0" max="500"></div>
-            <div class="input-group">
-                <label>ССС (вазопресори)</label>
-                <select id="sofa-cv">
-                    <option value="0">САТ ≥ 70 без вазопресорів</option>
-                    <option value="1">САТ < 70 без вазопресорів</option>
-                    <option value="2">ДА ≤ 5 / Добутамін (будь-яка доза)</option>
-                    <option value="3">ДА > 5 / НА ≤ 0.1</option>
-                    <option value="4">ДА > 15 / НА > 0.1</option>
-                </select>
-                <div class="helper-text">ДА, НА — мкг/кг/хв</div>
-            </div>
-            <div class="input-group"><label>GCS (3–15)</label><input type="number" id="sofa-gcs" placeholder="15" min="3" max="15"></div>
-            <div class="input-group">
-                <label>Креатинін (мкмоль/л) / діурез</label>
-                <select id="sofa-renal">
-                    <option value="0">< 110</option>
-                    <option value="1">110–170</option>
-                    <option value="2">171–299</option>
-                    <option value="3">300–440 / діурез < 500 мл/добу</option>
-                    <option value="4">> 440 / діурез < 200 мл/добу</option>
-                </select>
-            </div>
-        </div>
-        <div class="result-box" id="sofa-result">
-            <div class="interpretation empty">Введіть дані для розрахунку SOFA</div>
-        </div>
-    </div>
-
-    <!-- ==================== SPECIAL ==================== -->
-    <div id="tab-special" class="tab-content hidden">
-        <div class="card">
-            <div class="card-title">🩸 BISAP (Pancreatitis Severity)</div>
-            <div class="input-group"><label>Сечовина (ммоль/л)</label><input type="number" id="bisap-bun" placeholder="6.0" step="0.1" min="0" max="100"></div>
-            <div class="helper-text">BUN ≥ 9.0 ммоль/л = 1 бал</div>
-            <div class="checkbox-group"><input type="checkbox" id="bisap-mental"><label>Порушення свідомості (GCS < 15)</label></div>
-            <div class="checkbox-group"><input type="checkbox" id="bisap-sirs"><label>SIRS (≥ 2 критерії)</label></div>
-            <div class="input-group"><label>Вік (років)</label><input type="number" id="bisap-age" placeholder="50" min="18" max="120"></div>
-            <div class="checkbox-group"><input type="checkbox" id="bisap-effusion"><label>Плевральний випіт</label></div>
-        </div>
-        <div class="result-box" id="bisap-result">
-            <div class="interpretation empty">Введіть дані для розрахунку BISAP</div>
-        </div>
-    </div>
-
-    <button onclick="calculateAll()">🔄 ОНОВИТИ РОЗРАХУНКИ</button>
+    <div id="scaleContainer" class="scale-container"></div>
+    <button id="backToMenuBtn" class="back-btn hidden" style="margin-bottom:10px;">До меню</button>
 
     <script>
         (function() {
             const tg = window.Telegram?.WebApp;
             if (tg) { tg.expand(); tg.ready(); }
 
+            // Helper
             function val(id) {
                 const el = document.getElementById(id);
                 if (!el || el.value === '' || el.value === null) return NaN;
                 const num = parseFloat(el.value);
                 return isNaN(num) ? NaN : num;
             }
-
             function checked(id) {
                 const el = document.getElementById(id);
                 return el ? el.checked : false;
             }
-
-            const $ = (id) => document.getElementById(id);
-
+            function radioVal(name) {
+                const el = document.querySelector(`input[name="${name}"]:checked`);
+                return el ? el.value : null;
+            }
             function setResult(id, html) {
-                const el = $(id);
+                const el = document.getElementById(id);
                 if (el) el.innerHTML = html;
             }
 
-            // ==================== NEWS2 ====================
+            // === 1. NEWS2 (офіційна RCP) ===
             function calcNEWS2() {
                 const rr = val('news2-rr');
                 const spo2 = val('news2-spo2');
-                const copd = checked('news2-copd');
+                const copd = checked('news2-copd'); // використовуємо шкалу 2
                 const sbp = val('news2-sbp');
                 const hr = val('news2-hr');
-                const acvpu = $('news2-acvpu')?.value || 'A';
+                const acvpu = document.getElementById('news2-acvpu')?.value || 'A';
                 const temp = val('news2-temp');
                 const oxygen = checked('news2-oxygen');
 
@@ -503,83 +377,97 @@
                 }
 
                 let score = 0;
+                let redFlag = false; // single red score (будь-який параметр = 3)
+
+                // ЧД
                 if (!isNaN(rr)) {
-                    if (rr <= 8) score += 3;
+                    if (rr <= 8) { score += 3; redFlag = true; }
                     else if (rr <= 11) score += 1;
                     else if (rr <= 20) score += 0;
                     else if (rr <= 24) score += 2;
-                    else score += 3;
+                    else { score += 3; redFlag = true; }
                 }
+
+                // SpO2 (шкала 1 або 2)
                 if (!isNaN(spo2)) {
                     if (copd) {
-                        if (spo2 <= 83) score += 3;
+                        // Шкала 2 (для гіперкапнічного ризику)
+                        if (spo2 <= 83) { score += 3; redFlag = true; }
                         else if (spo2 <= 85) score += 2;
                         else if (spo2 <= 87) score += 1;
                         else if (spo2 <= 92) score += 0;
-                        else if (spo2 <= 94 && oxygen) score += 1;
-                        else if (spo2 <= 96 && oxygen) score += 2;
-                        else if (oxygen) score += 3;
+                        else if (spo2 <= 94) score += 1;
+                        else if (spo2 <= 96) score += 2;
+                        else { score += 3; redFlag = true; }
                     } else {
-                        if (spo2 <= 91) score += 3;
+                        // Шкала 1 (стандартна)
+                        if (spo2 <= 91) { score += 3; redFlag = true; }
                         else if (spo2 <= 93) score += 2;
                         else if (spo2 <= 95) score += 1;
                         else score += 0;
-                        if (oxygen) score += 2;
                     }
+                    // Киснева терапія додає +2 (якщо SpO2 визначено)
+                    if (oxygen) score += 2;
                 }
+
+                // САТ
                 if (!isNaN(sbp)) {
-                    if (sbp <= 90) score += 3;
+                    if (sbp <= 90) { score += 3; redFlag = true; }
                     else if (sbp <= 100) score += 2;
                     else if (sbp <= 110) score += 1;
                     else if (sbp <= 219) score += 0;
-                    else score += 3;
+                    else { score += 3; redFlag = true; }
                 }
+
+                // Пульс
                 if (!isNaN(hr)) {
-                    if (hr <= 40) score += 3;
+                    if (hr <= 40) { score += 3; redFlag = true; }
                     else if (hr <= 50) score += 1;
                     else if (hr <= 90) score += 0;
                     else if (hr <= 110) score += 1;
                     else if (hr <= 130) score += 2;
-                    else score += 3;
+                    else { score += 3; redFlag = true; }
                 }
-                if (acvpu !== 'A') score += 3;
+
+                // Свідомість
+                if (acvpu !== 'A') { score += 3; redFlag = true; }
+
+                // Температура
                 if (!isNaN(temp)) {
-                    if (temp <= 35.0) score += 3;
+                    if (temp <= 35.0) { score += 3; redFlag = true; }
                     else if (temp <= 36.0) score += 1;
                     else if (temp <= 38.0) score += 0;
                     else if (temp <= 39.0) score += 1;
-                    else score += 2;
+                    else { score += 2; }
                 }
 
                 const risk = score <= 4 ? 'LOW' : (score <= 6 ? 'MEDIUM' : 'HIGH');
                 const action = score <= 4 ? 'Спостереження кожні 12 год' : (score <= 6 ? 'Терміновий огляд лікаря' : 'ЕКСТРЕНА ДОПОМОГА');
                 const cls = risk === 'HIGH' ? 'danger' : (risk === 'MEDIUM' ? 'warning-box' : 'success');
 
+                let redMsg = '';
+                if (redFlag) redMsg = '<br><span style="color:#ef4444;font-weight:600;">Увага: Single Red Score (≥3 бали за один параметр)</span>';
+
                 setResult('news2-result', `
                     <div class="result-row"><span class="result-label">NEWS2</span><span class="result-value">${score}</span></div>
-                    <div class="interpretation ${cls}"><b>${risk}</b> — ${action}</div>
+                    <div class="interpretation ${cls}"><b>${risk}</b> — ${action}${redMsg}</div>
                 `);
             }
 
-            // ==================== qSOFA ====================
+            // === 2. qSOFA ===
             function calcQSOFA() {
-                const anyChecked = checked('qsofa-rr') || checked('qsofa-gcs') || checked('qsofa-sbp');
-                if (!anyChecked && !checked('qsofa-rr') && !checked('qsofa-gcs') && !checked('qsofa-sbp')) {
-                    // Всі не відмічені — показуємо 0
-                }
                 const s = (checked('qsofa-rr') ? 1 : 0) + (checked('qsofa-gcs') ? 1 : 0) + (checked('qsofa-sbp') ? 1 : 0);
                 const cls = s >= 2 ? 'danger' : 'success';
                 setResult('qsofa-result', `
                     <div class="result-row"><span class="result-label">qSOFA</span><span class="result-value">${s}/3</span></div>
-                    <div class="interpretation ${cls}">${s >= 2 ? '⚠️ Високий ризик сепсису — негайне обстеження' : '✅ Низький ризик'}</div>
+                    <div class="interpretation ${cls}">${s >= 2 ? 'Високий ризик сепсису — негайне обстеження' : 'Низький ризик'}</div>
                 `);
             }
 
-            // ==================== SIRS ====================
+            // === 3. SIRS ===
             function calcSIRS() {
-                // Взаємовиключення чекбоксів температури
-                const thEl = $('sirs-temp-high');
-                const tlEl = $('sirs-temp-low');
+                const thEl = document.getElementById('sirs-temp-high');
+                const tlEl = document.getElementById('sirs-temp-low');
                 if (thEl && tlEl) {
                     thEl.addEventListener('change', function() { if (this.checked) tlEl.checked = false; });
                     tlEl.addEventListener('change', function() { if (this.checked) thEl.checked = false; });
@@ -597,64 +485,71 @@
                 if (th || tl) hasAny = true;
 
                 if (th || tl) {
-                    if (th) { score++; details.push('🌡️ Температура > 38.0°C'); }
-                    else { score++; details.push('🌡️ Температура < 36.0°C'); }
+                    if (th) { score++; details.push('Температура > 38.0°C'); }
+                    else { score++; details.push('Температура < 36.0°C'); }
                 } else if (!isNaN(temp) && temp > 25 && (temp > 38.0 || temp < 36.0)) {
                     score++;
-                    details.push('🌡️ Температура ' + temp.toFixed(1) + '°C (поза нормою)');
+                    details.push('Температура ' + temp.toFixed(1) + '°C (поза нормою)');
                 } else {
-                    details.push('🌡️ Температура в нормі');
+                    details.push('Температура в нормі');
                 }
 
                 const hr = val('sirs-hr');
                 if (!isNaN(hr)) hasAny = true;
-                if (!isNaN(hr) && hr > 90) { score++; details.push('💓 Пульс > 90/хв'); }
-                else details.push('💓 Пульс у нормі');
+                if (!isNaN(hr) && hr > 90) { score++; details.push('Пульс > 90/хв'); }
+                else details.push('Пульс у нормі');
 
                 const rr = val('sirs-rr');
                 const paco2 = checked('sirs-paco2');
                 if (!isNaN(rr)) hasAny = true;
                 if (paco2) hasAny = true;
-                if ((!isNaN(rr) && rr > 20) || paco2) { score++; details.push('🫁 ЧД > 20/хв або PaCO₂ < 32'); }
-                else details.push('🫁 Дихання в нормі');
+                if ((!isNaN(rr) && rr > 20) || paco2) { score++; details.push('ЧД > 20/хв або PaCO₂ < 32'); }
+                else details.push('Дихання в нормі');
 
                 const wbc = val('sirs-wbc');
                 const bands = checked('sirs-bands');
                 if (!isNaN(wbc)) hasAny = true;
                 if (bands) hasAny = true;
-                if (!isNaN(wbc) && (wbc > 12.0 || wbc < 4.0)) { score++; details.push('🔬 Лейкоцити ' + wbc.toFixed(1) + ' (поза нормою)'); }
-                else if (bands) { score++; details.push('🔬 Незрілі форми > 10%'); }
-                else details.push('🔬 Лейкоцити в нормі');
+                if (!isNaN(wbc) && (wbc > 12.0 || wbc < 4.0)) { score++; details.push('Лейкоцити ' + wbc.toFixed(1) + ' (поза нормою)'); }
+                else if (bands) { score++; details.push('Незрілі форми > 10%'); }
+                else details.push('Лейкоцити в нормі');
 
                 if (!hasAny) {
                     setResult('sirs-result', '<div class="interpretation empty">Введіть дані для оцінки SIRS</div>');
                     return;
                 }
 
-                const cls = score >= 2 ? 'sirs-positive' : 'sirs-negative';
-                const icls = score >= 2 ? 'danger' : 'success';
+                const cls = score >= 2 ? 'danger' : 'success';
                 setResult('sirs-result', `
-                    <div class="result-row"><span class="result-label">SIRS</span><span class="result-value ${cls}">${score}/4</span></div>
-                    <div class="interpretation ${icls}">${score >= 2 ? '🔴 SIRS ПОЗИТИВНИЙ (≥2 критерії)' : '🟢 SIRS НЕГАТИВНИЙ'}</div>
-                    <div class="sirs-criteria">${details.join('<br>')}</div>
+                    <div class="result-row"><span class="result-label">SIRS</span><span class="result-value">${score}/4</span></div>
+                    <div class="interpretation ${cls}">${score >= 2 ? 'SIRS ПОЗИТИВНИЙ (≥2 критерії)' : 'SIRS НЕГАТИВНИЙ'}</div>
+                    <div style="font-size:11px;color:#94a3b8;margin-top:6px;">${details.join(' · ')}</div>
                 `);
             }
 
-            // ==================== ARDS ====================
+            // === 4. ARDS (Berlin) з коректним FiO2 ===
+            function parseFiO2(val) {
+                if (isNaN(val)) return NaN;
+                if (val >= 21 && val <= 100) return val / 100;
+                if (val >= 0.21 && val <= 1.0) return val;
+                return NaN;
+            }
+
             function calcARDS() {
                 const pao2 = val('ards-pao2');
-                const fio2 = val('ards-fio2');
+                const fio2Raw = val('ards-fio2');
+                const fio2 = parseFiO2(fio2Raw);
                 const peep = val('ards-peep');
                 const bi = checked('ards-bilateral');
                 const ac = checked('ards-acute');
                 const nc = checked('ards-noncardiac');
 
-                if (isNaN(pao2) && isNaN(fio2)) {
+                if (isNaN(pao2) && isNaN(fio2Raw)) {
                     setResult('ards-result', '<div class="interpretation empty">Введіть PaO₂ та FiO₂</div>');
                     return;
                 }
                 if (isNaN(fio2) || fio2 < 0.21 || fio2 > 1.0) {
-                    setResult('ards-result', '<div class="interpretation danger">FiO₂ має бути 0.21–1.0</div>');
+                    setResult('ards-result', '<div class="interpretation danger">FiO₂ має бути 0.21–1.0 або 21–100%</div>');
                     return;
                 }
                 if (isNaN(pao2) || pao2 <= 0) {
@@ -664,27 +559,26 @@
 
                 const peepOk = !isNaN(peep) && peep >= 5;
                 const pf = pao2 / fio2;
-                let sev = '';
-                let cls = 'empty';
+                let sev = '', cls = 'empty';
 
                 if (!bi || !ac || !nc || !peepOk) {
-                    sev = '❌ Критерії ARDS НЕ виконано';
+                    sev = 'Критерії ARDS НЕ виконано';
                     if (!bi) sev += ' (інфільтрати)';
                     if (!ac) sev += ' (початок)';
                     if (!nc) sev += ' (кардіогенний?)';
                     if (!peepOk) sev += ' (PEEP < 5)';
                     cls = 'warning-box';
                 } else if (pf <= 100) {
-                    sev = '🔴 ТЯЖКИЙ ARDS (лет. ~45%)';
+                    sev = 'ТЯЖКИЙ ARDS (летальність ~45%)';
                     cls = 'danger';
                 } else if (pf <= 200) {
-                    sev = '🟠 ПОМІРНИЙ ARDS (лет. ~32%)';
+                    sev = 'ПОМІРНИЙ ARDS (летальність ~32%)';
                     cls = 'warning-box';
                 } else if (pf <= 300) {
-                    sev = '🟡 ЛЕГКИЙ ARDS (лет. ~27%)';
+                    sev = 'ЛЕГКИЙ ARDS (летальність ~27%)';
                     cls = 'warning-box';
                 } else {
-                    sev = '🟢 P/F > 300 — ARDS немає';
+                    sev = 'P/F > 300 — ARDS немає';
                     cls = 'success';
                 }
 
@@ -694,12 +588,12 @@
                 `);
             }
 
-            // ==================== SpO2/FiO2 ====================
+            // === 5. S/F ratio ===
             function calcSF() {
                 const spo2 = val('sf-spo2');
-                const fio2 = val('sf-fio2');
-                
-                if (isNaN(spo2) && isNaN(fio2)) {
+                const fio2Raw = val('sf-fio2');
+                const fio2 = parseFiO2(fio2Raw);
+                if (isNaN(spo2) && isNaN(fio2Raw)) {
                     setResult('sf-result', '<div class="interpretation empty">Введіть SpO₂ та FiO₂</div>');
                     return;
                 }
@@ -708,106 +602,36 @@
                     return;
                 }
                 if (isNaN(fio2) || fio2 < 0.21 || fio2 > 1.0) {
-                    setResult('sf-result', '<div class="interpretation danger">FiO₂ має бути 0.21–1.0</div>');
+                    setResult('sf-result', '<div class="interpretation danger">FiO₂ має бути 0.21–1.0 або 21–100%</div>');
                     return;
                 }
-                
                 const sf = spo2 / fio2;
                 let sev, cls;
                 if (sf < 235) {
-                    sev = '🔴 S/F < 235 — співставно з P/F < 200 (ARDS)';
+                    sev = 'S/F < 235 — співставно з P/F < 200 (ARDS)';
                     cls = 'danger';
                 } else if (sf < 315) {
-                    sev = '🟡 S/F < 315 — співставно з P/F < 300';
+                    sev = 'S/F < 315 — співставно з P/F < 300';
                     cls = 'warning-box';
                 } else {
-                    sev = '🟢 S/F ≥ 315 — норма (P/F > 300)';
+                    sev = 'S/F ≥ 315 — норма (P/F > 300)';
                     cls = 'success';
                 }
-                
                 setResult('sf-result', `
                     <div class="result-row"><span class="result-label">S/F</span><span class="result-value">${sf.toFixed(0)}</span></div>
                     <div class="interpretation ${cls}">${sev}</div>
                 `);
             }
 
-            // ==================== SHOCK ====================
-            function calcShock() {
-                const sbp = val('shock-sbp');
-                const dbp = val('shock-dbp');
-                const mapDirect = val('shock-map-direct');
-                const lac = val('shock-lactate');
-                const lacP = val('shock-lactate-prev');
-                const neDose = val('shock-ne-dose');
-                const w = val('shock-weight');
-
-                let hasMapData = !isNaN(mapDirect) || (!isNaN(sbp) && !isNaN(dbp));
-                if (!hasMapData && isNaN(lac) && isNaN(neDose)) {
-                    setResult('shock-map-result', '<div class="interpretation empty">Введіть САТ/ДАТ або MAP</div>');
-                    setResult('shock-stage-result', '');
-                    return;
-                }
-
-                let map = NaN;
-                if (!isNaN(mapDirect)) {
-                    map = mapDirect;
-                } else if (!isNaN(sbp) && !isNaN(dbp)) {
-                    if (sbp < dbp) {
-                        setResult('shock-map-result', '<div class="interpretation danger">САТ < ДАТ — перевірте введені дані</div>');
-                    } else {
-                        map = (sbp + 2 * dbp) / 3;
-                    }
-                }
-
-                if (!isNaN(map)) {
-                    let mapText = `MAP = ${map.toFixed(0)} мм рт.ст.`;
-                    let mapCls = 'success';
-                    if (map < 65) { mapText += ' — ГІПОТЕНЗІЯ'; mapCls = 'danger'; }
-                    setResult('shock-map-result', `
-                        <div class="result-row"><span class="result-label">MAP</span><span class="result-value">${map.toFixed(0)}<span class="result-unit">мм рт.ст.</span></span></div>
-                        <div class="interpretation ${mapCls}">${mapText}</div>
-                    `);
-                } else if (!hasMapData) {
-                    setResult('shock-map-result', '<div class="interpretation empty">Введіть САТ/ДАТ або MAP</div>');
-                }
-
-                let stage = '';
-                let cls = 'success';
-                if (!isNaN(lac) && !isNaN(neDose) && !isNaN(w)) {
-                    if (lac > 2 && neDose > 0.2) { stage = '🔴 REFRACTORY SHOCK'; cls = 'danger'; }
-                    else if (lac > 2 && neDose > 0.05) { stage = '🔴 DECOMPENSATED SHOCK'; cls = 'danger'; }
-                    else if (lac > 2 || neDose > 0.05) { stage = '🟡 COMPENSATED SHOCK'; cls = 'warning-box'; }
-                    else { stage = '🟢 NO SHOCK'; }
-                } else if (!isNaN(lac)) {
-                    if (lac > 4) { stage = '🔴 Ймовірно DECOMPENSATED (лактат > 4)'; cls = 'danger'; }
-                    else if (lac > 2) { stage = '🟡 Підвищений лактат (> 2)'; cls = 'warning-box'; }
-                    else { stage = '🟢 Лактат у нормі'; }
-                }
-
-                if (!isNaN(lac) && !isNaN(lacP) && lacP > 0) {
-                    const cl = ((lacP - lac) / lacP) * 100;
-                    if (stage) stage += ' | ';
-                    stage += `Кліренс лактату: ${cl.toFixed(0)}%`;
-                    if (cl < 10) cls = 'danger';
-                }
-
-                if (stage) {
-                    setResult('shock-stage-result', `
-                        <div class="interpretation ${cls}"><b>${stage}</b></div>
-                    `);
-                } else {
-                    setResult('shock-stage-result', '<div class="interpretation empty">Введіть лактат та дозу НА</div>');
-                }
-            }
-
-            // ==================== SOFA ====================
+            // === 6. SOFA (з питанням про респіраторну підтримку) ===
             function calcSOFA() {
                 const pf = val('sofa-pf');
                 const plt = val('sofa-plt');
                 const bili = val('sofa-bili');
-                const cv = parseInt($('sofa-cv')?.value || 0);
+                const cv = parseInt(document.getElementById('sofa-cv')?.value || 0);
                 const gcs = val('sofa-gcs');
-                const renal = parseInt($('sofa-renal')?.value || 0);
+                const renal = parseInt(document.getElementById('sofa-renal')?.value || 0);
+                const respSupport = document.querySelector('input[name="sofa-resp"]:checked')?.value || 'none';
 
                 const hasAny = !isNaN(pf) || !isNaN(plt) || !isNaN(bili) || cv > 0 || !isNaN(gcs) || renal > 0;
                 if (!hasAny) {
@@ -818,6 +642,7 @@
                 let pfS = 0, pltS = 0, biliS = 0, gcsS = 0;
                 let missingCount = 0;
 
+                // Дихання: стандартна SOFA (без додаткових балів за ІВЛ)
                 if (!isNaN(pf)) {
                     if (pf >= 400) pfS = 0;
                     else if (pf >= 300) pfS = 1;
@@ -858,16 +683,69 @@
                 else band = 'VERY HIGH';
 
                 const cls = band === 'VERY HIGH' || band === 'HIGH' ? 'danger' : (band === 'MODERATE' ? 'warning-box' : 'success');
-                const missingNote = missingCount > 0 ? `<br><small style="color:#94a3b8">(${missingCount} систем без даних — 0 балів)</small>` : '';
+                const missingNote = missingCount > 0 ? `<br><small style="color:#94a3b8;">(${missingCount} систем без даних — 0 балів)</small>` : '';
+                const respNote = respSupport !== 'none' ? `<br><small style="color:#94a3b8;">Респіраторна підтримка: ${respSupport === 'iv' ? 'інвазивна ШВЛ' : 'НІВЛ/CPAP'}</small>` : '';
 
                 setResult('sofa-result', `
                     <div class="result-row"><span class="result-label">SOFA</span><span class="result-value">${total}/24</span></div>
-                    ${missingNote}
+                    ${missingNote}${respNote}
                     <div class="interpretation ${cls}"><b>${band}</b></div>
                 `);
             }
 
-            // ==================== BISAP ====================
+            // === 7. Glasgow-Blatchford (з урахуванням статі) ===
+            function calcBlatchford() {
+                const gender = document.querySelector('input[name="blatchford-gender"]:checked')?.value || 'male';
+                const hb = val('blatchford-hb');
+                const bun = val('blatchford-bun');
+                const hr = val('blatchford-hr');
+                const sbp = val('blatchford-sbp');
+                const melena = checked('blatchford-melena');
+                const syncope = checked('blatchford-syncope');
+                const hepatic = checked('blatchford-hepatic');
+                const hf = checked('blatchford-hf');
+
+                let score = 0;
+
+                // Гемоглобін згідно з офіційною таблицею GBS
+                if (!isNaN(hb)) {
+                    if (gender === 'male') {
+                        if (hb >= 130) score += 0;
+                        else if (hb >= 120) score += 1;
+                        else if (hb >= 100) score += 3;
+                        else if (hb >= 80) score += 6;
+                        else score += 10;
+                    } else { // female
+                        if (hb >= 120) score += 0;
+                        else if (hb >= 110) score += 1;
+                        else if (hb >= 90) score += 3;
+                        else if (hb >= 70) score += 6;
+                        else score += 10;
+                    }
+                }
+
+                if (!isNaN(bun)) {
+                    if (bun >= 18.2) score += 2;
+                    else if (bun >= 10.0) score += 1;
+                }
+                if (!isNaN(hr) && hr >= 100) score += 1;
+                if (!isNaN(sbp) && sbp >= 90 && sbp < 100) score += 1;
+                if (!isNaN(sbp) && sbp < 90) score += 2;
+                if (melena) score += 1;
+                if (syncope) score += 2;
+                if (hepatic) score += 2;
+                if (hf) score += 2;
+
+                const cls = score >= 6 ? 'danger' : (score >= 2 ? 'warning-box' : 'success');
+                const msg = score >= 6 ? 'Високий ризик (потреба в ендоскопії/трансфузії)' : (score >= 2 ? 'Помірний ризик' : 'Низький ризик');
+
+                setResult('blatchford-result', `
+                    <div class="result-row"><span class="result-label">Glasgow-Blatchford</span><span class="result-value">${score}</span></div>
+                    <div class="interpretation ${cls}"><b>${msg}</b></div>
+                `);
+            }
+
+            // === 8. BISAP (з одиницями для BUN) ===
             function calcBISAP() {
                 const bun = val('bisap-bun');
                 const mental = checked('bisap-mental');
@@ -900,42 +778,411 @@
                 setResult('bisap-result', `
                     <div class="result-row"><span class="result-label">BISAP</span><span class="result-value">${score}/5</span></div>
                     <div class="result-row"><span class="result-label">Летальність</span><span class="result-value">${mort}</span></div>
-                    <div class="interpretation ${cls}">${score >= 3 ? '🔴 ВИСОКИЙ РИЗИК' : (score >= 1 ? '🟡 ПОМІРНИЙ РИЗИК' : '🟢 НИЗЬКИЙ РИЗИК')}</div>
+                    <div class="interpretation ${cls}">${score >= 3 ? 'ВИСОКИЙ РИЗИК' : (score >= 1 ? 'ПОМІРНИЙ РИЗИК' : 'НИЗЬКИЙ РИЗИК')}</div>
                 `);
             }
 
-            // ==================== НАВІГАЦІЯ ====================
-            function switchMainTab(tabId) {
-                document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
-                const target = document.getElementById(`tab-${tabId}`);
-                if (target) target.classList.remove('hidden');
-                document.querySelectorAll('.main-tab').forEach(btn => {
-                    btn.classList.remove('active');
-                    if (btn.dataset.tab === tabId) btn.classList.add('active');
-                });
-                calculateAll();
+            // === 9. Aldrete ===
+            function calcAldrete() {
+                const activity = parseInt(document.querySelector('input[name="aldrete-activity"]:checked')?.value || 0);
+                const resp = parseInt(document.querySelector('input[name="aldrete-resp"]:checked')?.value || 0);
+                const circ = parseInt(document.querySelector('input[name="aldrete-circ"]:checked')?.value || 0);
+                const consc = parseInt(document.querySelector('input[name="aldrete-consc"]:checked')?.value || 0);
+                const oxy = parseInt(document.querySelector('input[name="aldrete-oxy"]:checked')?.value || 0);
+
+                const total = activity + resp + circ + consc + oxy;
+                const ready = total >= 9;
+                const cls = ready ? 'success' : 'warning-box';
+                const msg = ready ? 'Готовий до виписки з PACU' : 'Потребує подальшого нагляду';
+
+                setResult('aldrete-result', `
+                    <div class="result-row"><span class="result-label">Aldrete (модиф.)</span><span class="result-value">${total}/10</span></div>
+                    <div class="interpretation ${cls}"><b>${msg}</b></div>
+                `);
             }
 
-            function calculateAll() {
-                calcNEWS2();
-                calcQSOFA();
-                calcSIRS();
-                calcARDS();
-                calcSF();
-                calcShock();
-                calcSOFA();
-                calcBISAP();
+            // === 10. sPESI ===
+            function calcSPESI() {
+                const age = checked('spesi-age');
+                const cancer = checked('spesi-cancer');
+                const hf = checked('spesi-hf');
+                const lung = checked('spesi-lung');
+                const hr = checked('spesi-hr');
+                const sbp = checked('spesi-sbp');
+                const spo2 = checked('spesi-spo2');
+
+                const score = (age?1:0) + (cancer?1:0) + (hf?1:0) + (lung?1:0) + (hr?1:0) + (sbp?1:0) + (spo2?1:0);
+                const cls = score >= 1 ? 'warning-box' : 'success';
+                const msg = score >= 1 ? 'Підвищений ризик (sPESI ≥1)' : 'Низький ризик (sPESI = 0)';
+
+                setResult('spesi-result', `
+                    <div class="result-row"><span class="result-label">sPESI</span><span class="result-value">${score}/7</span></div>
+                    <div class="interpretation ${cls}"><b>${msg}</b></div>
+                `);
             }
 
-            document.addEventListener('DOMContentLoaded', () => {
-                document.querySelectorAll('.main-tab').forEach(tab => {
-                    tab.addEventListener('click', () => switchMainTab(tab.dataset.tab));
+            // === 11. PUQE-24 ===
+            function calcPUQE() {
+                const nausea = parseInt(document.querySelector('input[name="puqe-nausea"]:checked')?.value || 0);
+                const vomiting = parseInt(document.querySelector('input[name="puqe-vomiting"]:checked')?.value || 0);
+                const retching = parseInt(document.querySelector('input[name="puqe-rething"]:checked')?.value || 0);
+
+                const total = nausea + vomiting + retching;
+                let severity = '', cls = 'success';
+                if (total <= 6) { severity = 'Легка нудота/блювання'; cls = 'success'; }
+                else if (total <= 12) { severity = 'Помірна'; cls = 'warning-box'; }
+                else { severity = 'Тяжка (надмірне блювання)'; cls = 'danger'; }
+
+                setResult('puqe-result', `
+                    <div class="result-row"><span class="result-label">PUQE-24</span><span class="result-value">${total}</span></div>
+                    <div class="interpretation ${cls}"><b>${severity}</b></div>
+                `);
+            }
+
+            // === 12. West-Haven ===
+            function calcWestHaven() {
+                const grade = parseInt(document.getElementById('westhaven-grade')?.value || 0);
+                const grades = ['0 (норма)', '1 (легка)', '2 (помірна)', '3 (тяжка)', '4 (кома)'];
+                const desc = ['Відсутність порушень', 'Порушення сну, ейфорія, тривога', 'Сонливість, дезорієнтація, астериксис', 'Сплутаність, агресивність, атаксія', 'Кома, відсутність реакції'];
+                const cls = grade >= 3 ? 'danger' : (grade >= 2 ? 'warning-box' : 'success');
+
+                setResult('westhaven-result', `
+                    <div class="result-row"><span class="result-label">West-Haven</span><span class="result-value">${grade} (${grades[grade]})</span></div>
+                    <div class="interpretation ${cls}"><b>${desc[grade]}</b></div>
+                `);
+            }
+
+            // ========== НАВІГАЦІЯ ==========
+            const menuItems = document.querySelectorAll('.menu-item');
+            const menuContainer = document.getElementById('menuContainer');
+            const scaleContainer = document.getElementById('scaleContainer');
+            const backBtn = document.getElementById('backToMenuBtn');
+
+            const scaleTemplates = {
+                news2: `
+                    <div class="card">
+                        <div class="card-title">NEWS2 (RCP)</div>
+                        <div class="row-2">
+                            <div class="input-group"><label>ЧД (за хв)</label><input type="number" id="news2-rr" placeholder="18" min="0" max="60"></div>
+                            <div class="input-group"><label>SpO₂ (%)</label><input type="number" id="news2-spo2" placeholder="96" min="0" max="100"></div>
+                        </div>
+                        <div class="checkbox-group"><input type="checkbox" id="news2-copd"><label>Ризик гіперкапнічної ДН (шкала 2)</label></div>
+                        <div class="helper-text">Для ХОЗЛ та інших станів з ризиком гіперкапнії</div>
+                        <div class="row-2">
+                            <div class="input-group"><label>САТ (мм рт.ст.)</label><input type="number" id="news2-sbp" placeholder="120" min="0" max="300"></div>
+                            <div class="input-group"><label>Пульс (за хв)</label><input type="number" id="news2-hr" placeholder="80" min="0" max="300"></div>
+                        </div>
+                        <div class="row-2">
+                            <div class="input-group">
+                                <label>Свідомість (ACVPU)</label>
+                                <select id="news2-acvpu">
+                                    <option value="A">A — Alert (ясна)</option>
+                                    <option value="C">C — Confused (сплутана)</option>
+                                    <option value="V">V — Voice (на голос)</option>
+                                    <option value="P">P — Pain (на біль)</option>
+                                    <option value="U">U — Unresponsive (немає)</option>
+                                </select>
+                            </div>
+                            <div class="input-group"><label>Темп. (°C)</label><input type="number" id="news2-temp" placeholder="36.6" step="0.1" min="25" max="45"></div>
+                        </div>
+                        <div class="checkbox-group"><input type="checkbox" id="news2-oxygen"><label>Киснева терапія (+2 бали)</label></div>
+                        <div class="result-box" id="news2-result"><div class="interpretation empty">Введіть дані для розрахунку NEWS2</div></div>
+                        <button class="calc-btn" onclick="calcNEWS2()">Розрахувати</button>
+                    </div>
+                `,
+                qsofa: `
+                    <div class="card">
+                        <div class="card-title">qSOFA (скринінг сепсису)</div>
+                        <div class="checkbox-group"><input type="checkbox" id="qsofa-rr"><label>ЧД ≥ 22/хв</label></div>
+                        <div class="checkbox-group"><input type="checkbox" id="qsofa-gcs"><label>GCS < 15</label></div>
+                        <div class="checkbox-group"><input type="checkbox" id="qsofa-sbp"><label>САТ ≤ 100 мм рт.ст.</label></div>
+                        <div class="result-box" id="qsofa-result"><div class="interpretation empty">Відмітьте критерії qSOFA</div></div>
+                        <button class="calc-btn" onclick="calcQSOFA()">Розрахувати</button>
+                    </div>
+                `,
+                sirs: `
+                    <div class="card">
+                        <div class="card-title">SIRS</div>
+                        <div class="temp-group">
+                            <label style="margin-bottom:0;">Температура (°C)</label>
+                            <input type="number" id="sirs-temp" placeholder="36.6" step="0.1" min="25" max="45">
+                            <div class="checkbox-row">
+                                <div class="checkbox-group" style="padding:0;">
+                                    <input type="checkbox" id="sirs-temp-high">
+                                    <label>> 38.0°C</label>
+                                </div>
+                                <div class="checkbox-group" style="padding:0;">
+                                    <input type="checkbox" id="sirs-temp-low">
+                                    <label>< 36.0°C</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="input-group"><label>Пульс (за хв)</label><input type="number" id="sirs-hr" placeholder="80" min="0" max="300"></div>
+                        <div class="input-group"><label>ЧД (за хв)</label><input type="number" id="sirs-rr" placeholder="16" min="0" max="60"></div>
+                        <div class="checkbox-group"><input type="checkbox" id="sirs-paco2"><label>PaCO₂ < 32 мм рт.ст. (якщо відомо)</label></div>
+                        <div class="input-group"><label>Лейкоцити (×10⁹/л)</label><input type="number" id="sirs-wbc" placeholder="7.0" step="0.1" min="0" max="100"></div>
+                        <div class="checkbox-group"><input type="checkbox" id="sirs-bands"><label>Незрілі форми > 10%</label></div>
+                        <div class="result-box" id="sirs-result"><div class="interpretation empty">Введіть дані для оцінки SIRS</div></div>
+                        <button class="calc-btn" onclick="calcSIRS()">Розрахувати</button>
+                    </div>
+                `,
+                ards: `
+                    <div class="card">
+                        <div class="card-title">ARDS (Berlin Definition)</div>
+                        <div class="row-2">
+                            <div class="input-group"><label>PaO₂ (мм рт.ст.)</label><input type="number" id="ards-pao2" placeholder="80" min="1" max="600"></div>
+                            <div class="input-group"><label>FiO₂ (0.21–1.0 або 21–100%)</label><input type="number" id="ards-fio2" placeholder="0.5" step="0.05" min="0.21" max="100"></div>
+                        </div>
+                        <div class="input-group"><label>PEEP (см H₂O)</label><input type="number" id="ards-peep" placeholder="5" min="0" max="30"></div>
+                        <div class="checkbox-group"><input type="checkbox" id="ards-bilateral" checked><label>Двобічні інфільтрати</label></div>
+                        <div class="checkbox-group"><input type="checkbox" id="ards-acute" checked><label>Гострий початок (< 1 тижня)</label></div>
+                        <div class="checkbox-group"><input type="checkbox" id="ards-noncardiac" checked><label>Не кардіогенний набряк</label></div>
+                        <div class="result-box" id="ards-result"><div class="interpretation empty">Введіть PaO₂ та FiO₂</div></div>
+                        <button class="calc-btn" onclick="calcARDS()">Розрахувати</button>
+                    </div>
+                `,
+                sf: `
+                    <div class="card">
+                        <div class="card-title">SpO₂ / FiO₂ (S/F Ratio)</div>
+                        <div class="row-2">
+                            <div class="input-group"><label>SpO₂ (1–100%)</label><input type="number" id="sf-spo2" placeholder="95" min="1" max="100"></div>
+                            <div class="input-group"><label>FiO₂ (0.21–1.0 або 21–100%)</label><input type="number" id="sf-fio2" placeholder="0.21" step="0.05" min="0.21" max="100"></div>
+                        </div>
+                        <div class="helper-text">S/F < 235 ≈ P/F < 200 (ARDS)</div>
+                        <div class="result-box" id="sf-result"><div class="interpretation empty">Введіть SpO₂ та FiO₂</div></div>
+                        <button class="calc-btn" onclick="calcSF()">Розрахувати</button>
+                    </div>
+                `,
+                sofa: `
+                    <div class="card">
+                        <div class="card-title">SOFA (Sequential Organ Failure Assessment)</div>
+                        <div class="input-group"><label>PaO₂/FiO₂</label><input type="number" id="sofa-pf" placeholder="300" min="0" max="600"></div>
+                        <div class="input-group">
+                            <label>Респіраторна підтримка</label>
+                            <div class="radio-group">
+                                <label><input type="radio" name="sofa-resp" value="none" checked> Ні</label>
+                                <label><input type="radio" name="sofa-resp" value="niv"> НІВЛ/CPAP</label>
+                                <label><input type="radio" name="sofa-resp" value="iv"> Інвазивна ШВЛ</label>
+                            </div>
+                        </div>
+                        <div class="input-group"><label>Тромбоцити (×10⁹/л)</label><input type="number" id="sofa-plt" placeholder="200" min="0" max="2000"></div>
+                        <div class="input-group"><label>Білірубін (мкмоль/л)</label><input type="number" id="sofa-bili" placeholder="15" min="0" max="500"></div>
+                        <div class="input-group">
+                            <label>ССС (вазопресори)</label>
+                            <select id="sofa-cv">
+                                <option value="0">САТ ≥ 70 без вазопресорів</option>
+                                <option value="1">САТ < 70 без вазопресорів</option>
+                                <option value="2">ДА ≤ 5 / Добутамін (будь-яка доза)</option>
+                                <option value="3">ДА > 5 / НА ≤ 0.1</option>
+                                <option value="4">ДА > 15 / НА > 0.1</option>
+                            </select>
+                            <div class="helper-text">ДА, НА — мкг/кг/хв</div>
+                        </div>
+                        <div class="input-group"><label>GCS (3–15)</label><input type="number" id="sofa-gcs" placeholder="15" min="3" max="15"></div>
+                        <div class="input-group">
+                            <label>Креатинін (мкмоль/л) / діурез</label>
+                            <select id="sofa-renal">
+                                <option value="0">< 110</option>
+                                <option value="1">110–170</option>
+                                <option value="2">171–299</option>
+                                <option value="3">300–440 / діурез < 500 мл/добу</option>
+                                <option value="4">> 440 / діурез < 200 мл/добу</option>
+                            </select>
+                        </div>
+                        <div class="result-box" id="sofa-result"><div class="interpretation empty">Введіть дані для розрахунку SOFA</div></div>
+                        <button class="calc-btn" onclick="calcSOFA()">Розрахувати</button>
+                    </div>
+                `,
+                blatchford: `
+                    <div class="card">
+                        <div class="card-title">Glasgow-Blatchford (верхня ШКТ кровотеча)</div>
+                        <div class="input-group">
+                            <label>Стать</label>
+                            <div class="radio-group">
+                                <label><input type="radio" name="blatchford-gender" value="male" checked> Чоловік</label>
+                                <label><input type="radio" name="blatchford-gender" value="female"> Жінка</label>
+                            </div>
+                        </div>
+                        <div class="row-2">
+                            <div class="input-group"><label>Hb (г/л)</label><input type="number" id="blatchford-hb" placeholder="120" min="0" max="250"></div>
+                            <div class="input-group"><label>Сечовина (ммоль/л)</label><input type="number" id="blatchford-bun" placeholder="6.0" step="0.1" min="0" max="50"></div>
+                        </div>
+                        <div class="row-2">
+                            <div class="input-group"><label>ЧСС (за хв)</label><input type="number" id="blatchford-hr" placeholder="80" min="0" max="300"></div>
+                            <div class="input-group"><label>САТ (мм рт.ст.)</label><input type="number" id="blatchford-sbp" placeholder="120" min="0" max="300"></div>
+                        </div>
+                        <div class="checkbox-group"><input type="checkbox" id="blatchford-melena"><label>Мелена</label></div>
+                        <div class="checkbox-group"><input type="checkbox" id="blatchford-syncope"><label>Синкопе</label></div>
+                        <div class="checkbox-group"><input type="checkbox" id="blatchford-hepatic"><label>Захворювання печінки</label></div>
+                        <div class="checkbox-group"><input type="checkbox" id="blatchford-hf"><label>Серцева недостатність</label></div>
+                        <div class="result-box" id="blatchford-result"><div class="interpretation empty">Введіть дані для розрахунку</div></div>
+                        <button class="calc-btn" onclick="calcBlatchford()">Розрахувати</button>
+                    </div>
+                `,
+                bisap: `
+                    <div class="card">
+                        <div class="card-title">BISAP (панкреатит)</div>
+                        <div class="input-group">
+                            <label>Сечовина (ммоль/л)</label>
+                            <input type="number" id="bisap-bun" placeholder="6.0" step="0.1" min="0" max="100">
+                            <div class="helper-text">BUN ≥ 9.0 ммоль/л = 1 бал</div>
+                        </div>
+                        <div class="checkbox-group"><input type="checkbox" id="bisap-mental"><label>Порушення свідомості (GCS < 15)</label></div>
+                        <div class="checkbox-group"><input type="checkbox" id="bisap-sirs"><label>SIRS (≥ 2 критерії)</label></div>
+                        <div class="input-group"><label>Вік (років)</label><input type="number" id="bisap-age" placeholder="50" min="18" max="120"></div>
+                        <div class="checkbox-group"><input type="checkbox" id="bisap-effusion"><label>Плевральний випіт</label></div>
+                        <div class="result-box" id="bisap-result"><div class="interpretation empty">Введіть дані для розрахунку BISAP</div></div>
+                        <button class="calc-btn" onclick="calcBISAP()">Розрахувати</button>
+                    </div>
+                `,
+                puqe: `
+                    <div class="card">
+                        <div class="card-title">PUQE-24 (нудота/блювання вагітних)</div>
+                        <div class="input-group"><label>Нудота (за останні 24 год)</label>
+                            <div class="radio-group">
+                                <label><input type="radio" name="puqe-nausea" value="1" checked> Немає</label>
+                                <label><input type="radio" name="puqe-nausea" value="2"> Незначна</label>
+                                <label><input type="radio" name="puqe-nausea" value="3"> Помірна</label>
+                                <label><input type="radio" name="puqe-nausea" value="4"> Тяжка</label>
+                            </div>
+                        </div>
+                        <div class="input-group"><label>Блювання (за останні 24 год)</label>
+                            <div class="radio-group">
+                                <label><input type="radio" name="puqe-vomiting" value="1" checked> 0 разів</label>
+                                <label><input type="radio" name="puqe-vomiting" value="2"> 1-2 рази</label>
+                                <label><input type="radio" name="puqe-vomiting" value="3"> 3-4 рази</label>
+                                <label><input type="radio" name="puqe-vomiting" value="4"> ≥5 разів</label>
+                            </div>
+                        </div>
+                        <div class="input-group"><label>Ретчинг (позиви, за останні 24 год)</label>
+                            <div class="radio-group">
+                                <label><input type="radio" name="puqe-rething" value="1" checked> 0 разів</label>
+                                <label><input type="radio" name="puqe-rething" value="2"> 1-2 рази</label>
+                                <label><input type="radio" name="puqe-rething" value="3"> 3-4 рази</label>
+                                <label><input type="radio" name="puqe-rething" value="4"> ≥5 разів</label>
+                            </div>
+                        </div>
+                        <div class="result-box" id="puqe-result"><div class="interpretation empty">Оберіть відповіді для оцінки</div></div>
+                        <button class="calc-btn" onclick="calcPUQE()">Розрахувати</button>
+                    </div>
+                `,
+                westhaven: `
+                    <div class="card">
+                        <div class="card-title">West-Haven (печінкова енцефалопатія)</div>
+                        <div class="input-group">
+                            <label>Ступінь</label>
+                            <select id="westhaven-grade">
+                                <option value="0">0 (норма)</option>
+                                <option value="1">1 (легка)</option>
+                                <option value="2">2 (помірна)</option>
+                                <option value="3">3 (тяжка)</option>
+                                <option value="4">4 (кома)</option>
+                            </select>
+                            <div class="helper-text">Клінічна оцінка: 0 – без порушень, 1 – ейфорія/тривога, 2 – сонливість/астериксис, 3 – сплутаність/атаксія, 4 – кома</div>
+                        </div>
+                        <div class="result-box" id="westhaven-result"><div class="interpretation empty">Оберіть ступінь</div></div>
+                        <button class="calc-btn" onclick="calcWestHaven()">Розрахувати</button>
+                    </div>
+                `,
+                aldrete: `
+                    <div class="card">
+                        <div class="card-title">Модифікована шкала Aldrete</div>
+                        <div class="input-group"><label>Активність</label>
+                            <div class="radio-group">
+                                <label><input type="radio" name="aldrete-activity" value="2" checked> 2 – рухає всіма кінцівками</label>
+                                <label><input type="radio" name="aldrete-activity" value="1"> 1 – рухає двома кінцівками</label>
+                                <label><input type="radio" name="aldrete-activity" value="0"> 0 – не рухає</label>
+                            </div>
+                        </div>
+                        <div class="input-group"><label>Дихання</label>
+                            <div class="radio-group">
+                                <label><input type="radio" name="aldrete-resp" value="2" checked> 2 – глибоке, кашляє</label>
+                                <label><input type="radio" name="aldrete-resp" value="1"> 1 – задишка, обмежене</label>
+                                <label><input type="radio" name="aldrete-resp" value="0"> 0 – апное/ШВЛ</label>
+                            </div>
+                        </div>
+                        <div class="input-group"><label>Кровообіг (тиск ±% від вихідного)</label>
+                            <div class="radio-group">
+                                <label><input type="radio" name="aldrete-circ" value="2" checked> 2 – ±20%</label>
+                                <label><input type="radio" name="aldrete-circ" value="1"> 1 – ±20-49%</label>
+                                <label><input type="radio" name="aldrete-circ" value="0"> 0 – ≥50%</label>
+                            </div>
+                        </div>
+                        <div class="input-group"><label>Свідомість</label>
+                            <div class="radio-group">
+                                <label><input type="radio" name="aldrete-consc" value="2" checked> 2 – повністю притомний</label>
+                                <label><input type="radio" name="aldrete-consc" value="1"> 1 – прокидається на оклик</label>
+                                <label><input type="radio" name="aldrete-consc" value="0"> 0 – не реагує</label>
+                            </div>
+                        </div>
+                        <div class="input-group"><label>Оксигенація (SpO₂)</label>
+                            <div class="radio-group">
+                                <label><input type="radio" name="aldrete-oxy" value="2" checked> 2 – >92% на повітрі</label>
+                                <label><input type="radio" name="aldrete-oxy" value="1"> 1 – потрібен кисень для >90%</label>
+                                <label><input type="radio" name="aldrete-oxy" value="0"> 0 – <90% навіть з киснем</label>
+                            </div>
+                        </div>
+                        <div class="result-box" id="aldrete-result"><div class="interpretation empty">Оберіть бали</div></div>
+                        <button class="calc-btn" onclick="calcAldrete()">Розрахувати</button>
+                    </div>
+                `,
+                spesi: `
+                    <div class="card">
+                        <div class="card-title">sPESI (ТЕЛА)</div>
+                        <div class="checkbox-group"><input type="checkbox" id="spesi-age"><label>Вік > 80 років</label></div>
+                        <div class="checkbox-group"><input type="checkbox" id="spesi-cancer"><label>Рак</label></div>
+                        <div class="checkbox-group"><input type="checkbox" id="spesi-hf"><label>Серцева недостатність</label></div>
+                        <div class="checkbox-group"><input type="checkbox" id="spesi-lung"><label>Хронічне захворювання легень</label></div>
+                        <div class="checkbox-group"><input type="checkbox" id="spesi-hr"><label>ЧСС ≥ 110/хв</label></div>
+                        <div class="checkbox-group"><input type="checkbox" id="spesi-sbp"><label>САТ < 100 мм рт.ст.</label></div>
+                        <div class="checkbox-group"><input type="checkbox" id="spesi-spo2"><label>SpO₂ < 90%</label></div>
+                        <div class="result-box" id="spesi-result"><div class="interpretation empty">Відмітьте критерії sPESI</div></div>
+                        <button class="calc-btn" onclick="calcSPESI()">Розрахувати</button>
+                    </div>
+                `
+            };
+
+            function showScale(scaleKey) {
+                if (!scaleTemplates[scaleKey]) return;
+                menuContainer.classList.add('hidden');
+                scaleContainer.classList.remove('hidden');
+                backBtn.classList.remove('hidden');
+                scaleContainer.innerHTML = scaleTemplates[scaleKey];
+
+                const inputs = scaleContainer.querySelectorAll('input, select');
+                const funcMap = {
+                    'news2': calcNEWS2,
+                    'qsofa': calcQSOFA,
+                    'sirs': calcSIRS,
+                    'ards': calcARDS,
+                    'sf': calcSF,
+                    'sofa': calcSOFA,
+                    'bisap': calcBISAP,
+                    'spesi': calcSPESI,
+                    'blatchford': calcBlatchford,
+                    'puqe': calcPUQE,
+                    'westhaven': calcWestHaven,
+                    'aldrete': calcAldrete
+                };
+                inputs.forEach(el => {
+                    el.addEventListener('input', () => { if (funcMap[scaleKey]) funcMap[scaleKey](); });
+                    el.addEventListener('change', () => { if (funcMap[scaleKey]) funcMap[scaleKey](); });
                 });
-                document.querySelectorAll('input, select').forEach(el => {
-                    el.addEventListener('input', calculateAll);
-                    el.addEventListener('change', calculateAll);
+                if (funcMap[scaleKey]) funcMap[scaleKey]();
+            }
+
+            menuItems.forEach(item => {
+                item.addEventListener('click', function() {
+                    const scale = this.dataset.scale;
+                    if (scale) showScale(scale);
                 });
-                calculateAll();
+            });
+
+            backBtn.addEventListener('click', function() {
+                menuContainer.classList.remove('hidden');
+                scaleContainer.classList.add('hidden');
+                backBtn.classList.add('hidden');
+                scaleContainer.innerHTML = '';
             });
         })();
     </script>
